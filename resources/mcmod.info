@@ -1,0 +1,21 @@
+[
+{
+  "modid": "EnderStructures",
+  "name": "Ender Structures",
+  "description": "Structre Generation",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "http://enderio.com",
+  "updateUrl": "",
+  "authors": [
+    "crazypants"
+  ],
+  "credits": "By CrazyPants",
+  "logoFile": "",
+  "screenshots": [
+  ],
+  "parent":"",
+  "dependencies": [
+  ]
+}
+]
