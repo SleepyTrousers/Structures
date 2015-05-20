@@ -55,7 +55,6 @@ public class ExportManager {
           }
         } catch (Exception e) {
           Log.warn("Could not load exported generator: " + f.getAbsolutePath() + " Ex: " + e);
-//          e.printStackTrace();
         }    
       }
     }

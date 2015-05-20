@@ -12,13 +12,16 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.event.FMLServerStoppedEvent;
+import crazypants.structures.block.BlockClearMarker;
+import crazypants.structures.block.BlockGroundLevelMarker;
+import crazypants.structures.block.BlockStructureMarker;
 import crazypants.structures.config.Config;
 import crazypants.structures.gen.DefaultStructures;
 import crazypants.structures.gen.ReloadConfigCommand;
 import crazypants.structures.gen.WorldGenerator;
-import crazypants.structures.gen.item.BlockStructureMarker;
-import crazypants.structures.gen.item.ExportManager;
-import crazypants.structures.gen.item.ItemStructureTool;
+import crazypants.structures.item.ExportManager;
+import crazypants.structures.item.ItemClearTool;
+import crazypants.structures.item.ItemStructureTool;
 
 @Mod(modid = MODID, name = MOD_NAME, version = VERSION, dependencies = "required-after:Forge@10.13.0.1150,)", guiFactory = "crazypants.structures.config.ConfigFactoryEnderStructures")
 public class EnderStructures {
@@ -34,7 +37,11 @@ public class EnderStructures {
   public static CommonProxy proxy;
 
   public static BlockStructureMarker blockStructureMarker;
+  public static BlockClearMarker blockClearMarker;
+  public static BlockGroundLevelMarker blockGroundLevelMarker;
+  
   public static ItemStructureTool itemStructureTool;
+  public static ItemClearTool itemClearTool;
   public static WorldGenerator structureManager;  
 
   @EventHandler
@@ -43,7 +50,11 @@ public class EnderStructures {
     Config.load(event);   
 
     blockStructureMarker = BlockStructureMarker.create();
+    blockGroundLevelMarker = BlockGroundLevelMarker.create();
+    blockClearMarker = BlockClearMarker.create();
+    
     itemStructureTool = ItemStructureTool.create();
+    itemClearTool = ItemClearTool.create();
     structureManager = WorldGenerator.create();
   }
 

@@ -1,5 +1,7 @@
 package crazypants.structures.gen.structure;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -12,9 +14,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
@@ -23,6 +25,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.common.registry.GameRegistry;
+import crazypants.structures.EnderStructures;
 import crazypants.structures.Log;
 import crazypants.structures.gen.ChunkBounds;
 import crazypants.structures.gen.StructureUtil;
@@ -57,15 +60,15 @@ public class StructureTemplate {
     boolean markBiomeFillerForMerge = true;
     StructureBlock fb = null;
     StructureBlock sufb = null;
-    if(markBiomeFillerForMerge) {
+    if (markBiomeFillerForMerge) {
       BiomeGenBase biome = world.getBiomeGenForCoords((int) worldBnds.minX, (int) worldBnds.minZ);
-      if(biome != null) {
-        if(biome.topBlock != null) {
+      if (biome != null) {
+        if (biome.topBlock != null) {
           sufb = new StructureBlock(biome.fillerBlock);
         }
-        if(biome.fillerBlock != null) {
+        if (biome.fillerBlock != null) {
           fb = new StructureBlock(biome.fillerBlock);
-          if(sufb == null) {
+          if (sufb == null) {
             sufb = fb;
           }
         }
@@ -80,13 +83,12 @@ public class StructureTemplate {
     for (short xIndex = 0; xIndex < size.x; xIndex++) {
       for (short yIndex = 0; yIndex < size.y; yIndex++) {
         for (short zIndex = 0; zIndex < size.z; zIndex++) {
-
           x = (int) worldBnds.minX + xIndex;
           y = (int) worldBnds.minY + yIndex;
           z = (int) worldBnds.minZ + zIndex;
           Block blk = world.getBlock(x, y, z);
           StructureBlock sb = new StructureBlock(blk, world.getBlockMetadata(x, y, z), world.getTileEntity(x, y, z));
-          if(!sb.isAir()) {
+          if (!sb.isAir()) {
             addBlock(sb, xIndex, yIndex, zIndex);
           }
         }
@@ -107,53 +109,36 @@ public class StructureTemplate {
       NBTTagCompound entryTag = dataList.getCompoundTagAt(i);
       NBTTagCompound blockTag = entryTag.getCompoundTag("block");
       StructureBlock sb = new StructureBlock(blockTag);
-
-      List<Point3i> coords = new ArrayList<Point3i>();
-      if(entryTag.getTag("coords") instanceof NBTTagIntArray) { //TODO
-        int[] coordArr = entryTag.getIntArray("coords");
-        for (int j = 0; j < coordArr.length; j += 3) {
-          coords.add(new Point3i(coordArr[j], coordArr[j + 1], coordArr[j + 2]));
-        }
-      } else {
-        //TODO: old
-        NBTTagList coordList = (NBTTagList) entryTag.getTag("coords");
-        for (int j = 0; j < coordList.tagCount(); j++) {
-          NBTTagCompound coordTag = coordList.getCompoundTagAt(j);
-          coords.add(new Point3i(coordTag.getShort("x"), coordTag.getShort("y"), coordTag.getShort("z")));
-        }
-      }
-
+      List<Point3i> coords = readCoords(entryTag);
       blocks.put(sb, coords);
-
     }
 
-    bb = AxisAlignedBB.getBoundingBox(root.getInteger("minX"), root.getInteger("minY"), root.getInteger("minZ"),
-        root.getInteger("maxX"), root.getInteger("maxY"), root.getInteger("maxZ"));
+    bb = AxisAlignedBB.getBoundingBox(root.getInteger("minX"), root.getInteger("minY"), root.getInteger("minZ"), root.getInteger("maxX"),
+        root.getInteger("maxY"), root.getInteger("maxZ"));
 
-    size = new Point3i((int) Math.abs(bb.maxX - bb.minX), (int) Math.abs(bb.maxY - bb.minY), (int) Math.abs(bb.maxZ
-        - bb.minZ));
+    size = new Point3i((int) Math.abs(bb.maxX - bb.minX), (int) Math.abs(bb.maxY - bb.minY), (int) Math.abs(bb.maxZ - bb.minZ));
 
     surfaceOffset = root.getInteger("surfaceOffset");
-    if(root.hasKey("fillerBlock")) {
+    if (root.hasKey("fillerBlock")) {
       fillerBlock = new StructureBlock(root.getCompoundTag("fillerBlock"));
       //enable == comparison when building
-      if(blocks.containsKey(fillerBlock)) {
+      if (blocks.containsKey(fillerBlock)) {
         blocks.put(fillerBlock, blocks.get(fillerBlock));
       }
     } else {
       fillerBlock = null;
     }
-    if(root.hasKey("topBlock")) {
+    if (root.hasKey("topBlock")) {
       topBlock = new StructureBlock(root.getCompoundTag("topBlock"));
       //enable == comparison when building
-      if(blocks.containsKey(topBlock)) {
+      if (blocks.containsKey(topBlock)) {
         blocks.put(topBlock, blocks.get(topBlock));
       }
     } else {
       topBlock = null;
     }
 
-    if(uid == null || bb == null || blocks.isEmpty()) {
+    if (uid == null || bb == null || blocks.isEmpty()) {
       throw new IOException("Invalid NBT");
     }
   }
@@ -170,10 +155,10 @@ public class StructureTemplate {
     root.setInteger("maxZ", (int) bb.maxZ);
     root.setInteger("surfaceOffset", surfaceOffset);
 
-    if(fillerBlock != null) {
+    if (fillerBlock != null) {
       root.setTag("fillerBlock", fillerBlock.asNbt());
     }
-    if(topBlock != null) {
+    if (topBlock != null) {
       root.setTag("topBlock", topBlock.asNbt());
     }
 
@@ -184,29 +169,43 @@ public class StructureTemplate {
 
       NBTTagCompound entryTag = new NBTTagCompound();
       entryTag.setTag("block", entry.getKey().asNbt());
-
-      int i = 0;
-      int[] coords = new int[entry.getValue().size() * 3];
-      for (Point3i coord : entry.getValue()) {
-        coords[i++] = coord.x;
-        coords[i++] = coord.y;
-        coords[i++] = coord.z;
-      }
-      entryTag.setIntArray("coords", coords);
-
-      //      NBTTagList coordList = new NBTTagList();
-      //      for (Point3i coord : entry.getValue()) {
-      //        NBTTagCompound coordTag = new NBTTagCompound();
-      //        coordTag.setShort("x", (short) coord.x);
-      //        coordTag.setShort("y", (short) coord.y);
-      //        coordTag.setShort("z", (short) coord.z);
-      //        coordList.appendTag(coordTag);
-      //      }
-      //entryTag.setTag("coords", coordList);
-
+      writeCoords(entry, entryTag);
       entryList.appendTag(entryTag);
     }
 
+  }
+
+  private void writeCoords(Entry<StructureBlock, List<Point3i>> entry, NBTTagCompound entryTag) {
+    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    DataOutputStream dos = new DataOutputStream(bos);
+    try {
+      for (Point3i coord : entry.getValue()) {
+        dos.writeShort((short) coord.x);
+        dos.writeShort((short) coord.y);
+        dos.writeShort((short) coord.z);
+      }
+    } catch (IOException e) {
+      Log.error("StructureTemplate: Ccould not write coords: " + e);
+    }
+    byte[] bytes = bos.toByteArray();
+    entryTag.setByteArray("coords", bytes);
+    entryTag.setInteger("numCoords", entry.getValue().size());
+  }
+
+  private List<Point3i> readCoords(NBTTagCompound entryTag) {
+    List<Point3i> coords = new ArrayList<Point3i>();
+    byte[] bytes = entryTag.getByteArray("coords");
+    int numCoords = entryTag.getInteger("numCoords");
+    DataInputStream dis = new DataInputStream(new ByteArrayInputStream(bytes));
+    try {
+      for (int i = 0; i < numCoords; i++) {
+        coords.add(new Point3i(dis.readShort(), dis.readShort(), dis.readShort()));
+      }
+    } catch (IOException e) {
+      Log.error("StructureTemplate: Ccould not read coords: " + e);
+    }
+
+    return coords;
   }
 
   public void write(OutputStream os) throws IOException {
@@ -225,14 +224,14 @@ public class StructureTemplate {
 
   public void build(World world, int x, int y, int z, Rotation rot, ChunkBounds genBounds) {
 
-    if(rot == null) {
+    if (rot == null) {
       rot = Rotation.DEG_0;
     }
 
     Block fillBlk = null;
     Block surfBlk = null;
     BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
-    if(biome != null) {
+    if (biome != null) {
       fillBlk = biome.fillerBlock;
       surfBlk = biome.topBlock;
     }
@@ -242,9 +241,9 @@ public class StructureTemplate {
 
       StructureBlock sb = entry.getKey();
       List<Point3i> coords = entry.getValue();
-      if(fillBlk != null && sb == fillerBlock) {
+      if (fillBlk != null && sb == fillerBlock) {
         fillBlocks(world, x, y, z, rot, genBounds, coords, fillBlk);
-      } else if(surfBlk != null && sb == topBlock) {
+      } else if (surfBlk != null && sb == topBlock) {
         fillBlocks(world, x, y, z, rot, genBounds, coords, surfBlk);
       } else {
         placeBlocks(world, x, y, z, rot, genBounds, sb, coords);
@@ -252,13 +251,11 @@ public class StructureTemplate {
     }
   }
 
- 
-
   private void fillBlocks(World world, int x, int y, int z, Rotation rot, ChunkBounds genBounds, List<Point3i> coords, Block filler) {
     for (Point3i coord : coords) {
       Point3i bc = transformToWorld(x, y, z, rot, coord);
-      //if( (genBounds == null || genBounds.isBlockInBounds(bc.x, bc.z)) && world.isAirBlock(bc.x, bc.y, bc.z)) {
-      if((genBounds == null || genBounds.isBlockInBounds(bc.x, bc.z)) && StructureUtil.isIgnoredAsSurface(world, x, z, y, world.getBlock(x, y, z), true, false)) {
+      if ((genBounds == null || genBounds.isBlockInBounds(bc.x, bc.z))
+          && StructureUtil.isIgnoredAsSurface(world, x, z, y, world.getBlock(x, y, z), true, false)) {
         world.setBlock(bc.x, bc.y, bc.z, filler, 0, 2);
       }
     }
@@ -267,18 +264,22 @@ public class StructureTemplate {
 
   private void placeBlocks(World world, int x, int y, int z, Rotation rot, ChunkBounds genBounds, StructureBlock sb, List<Point3i> coords) {
     Block block = GameRegistry.findBlock(sb.getModId(), sb.getBlockName());
-    if(block == null) {
+    if (block == null) {
       Log.error("Could not find block " + sb.getModId() + ":" + sb.getBlockName() + " when generating structure: " + uid);
     } else {
+      if (block == EnderStructures.blockClearMarker) {
+        block = Blocks.air;
+      }
+
       for (Point3i coord : coords) {
         Point3i bc = transformToWorld(x, y, z, rot, coord);
-        if(genBounds == null || genBounds.isBlockInBounds(bc.x, bc.z)) {
+        if (genBounds == null || genBounds.isBlockInBounds(bc.x, bc.z)) {
 
           world.setBlock(bc.x, bc.y, bc.z, block, sb.getMetaData(), 2);
 
-          if(sb.getTileEntity() != null) {
+          if (sb.getTileEntity() != null) {
             TileEntity te = TileEntity.createAndLoadEntity(sb.getTileEntity());
-            if(te != null) {
+            if (te != null) {
               te.xCoord = bc.x;
               te.yCoord = bc.y;
               te.zCoord = bc.z;
@@ -286,7 +287,7 @@ public class StructureTemplate {
             }
           }
           //Chest will change the meta on block placed, so need to set it back
-          if(world.getBlockMetadata(bc.x, bc.y, bc.z) != sb.getMetaData()) {
+          if (world.getBlockMetadata(bc.x, bc.y, bc.z) != sb.getMetaData()) {
             world.setBlockMetadataWithNotify(bc.x, bc.y, bc.z, sb.getMetaData(), 3);
           }
           for (int i = 0; i < rot.ordinal(); i++) {
@@ -317,7 +318,7 @@ public class StructureTemplate {
   }
 
   private void addBlock(StructureBlock block, short x, short y, short z) {
-    if(!blocks.containsKey(block)) {
+    if (!blocks.containsKey(block)) {
       blocks.put(block, new ArrayList<Point3i>());
     }
     blocks.get(block).add(new Point3i(x, y, z));

@@ -6,7 +6,7 @@ import java.util.List;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.ChatComponentText;
-import crazypants.structures.gen.item.ExportManager;
+import crazypants.structures.item.ExportManager;
 
 public class ReloadConfigCommand implements ICommand {
 

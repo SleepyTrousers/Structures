@@ -1,2 +1,6 @@
 tile.blockStructureMarker.name=Structure Marker
+tile.blockClearMarker.name=Clear Marker
+tile.blockGroundLevelMarker.name=Ground Level Marker
+
 item.itemStructureTool.name=Structure Tool
+item.itemClearTool.name=Clear Tool

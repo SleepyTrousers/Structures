@@ -88,6 +88,10 @@ public class StructureRegister {
   public void registerStructureTemplate(StructureTemplate st) {
     templates.put(st.getUid(), st);
   }
+  
+  public Collection<StructureTemplate> getStructureTemplates() {
+    return templates.values();    
+  }
 
   public StructureTemplate getStructureTemplate(String uid) {
     return getStructureTemplate(uid, false);
@@ -126,5 +130,7 @@ public class StructureRegister {
     }
 
   }
+
+  
 
 }

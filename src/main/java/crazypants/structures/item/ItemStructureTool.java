@@ -1,6 +1,5 @@
 package crazypants.structures.item;
 
-import java.util.Collection;
 import java.util.Iterator;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,14 +13,13 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import crazypants.structures.EnderStructures;
 import crazypants.structures.EnderStructuresTab;
 import crazypants.structures.gen.StructureRegister;
-import crazypants.structures.gen.structure.Structure;
-import crazypants.structures.gen.structure.StructureGenerator;
+import crazypants.structures.gen.structure.Structure.Rotation;
+import crazypants.structures.gen.structure.StructureTemplate;
 import crazypants.vec.Point3i;
 
 public class ItemStructureTool extends Item {
 
   private static final String NAME = "itemStructureTool";
-  
 
   public static ItemStructureTool create() {
     ItemStructureTool res = new ItemStructureTool();
@@ -32,8 +30,8 @@ public class ItemStructureTool extends Item {
   private ItemStructureTool() {
     setUnlocalizedName(NAME);
     setCreativeTab(EnderStructuresTab.tabEnderStructures);
-    setTextureName("enderzoo:" + NAME);
-    setHasSubtypes(false);    
+    setTextureName(EnderStructures.MODID.toLowerCase() + ":" + NAME);
+    setHasSubtypes(false);
   }
 
   private void init() {
@@ -43,24 +41,12 @@ public class ItemStructureTool extends Item {
   @Override
   public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
 
-    if(!world.isRemote) {
-      //      EnderZoo.structureManager.GEN_ENABLED_DEBUG = true; 
-      //      EnderZoo.structureManager.generate(world.rand, (int)player.posX >> 4, (int)player.posZ >> 4, world, world.getChunkProvider(), world.getChunkProvider());
-      ////      EnderZoo.structureManager.generate(world.rand, 21, 27, world, world.getChunkProvider(), world.getChunkProvider());
-      //      EnderZoo.structureManager.GEN_ENABLED_DEBUG = false;
-      //      System.out.println("ItemStructureTool.onItemRightClick: Did gen");
-
-      //      boolean valid = new LevelGroundRule().isValidLocation(new Point3i(186, 61, 128), TemplateRegister.instance.getTemplate("test"), null, world, null, 186 >> 4, 128 >> 4);
-      //      System.out.println("ItemStructureTool.onItemRightClick: " + valid);
-      //      EnderZoo.structureManager.GEN_ENABLED_DEBUG = true;
-      
-      if(player.isSneaking()) {
+    if (!world.isRemote) {
+      if (player.isSneaking()) {
         String uid = setNextUid(stack);
         player.addChatComponentMessage(new ChatComponentText("Structure Generator set to " + uid));
       }
     }
-    
-    
 
     return super.onItemRightClick(stack, world, player);
   }
@@ -68,103 +54,92 @@ public class ItemStructureTool extends Item {
   @Override
   public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
 
-   
-    if(world.getBlock(x, y, z) == EnderStructures.blockStructureMarker) {      
+    if (world.getBlock(x, y, z) == EnderStructures.blockStructureMarker) {
       return true;
     }
-    if(world.isRemote) {
+    if (world.isRemote) {
       return true;
     }
 
-    
-    String uid = getGenUid(stack);
-    StructureGenerator gen = StructureRegister.instance.getGenerator(uid);
-    if(gen != null) {
-      ForgeDirection dir = ForgeDirection.getOrientation(side);
-      placeStructure(gen, world, x + dir.offsetX, y + dir.offsetY, z + dir.offsetZ, player.isSneaking());
+    String uid = getGenUid(stack, true);    
+    if (uid != null) {
+      StructureTemplate st = StructureRegister.instance.getStructureTemplate(uid);
+      if(st != null) {
+        ForgeDirection dir = ForgeDirection.getOrientation(side);
+        Point3i origin = new Point3i(x + dir.offsetX, y + dir.offsetY - 1, z + dir.offsetZ);
+        origin.y -= st.getSurfaceOffset();
+        st.build(world, origin.x,origin.y,origin.z, Rotation.DEG_0, null);
+        addMarkers(world, st, origin);        
+      }
     }
     return true;
   }
 
-  private String setNextUid(ItemStack stack) {
-    String curUid = getGenUid(stack);
-    if(curUid == null) {
-      return null;
+  private void addMarkers(World world, StructureTemplate st, Point3i origin) {
+    Point3i sz = st.getSize();
+    world.setBlock(origin.x - 1, origin.y - 1, origin.z - 1, EnderStructures.blockStructureMarker);
+    world.setBlock(origin.x - 1, origin.y  + sz.y, origin.z - 1, EnderStructures.blockStructureMarker);    
+    world.setBlock(origin.x + sz.x, origin.y - 1, origin.z - 1, EnderStructures.blockStructureMarker);
+    world.setBlock(origin.x - 1, origin.y - 1, origin.z + sz.z, EnderStructures.blockStructureMarker);
+    
+    if(st.getSurfaceOffset() > 0) {
+      world.setBlock(origin.x - 1, origin.y + st.getSurfaceOffset(), origin.z - 1, EnderStructures.blockGroundLevelMarker);
     }
-    Iterator<StructureGenerator> it = StructureRegister.instance.getGenerators().iterator();
-    while(it.hasNext()) {
-      StructureGenerator gen = it.next();
-      if(curUid.equals(gen.getUid())) {
-        if(it.hasNext()) {
-          gen = it.next();          
-        } else {
-          gen = StructureRegister.instance.getGenerators().iterator().next();
-        }
-        stack.stackTagCompound.setString("genUid", gen.getUid());
-        return gen.getUid();
-      }
-    }
-    //No match, so default to first in list
-    it = StructureRegister.instance.getGenerators().iterator();
-    if(it.hasNext()) {
-      StructureGenerator gen = it.next();
-      stack.stackTagCompound.setString("genUid", gen.getUid());
-      return gen.getUid();
-    }    
-    return null;
   }
 
-  private String getGenUid(ItemStack stack) {
-    String uid = null;
-    if(stack.stackTagCompound == null) {
-      stack.stackTagCompound = new NBTTagCompound();
+  private String setNextUid(ItemStack stack) {
+    String curUid = getGenUid(stack, false);
+    if(curUid == null) {
+      return setDefaultUid(stack);
     }
-    if(!stack.stackTagCompound.hasKey("genUid")) {
-      Collection<StructureGenerator> gens = StructureRegister.instance.getGenerators();
-      if(gens != null && !gens.isEmpty()) {
-        uid = gens.iterator().next().getUid();
-
-      } else {
-        StructureGenerator gen = StructureRegister.instance.getGenerator(ExportManager.STRUCT_NAME, true);
-        if(gen != null) {
-          uid = gen.getUid();
+    Iterator<StructureTemplate> it = StructureRegister.instance.getStructureTemplates().iterator();
+    while (it.hasNext()) {
+      StructureTemplate template = it.next();
+      if (curUid.equals(template.getUid())) {
+        if (it.hasNext()) {
+          String uid = it.next().getUid();
+          setGenUid(stack, uid);
+          return uid;
         }
       }
-      if(uid != null) {
-        stack.stackTagCompound.setString("genUid", uid);
-      }
-    } else {
-      uid = stack.stackTagCompound.getString("genUid");
-    }
+    }        
+    return setDefaultUid(stack);
+  }
+
+  private String setDefaultUid(ItemStack stack) {
+    String uid =  getFirstTemplateUid();
+    setGenUid(stack, uid);
     return uid;
   }
 
-  private void placeStructure(StructureGenerator gen, World world, int x, int y, int z, boolean ignoreSurfaceOffset) {
-    Structure s = gen.createStructure();
-    Point3i origin = new Point3i(x, y, z);
-    if(!ignoreSurfaceOffset) {
-      System.out.println("ItemStructureTool.placeStructure: ");
-      origin.y -= (s.getTemplate().getSurfaceOffset() + 1);
-    }  else {
-      origin.y++;
+  private String getGenUid(ItemStack stack, boolean setDefaultIfNull) {   
+    String result = null;
+    if (stack.stackTagCompound != null && stack.stackTagCompound.hasKey("genUid")) {      
+      result = stack.stackTagCompound.getString("genUid");
     }
-    s.setOrigin(origin);
-    EnderStructures.structureManager.generate(world, s);
-    origin = s.getOrigin();
-    
-    Point3i sz = s.getSize();
-    world.setBlock(origin.x - 1, origin.y - 1, origin.z - 1, EnderStructures.blockStructureMarker);
-    world.setBlock(origin.x - 1, origin.y + sz.y, origin.z - 1, EnderStructures.blockStructureMarker);
-    int sidesY =  origin.y - 1;
-    if(s.getTemplate().getSurfaceOffset() != 0) {
-      sidesY =  origin.y + s.getTemplate().getSurfaceOffset();
-      world.setBlock(origin.x - 1, sidesY, origin.z - 1, EnderStructures.blockStructureMarker);
+    if(setDefaultIfNull && result == null) {
+      result = setDefaultUid(stack);
+    }    
+    return result;     
+  }
+  
+  private void setGenUid(ItemStack stack, String uid) {
+    if (stack.stackTagCompound == null) {      
+      stack.stackTagCompound = new NBTTagCompound();
     }
-    
-    world.setBlock(origin.x + sz.x, sidesY, origin.z - 1, EnderStructures.blockStructureMarker);
-    world.setBlock(origin.x - 1, sidesY, origin.z + sz.z, EnderStructures.blockStructureMarker);
-    
-    
+    if(uid == null) {
+      stack.stackTagCompound.removeTag("genUid");
+    } else {
+      stack.stackTagCompound.setString("genUid", uid);
+    }
+  }
+  
+  private String getFirstTemplateUid() {
+    Iterator<StructureTemplate> it = StructureRegister.instance.getStructureTemplates().iterator();
+    if(it.hasNext()) {
+      return it.next().getUid();
+    }
+    return null;
   }
 
 }

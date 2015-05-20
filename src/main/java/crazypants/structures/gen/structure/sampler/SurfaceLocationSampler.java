@@ -42,7 +42,7 @@ public class SurfaceLocationSampler implements ILocationSampler {
     return findStartPos(structure, chunkX, chunkZ, world);
   }
 
-  protected Point3i findStartPos(Structure structure, int chunkX, int chunkZ, World world) {    
+  protected Point3i findStartPos(Structure structure, int chunkX, int chunkZ, World world) {     
     Point3i candidate;
     if(structure.getGenerator().canSpanChunks()) {
       candidate = getRandomBlock(world, chunkX, chunkZ, 16, 16, distanceFromSurface - structure.getTemplate().getSurfaceOffset(), structure.getSize().y);

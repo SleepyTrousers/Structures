@@ -61,7 +61,7 @@
                                                            
        ],
        
-       "sitePreperations" : [
+       "_sitePreperations" : [
                   
             { "type" : "ClearPreperation", 
                       "clearPlants" : "true",           

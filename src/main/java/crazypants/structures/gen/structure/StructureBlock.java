@@ -71,6 +71,10 @@ public class StructureBlock {
   public boolean isAir() {
     return "minecraft".equals(getModId()) && "air".equals(getBlockName());
   }
+  
+//  public boolean isClearMarker() {
+//    return EnderStructures.MODID.equals(getModId()) && BlockClearMarker.NAME.equals(getBlockName());
+//  }
 
   public NBTTagCompound asNbt() {
     NBTTagCompound res = new NBTTagCompound();

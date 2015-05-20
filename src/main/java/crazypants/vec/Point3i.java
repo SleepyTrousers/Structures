@@ -95,6 +95,12 @@ public class Point3i {
     return true;
   }
 
+  public void scale(int scale) {
+    x *= scale;
+    y *= scale;
+    z *= scale;    
+  }
+
   
 
 }
