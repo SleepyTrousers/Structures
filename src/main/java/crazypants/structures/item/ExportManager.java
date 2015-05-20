@@ -16,7 +16,7 @@ import crazypants.structures.gen.DefaultStructures;
 import crazypants.structures.gen.StructureRegister;
 import crazypants.structures.gen.io.StructureResourceManager;
 import crazypants.structures.gen.structure.StructureGenerator;
-import crazypants.structures.gen.structure.StructureTemplate;
+import crazypants.structures.gen.structure.StructureComponent;
 
 public class ExportManager {
 
@@ -62,17 +62,17 @@ public class ExportManager {
 
   public String getNextExportUid() {
     String res = STRUCT_NAME;
-    File file = new File(EXPORT_DIR, res + StructureResourceManager.TEMPLATE_EXT);
+    File file = new File(EXPORT_DIR, res + StructureResourceManager.COMPONENT_EXT);
     int num = 1;
     while (file.exists() && num < 100) {
       res = STRUCT_NAME + "_" + num;
-      file = new File(EXPORT_DIR, res + StructureResourceManager.TEMPLATE_EXT);
+      file = new File(EXPORT_DIR, res + StructureResourceManager.COMPONENT_EXT);
       num++;
     }
     return res;
   }
 
-  public static void writeToFile(EntityPlayer entityPlayer, StructureTemplate st, boolean createDefaultGenerator) {
+  public static void writeToFile(EntityPlayer entityPlayer, StructureComponent st, boolean createDefaultGenerator) {
     EXPORT_DIR.mkdir();
     if(!EXPORT_DIR.exists()) {
       entityPlayer.addChatComponentMessage(new ChatComponentText("Could not make folder " + EXPORT_DIR.getAbsolutePath()));
@@ -115,9 +115,9 @@ public class ExportManager {
     return res;
   }
 
-  private static boolean doWriteToFile(EntityPlayer entityPlayer, StructureTemplate st) {
+  private static boolean doWriteToFile(EntityPlayer entityPlayer, StructureComponent st) {
     boolean saved = false;
-    File file = new File(EXPORT_DIR, st.getUid() + StructureResourceManager.TEMPLATE_EXT);
+    File file = new File(EXPORT_DIR, st.getUid() + StructureResourceManager.COMPONENT_EXT);
     FileOutputStream fos = null;
     try {
       fos = new FileOutputStream(file, false);

@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.MinecraftForge;
@@ -90,15 +89,6 @@ public class WorldGenerator implements IWorldGenerator {
       Point3i chk = deffered.iterator().next();
       deffered.remove(chk);
       generate(random, chunkX, chunkZ, world, chunkGenerator, chunkProvider);
-    }
-  }
-
-  public void generate(World world, Structure s) {
-    StructureGenerator gen = s.getGenerator();
-    ChunkCoordIntPair cc = s.getChunkCoord();
-    WorldStructures structures = getWorldManOrCreate(world);
-    if(gen.buildStructure(s, structures, world.rand, cc.chunkXPos, cc.chunkZPos, world, world.getChunkProvider(), world.getChunkProvider())) {
-      structures.add(s);
     }
   }
 

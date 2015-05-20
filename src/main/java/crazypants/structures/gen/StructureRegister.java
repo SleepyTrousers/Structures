@@ -11,6 +11,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import crazypants.structures.Log;
 import crazypants.structures.gen.io.StructureResourceManager;
 import crazypants.structures.gen.structure.StructureGenerator;
+import crazypants.structures.gen.structure.StructureComponent;
 import crazypants.structures.gen.structure.StructureTemplate;
 
 public class StructureRegister {
@@ -24,12 +25,14 @@ public class StructureRegister {
   }
 
   private final Map<String, StructureGenerator> generators = new HashMap<String, StructureGenerator>();
-  private final Map<String, StructureTemplate> templates = new HashMap<String, StructureTemplate>();
+  private Map<String, StructureTemplate> templates = new HashMap<String, StructureTemplate>();
+  private final Map<String, StructureComponent> components = new HashMap<String, StructureComponent>();
   //Keep these separately so they can be retried ever reload attempt
   private final Set<String> genUids = new HashSet<String>();
   
 
   private StructureResourceManager resourceManager;
+  
 
   private StructureRegister() {
   }
@@ -81,20 +84,35 @@ public class StructureRegister {
     return generators.values();
   }
 
-  public void registerStructureTemplate(String uid, NBTTagCompound nbt) throws IOException {
-    templates.put(uid, new StructureTemplate(nbt));
+  public void registerStructureComponent(String uid, NBTTagCompound nbt) throws IOException {
+    components.put(uid, new StructureComponent(nbt));
   }
 
-  public void registerStructureTemplate(StructureTemplate st) {
-    templates.put(st.getUid(), st);
+  public void registerStructureComponent(StructureComponent st) {
+    components.put(st.getUid(), st);
   }
   
-  public Collection<StructureTemplate> getStructureTemplates() {
-    return templates.values();    
+  public Collection<StructureComponent> getStructureComponents() {
+    return components.values();    
   }
 
-  public StructureTemplate getStructureTemplate(String uid) {
-    return getStructureTemplate(uid, false);
+  public StructureComponent getStructureComponent(String uid) {
+    return getStructureComponent(uid, false);
+  }
+  
+  public StructureComponent getStructureComponent(String uid, boolean doLoadIfNull) {
+    if(!doLoadIfNull || components.containsKey(uid)) {
+      return components.get(uid);
+    }
+    StructureComponent sd = null;
+    try {
+      sd = resourceManager.loadStructureComponent(uid);
+    } catch (IOException e) {
+      Log.error("StructureRegister: Could not load structure component: " + uid + " Ex: " + e);
+    } finally {
+      components.put(uid, sd);
+    }
+    return sd;
   }
   
   public StructureTemplate getStructureTemplate(String uid, boolean doLoadIfNull) {
@@ -103,10 +121,9 @@ public class StructureRegister {
     }
     StructureTemplate sd = null;
     try {
-      sd = resourceManager.loadStructureTemplate(uid);
-    } catch (IOException e) {
-      Log.error("StructureRegister: Could not load structure template for " + uid + " Ex: " + e);
-      //e.printStackTrace();
+      sd = resourceManager.loadTemplate(uid);
+    } catch (Exception e) {
+      Log.error("StructureRegister: Could not load structure template: " + uid + " Ex: " + e);
     } finally {
       templates.put(uid, sd);
     }
@@ -114,7 +131,7 @@ public class StructureRegister {
   }
 
   public void reload() {
-    templates.clear();
+    components.clear();
     generators.clear();
     for (String uid : genUids) { 
       StructureGenerator tmp;
@@ -130,7 +147,5 @@ public class StructureRegister {
     }
 
   }
-
-  
 
 }

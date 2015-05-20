@@ -13,12 +13,14 @@ import org.apache.commons.io.IOUtils;
 import crazypants.IoUtil;
 import crazypants.structures.gen.StructureRegister;
 import crazypants.structures.gen.structure.StructureGenerator;
+import crazypants.structures.gen.structure.StructureComponent;
 import crazypants.structures.gen.structure.StructureTemplate;
 
 public class StructureResourceManager {
 
   public static final String GENERATOR_EXT = ".gen";
-  public static final String TEMPLATE_EXT = ".nbt";
+  public static final String COMPONENT_EXT = ".nbt";
+  public static final String TEMPLATE_EXT = ".stp";
   
   private final List<ResourcePath> resourcePaths = new ArrayList<ResourcePath>();
   private final GeneratorParser parser = new GeneratorParser();
@@ -49,7 +51,7 @@ public class StructureResourceManager {
   }
 
   public StructureGenerator parseJsonGenerator(String json) throws Exception {
-    return parser.parseTemplate(register, json);
+    return parser.parseGeneratorConfig(register, json);
   }
   
   public String loadText(File fromFile) throws IOException {
@@ -64,23 +66,47 @@ public class StructureResourceManager {
     return IoUtil.readStream(str);
   }
 
-  public StructureTemplate loadStructureTemplate(String uid) throws IOException {
+  public StructureComponent loadStructureComponent(String uid) throws IOException {
     InputStream stream = null;
     try {
-      stream = getStreamForTemplate(uid);
+      stream = getStreamForComponent(uid);
       if(stream == null) {
         throw new IOException("StructureResourceManager: Could find resources for template: " + uid);        
       }
-      return new StructureTemplate(stream);
+      return new StructureComponent(stream);
     } finally {
       IOUtils.closeQuietly(stream);
     }
+  }
+  
+  private String loadTemplateText(String uid) throws IOException {
+    InputStream str = getStreamForTemplate(uid);
+    if(str == null) {
+      throw new IOException("Could not find the resource for template: " + uid);
+    }
+    return IoUtil.readStream(str);
+  }
+  
+  public StructureTemplate loadTemplate(String uid) throws Exception {
+    return parseJsonTemplate(loadTemplateText(uid));
+  }
+
+  public StructureTemplate loadTemplate(File fromFile) throws Exception {
+    return parseJsonTemplate(loadText(fromFile));
+  }
+
+  public StructureTemplate parseJsonTemplate(String json) throws Exception {
+    return parser.parseTemplateConfig(register, json);
   }
 
   private InputStream getStreamForGenerator(String uid) {
     return getStream(uid + GENERATOR_EXT);
   }
 
+  private InputStream getStreamForComponent(String uid) {
+    return getStream(uid + COMPONENT_EXT);
+  }
+  
   private InputStream getStreamForTemplate(String uid) {
     return getStream(uid + TEMPLATE_EXT);
   }
@@ -164,5 +190,5 @@ public class StructureResourceManager {
     }
 
   }
-  
+
 }

@@ -12,9 +12,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
 import crazypants.structures.Log;
 import crazypants.structures.gen.WorldStructures;
-import crazypants.structures.gen.structure.Structure.Rotation;
-import crazypants.structures.gen.structure.preperation.CompositePreperation;
-import crazypants.structures.gen.structure.preperation.ISitePreperation;
 import crazypants.structures.gen.structure.sampler.ILocationSampler;
 import crazypants.structures.gen.structure.sampler.SurfaceLocationSampler;
 import crazypants.structures.gen.structure.validator.CompositeValidator;
@@ -23,13 +20,12 @@ import crazypants.vec.Point3i;
 
 public class StructureGenerator {
 
-  private static final Random rnd = new Random();
+  private static final Random RND = new Random();
 
 //  private final StructureTemplate data;
   private final String uid;
 
   private final CompositeValidator validators = new CompositeValidator();
-  private final CompositePreperation sitePreps = new CompositePreperation();
 
   private ILocationSampler locSampler;
   private boolean canSpanChunks = false;
@@ -38,40 +34,40 @@ public class StructureGenerator {
   private int maxInChunk = 1;
   private int yOffset = 0;
   
-  private final List<InstanceGen> instanceGens = new ArrayList<InstanceGen>();
+  private final List<StructureTemplate> structureTemplates = new ArrayList<StructureTemplate>();
 
   public StructureGenerator(String uid) {
-    this(uid, (InstanceGen)null);
+    this(uid, (StructureTemplate)null);
   }
   
-  public StructureGenerator(String uid, InstanceGen... gens) {
-    this(uid, gens == null ? (Collection<InstanceGen>)null : Arrays.asList(gens));
+  public StructureGenerator(String uid, StructureTemplate... gens) {
+    this(uid, gens == null ? (Collection<StructureTemplate>)null : Arrays.asList(gens));
   }
   
-  public StructureGenerator(String uid, Collection<InstanceGen> gens) {
+  public StructureGenerator(String uid, Collection<StructureTemplate> gens) {
     this.uid = uid;
     if(gens != null) {
-      for(InstanceGen gen : gens) {
+      for(StructureTemplate gen : gens) {
         if(gen != null) {
-          instanceGens.add(gen);
+          structureTemplates.add(gen);
         }
       }      
     }
     locSampler = new SurfaceLocationSampler();
   }
   
-  public void addInstanceGen(InstanceGen instanceGen) {
-    if(instanceGen != null) {
-      instanceGens.add(instanceGen);
+  public void addStructureTemaplate(StructureTemplate structureTemplate) {
+    if(structureTemplate != null) {
+      structureTemplates.add(structureTemplate);
     }
   }
 
 //  Rotation rot = Rotation.DEG_0;
   public Structure createStructure() {
-    if(instanceGens.isEmpty()) {
+    if(structureTemplates.isEmpty()) {
       return null;
     }
-    return instanceGens.get(rnd.nextInt(instanceGens.size())).createInstance(this);        
+    return structureTemplates.get(RND.nextInt(structureTemplates.size())).createInstance(this);        
 //    rot = rot.next();
     //return new Structure(this, data, new Point3i(), Rotation.DEG_0);
 //    return new Structure(this, data, new Point3i(), Rotation.values()[rnd.nextInt(4)]);
@@ -116,27 +112,28 @@ public class StructureGenerator {
       IChunkProvider chunkGenerator,
       IChunkProvider chunkProvider) {
 
+    //TODO: Site prep
     boolean res = false;
     if(s.isChunkBoundaryCrossed()) {
       //Only build in the chunk
-      if(sitePreps.prepareLocation(s, structures, world, random, chunkX, chunkZ)) {
+//      if(sitePreps.prepareLocation(s, structures, world, random, chunkX, chunkZ)) {
         res = true;
         s.build(world, chunkX, chunkZ);
         //and already created ones      
         Collection<ChunkCoordIntPair> chunks = s.getChunkBounds().getChunks();
         for (ChunkCoordIntPair c : chunks) {
           if(!(c.chunkXPos == chunkX && c.chunkZPos == chunkZ) && chunkGenerator.chunkExists(c.chunkXPos, c.chunkZPos)) {
-            sitePreps.prepareLocation(s, structures, world, random, c.chunkXPos, c.chunkZPos);
+//            sitePreps.prepareLocation(s, structures, world, random, c.chunkXPos, c.chunkZPos);
             s.build(world, c.chunkXPos, c.chunkZPos);
           }
         }
-      }
+//      }
 
     } else {
-      if(sitePreps.prepareLocation(s, structures, world, random, chunkX, chunkZ)) {
+//      if(sitePreps.prepareLocation(s, structures, world, random, chunkX, chunkZ)) {
         s.build(world);
         res = true;
-      }
+//      }
     }
     return res;
   }
@@ -148,27 +145,22 @@ public class StructureGenerator {
     structures.getStructuresIntersectingChunk(new ChunkCoordIntPair(chunkX, chunkZ), uid, existing);
 
     for (Structure s : existing) {
-      if(sitePreps.prepareLocation(s, structures, world, random, chunkX, chunkZ)) {
+      //TODO: site prep
+//      if(sitePreps.prepareLocation(s, structures, world, random, chunkX, chunkZ)) {
         s.build(world, chunkX, chunkZ);
-      }
+//      }
     }
     return !existing.isEmpty();
 
   }
 
   public boolean isValid() {
-    return uid != null && !uid.trim().isEmpty() && !instanceGens.isEmpty() && locSampler != null;
+    return uid != null && !uid.trim().isEmpty() && !structureTemplates.isEmpty() && locSampler != null;
   }
 
   public void addLocationValidator(ILocationValidator val) {
     if(val != null) {
       validators.add(val);
-    }
-  }
-
-  public void addSitePreperation(ISitePreperation val) {
-    if(val != null) {
-      sitePreps.add(val);
     }
   }
 
@@ -224,37 +216,13 @@ public class StructureGenerator {
     this.yOffset = yOffset;
   }
   
-  public List<InstanceGen> getInstanceGens() {
-    return instanceGens;
+  public List<StructureTemplate> getTemplates() {
+    return structureTemplates;
   }
 
   @Override
   public String toString() {
-    return "StructureTemplate [uid=" + uid + "]";
-  }
-  
-  public static class InstanceGen {
-    
-    private final StructureTemplate template;
-    private final List<Rotation> rots;
-
-    public InstanceGen(StructureTemplate template, List<Rotation> rots) {
-      super();
-      this.template = template;
-      if(rots == null) {
-        rots = new ArrayList<Structure.Rotation>();
-      }
-      if(rots.isEmpty()) {
-        rots.add(Rotation.DEG_0);
-      }
-      this.rots = rots;
-      
-    }
-
-    public Structure createInstance(StructureGenerator gen) {
-      return new Structure(gen, template, new Point3i(), rots.get(rnd.nextInt(rots.size())));
-    }
-    
+    return "StructureGenerator [uid=" + uid + "]";
   }
 
   

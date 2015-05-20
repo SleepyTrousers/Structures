@@ -2,13 +2,11 @@
     "StructureGenerator" : {
             
         "uid" : "GENERATOR_UID",        
-        "canSpanChunks" :  "true",
         "maxAttemptsPerChunk" : 2,
         "maxGeneratedPerChunk" : 1,
         
         "templates" : [
-          {"uid" : "TEMPLATE_UID",
-           "_rotations" : [0,90,180,270]}
+          {"uid" : "TEMPLATE_UID"}
         ],
         
         "LocationSampler" : {
@@ -59,22 +57,7 @@
                         "sizeXZ" : 1
                       }}                                
                                                            
-       ],
+       ]       
        
-       "sitePreperations" : [
-                  
-            { "_type" : "ClearPreperation", 
-                      "clearPlants" : "true",           
-                      "Border" : {
-                          "up" : 3, "down" : 0, "north" : 1, "south" : 1, "east" : 1, "west" : 1
-                      }
-            },
-           
-            { "_type" : "FillPreperation",
-                      "clearPlants" : "true",
-                      "Border" : {
-                          "sizeXZ" : 1
-                      }}           
-       ]
    }
 }

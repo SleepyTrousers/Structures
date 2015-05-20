@@ -14,7 +14,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import crazypants.structures.EnderStructures;
 import crazypants.structures.EnderStructuresTab;
 import crazypants.structures.gen.StructureRegister;
-import crazypants.structures.gen.structure.StructureTemplate;
+import crazypants.structures.gen.structure.StructureComponent;
 import crazypants.structures.item.ExportManager;
 import crazypants.vec.Point3i;
 
@@ -61,22 +61,22 @@ public class BlockStructureMarker extends Block {
     return true;
   }
 
-  public StructureTemplate generateAndExport(World world, int x, int y, int z, EntityPlayer entityPlayer) {
-    StructureTemplate st = generateTemplate(ExportManager.instance.getNextExportUid(), world, x, y, z, entityPlayer);
+  public StructureComponent generateAndExport(World world, int x, int y, int z, EntityPlayer entityPlayer) {
+    StructureComponent st = generateTemplate(ExportManager.instance.getNextExportUid(), world, x, y, z, entityPlayer);
     if(st != null) {
       ExportManager.writeToFile(entityPlayer, st, true);
-      StructureRegister.instance.registerStructureTemplate(st);
+      StructureRegister.instance.registerStructureComponent(st);
 //      StructureRegister.instance.getGenerator(st.getUid(), true);
     }
     return st;
   }
   
-  public static StructureTemplate generateTemplate(String name, IBlockAccess world, int x, int y, int z, EntityPlayer entityPlayer) {
+  public static StructureComponent generateTemplate(String name, IBlockAccess world, int x, int y, int z, EntityPlayer entityPlayer) {
     StructureBounds bb = getStructureBounds(world, x, y, z, entityPlayer);
     if(bb == null) {      
       return null;
     }
-    return new StructureTemplate(name, world, bb.bb, bb.surfaceOffset);
+    return new StructureComponent(name, world, bb.bb, bb.surfaceOffset);
   }
 
   public static StructureBounds getStructureBounds(IBlockAccess world, int x, int y, int z, EntityPlayer entityPlayer) {

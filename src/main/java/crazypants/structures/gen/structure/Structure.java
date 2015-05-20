@@ -64,37 +64,36 @@ public class Structure {
       return null;
     }
   }
-
-  private final StructureGenerator generator;
+  
   private final Point3i origin;
-  private final StructureTemplate template;
+  private final StructureComponent component;
 
   private BoundingCircle bc;
   private final Rotation rotation;
   private AxisAlignedBB bb;
   private Point3i size;
+  private boolean canSpanChunks;
 
-  public Structure(StructureGenerator generator, StructureTemplate template, Point3i origin, Rotation rotation) {
-    this.generator = generator;
-    this.template = template;
+  public Structure(Point3i origin, Rotation rotation, boolean canSpanChunks, StructureComponent component) {    
     if(origin == null) {
       origin = new Point3i();
     }
     this.origin = origin;
-
     if(rotation == null) {
       this.rotation = Rotation.DEG_0;
     } else {
       this.rotation = rotation;
     }
+    this.canSpanChunks = canSpanChunks;
+    this.component = component;
     updateBounds();
   }
 
-  public Structure(NBTTagCompound root) {
-    generator = StructureRegister.instance.getGenerator(root.getString("generator"));
-    template = StructureRegister.instance.getStructureTemplate(root.getString("template"), true);
+  public Structure(NBTTagCompound root) {    
+    component = StructureRegister.instance.getStructureComponent(root.getString("component"), true);
     origin = new Point3i(root.getInteger("x"), root.getInteger("y"), root.getInteger("z"));
     rotation = Rotation.values()[MathHelper.clamp_int(root.getShort("rotation"), 0, Rotation.values().length - 1)];
+    canSpanChunks = root.getBoolean("canSpanChunks");
     updateBounds();
   }
 
@@ -104,10 +103,6 @@ public class Structure {
 
   public Point3i getSize() {
     return size;
-  }
-
-  public StructureGenerator getGenerator() {
-    return generator;
   }
 
   public Point3i getOrigin() {
@@ -121,12 +116,14 @@ public class Structure {
 
   private void updateBounds() {
     if(isValid()) {
-      bb = rotation.rotate(template.getBounds());
+      bb = rotation.rotate(component.getBounds());
       bb = bb.getOffsetBoundingBox(origin.x, origin.y, origin.z);
       size = size(bb);
       bc = new BoundingCircle(bb);
     }
   }
+  
+  
 
   public static crazypants.vec.Point3i size(AxisAlignedBB bb) {
     return new Point3i((int) Math.abs(bb.maxX - bb.minX), (int) Math.abs(bb.maxY - bb.minY), (int) Math.abs(bb.maxZ - bb.minZ));
@@ -137,7 +134,7 @@ public class Structure {
   }
 
   public ChunkBounds getChunkBounds() {
-    Point3i size = template.getSize();
+    Point3i size = component.getSize();
     return new ChunkBounds(origin.x >> 4, origin.z >> 4, (origin.x + size.x) >> 4, (origin.z + size.z) >> 4);
   }
 
@@ -145,30 +142,23 @@ public class Structure {
     root.setInteger("x", origin.x);
     root.setInteger("y", origin.y);
     root.setInteger("z", origin.z);
-    root.setString("generator", generator.getUid());
-    root.setString("template", template.getUid());
+    root.setString("component", component.getUid());
     root.setShort("rotation", (short) rotation.ordinal());
+    root.setBoolean("canSpanChunks", canSpanChunks);
   }
 
-  public boolean isValid() {
-    return generator != null && origin != null && template != null;
-  }
-
-  @Override
-  public String toString() {
-    if(isValid()) {
-      return "Structure [generator=" + generator.getUid() + ", template=" + template.getUid() + ", origin=" + origin + "]";
-    } else {
-      return "Structure [generator=" + generator + ", template=" + template + ", origin=" + origin + "]";
-    }
-  }
+  
 
   public boolean isChunkBoundaryCrossed() {
     return getChunkBounds().getNumChunks() > 1;
   }
 
-  public StructureTemplate getTemplate() {
-    return template;
+  public boolean canSpanChunks() {    
+    return canSpanChunks;
+  }
+  
+  public StructureComponent getComponent() {
+    return component;
   }
 
   public void build(World world) {
@@ -181,7 +171,7 @@ public class Structure {
   }
 
   public void build(World world, ChunkBounds genBounds) {
-    template.build(world, origin.x, origin.y, origin.z, rotation, genBounds);
+    component.build(world, origin.x, origin.y, origin.z, rotation, genBounds);
   }
 
   public double getBoundingRadius() {
@@ -190,6 +180,19 @@ public class Structure {
 
   public BoundingCircle getBoundingCircle() {
     return bc;
+  }
+  
+  public boolean isValid() {
+    return origin != null && component != null;
+  }
+
+  @Override
+  public String toString() {
+    if(isValid()) {
+      return "Structure [canSpanChunks=" + canSpanChunks + ", component=" + component.getUid() + ", origin=" + origin + "]";
+    } else {
+      return "Structure [canSpanChunks=" + canSpanChunks  + ", component=" + component + ", origin=" + origin + "]";
+    }
   }
 
 }

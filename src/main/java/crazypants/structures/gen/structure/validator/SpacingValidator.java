@@ -90,7 +90,7 @@ public class SpacingValidator implements ILocationValidator {
       ListIterator<Structure> iter = res.listIterator();
       while (iter.hasNext()) {
         Structure match = iter.next();
-        if(!templateFilter.contains(match.getTemplate().getUid())) {
+        if(!templateFilter.contains(match.getComponent().getUid())) {
           iter.remove();
         }
       }

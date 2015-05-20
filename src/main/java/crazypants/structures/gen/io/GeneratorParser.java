@@ -11,7 +11,7 @@ import com.google.gson.JsonParser;
 import crazypants.structures.gen.StructureRegister;
 import crazypants.structures.gen.structure.Structure.Rotation;
 import crazypants.structures.gen.structure.StructureGenerator;
-import crazypants.structures.gen.structure.StructureGenerator.InstanceGen;
+import crazypants.structures.gen.structure.StructureComponent;
 import crazypants.structures.gen.structure.StructureTemplate;
 import crazypants.structures.gen.structure.preperation.ISitePreperation;
 import crazypants.structures.gen.structure.sampler.ILocationSampler;
@@ -28,7 +28,7 @@ public class GeneratorParser {
     return ruleFact;
   }
 
-  public StructureGenerator parseTemplate(StructureRegister reg, String json) throws Exception {
+  public StructureGenerator parseGeneratorConfig(StructureRegister reg, String json) throws Exception {
     String uid = null;
     StructureGenerator res = null;
     try {
@@ -58,23 +58,11 @@ public class GeneratorParser {
           String tpUid = valObj.get("uid").getAsString();
           StructureTemplate st = reg.getStructureTemplate(tpUid, true);
           if(st != null) {
-            List<Rotation> rots = new ArrayList<Rotation>();
-            if(valObj.has("rotations")) {
-              for (JsonElement rot : valObj.get("rotations").getAsJsonArray()) {
-                if(!rot.isJsonNull()) {
-                  Rotation r = Rotation.get(rot.getAsInt());
-                  if(r != null) {
-                    rots.add(r);
-                  }
-                }
-              }
-            }
-            InstanceGen gen = new InstanceGen(st, rots);
-            res.addInstanceGen(gen);
-          }
+            res.addStructureTemaplate(st);
+          } 
         }
       }
-      if(res.getInstanceGens().isEmpty()) {
+      if(res.getTemplates().isEmpty()) {
         throw new Exception("No valid template found in definition for " + uid);
       }
 
@@ -107,26 +95,9 @@ public class GeneratorParser {
         }
       }
 
-      if(to.has("sitePreperations")) {
-
-        JsonArray arr = to.getAsJsonArray("sitePreperations");
-        for (JsonElement e : arr) {
-          JsonObject valObj = e.getAsJsonObject();
-          if(!valObj.isJsonNull() && valObj.has("type")) {
-            String id = valObj.get("type").getAsString();
-            ISitePreperation val = ruleFact.createPreperation(id, valObj);
-            if(val != null) {
-              res.addSitePreperation(val);
-            } else {
-              throw new Exception("Could not parse validator: " + id + " for template: " + uid);
-            }
-          }
-        }
-
-      }
-
+      
     } catch (Exception e) {
-      throw new Exception("TemplateParser: Could not parse template " + uid, e);
+      throw new Exception("TemplateParser: Could not parse generator " + uid, e);
     }
 
     if(res == null || !res.isValid()) {
@@ -135,6 +106,81 @@ public class GeneratorParser {
 
     return res;
 
+  }
+
+  public StructureTemplate parseTemplateConfig(StructureRegister reg, String json) throws Exception {
+    
+    String uid = null;
+    StructureTemplate res = null;
+    try {
+
+    JsonObject to = new JsonParser().parse(json).getAsJsonObject();
+    to = to.getAsJsonObject("StructureTemplate");
+
+    uid = to.get("uid").getAsString();
+    res = new StructureTemplate(uid);
+    
+    if(to.has("canSpanChunks")) {
+      res.setCanSpanChunks(to.get("canSpanChunks").getAsBoolean());
+    }
+    
+    
+    JsonArray components = to.get("components").getAsJsonArray();
+    for (JsonElement e : components) {
+      JsonObject valObj = e.getAsJsonObject();
+      if(!valObj.isJsonNull() && valObj.has("uid")) {
+        String tpUid = valObj.get("uid").getAsString();
+        StructureComponent st = reg.getStructureComponent(tpUid, true);
+        if(st != null) {
+          res.addComponent(st);
+        } 
+      }
+    }
+    if(res.getComponents().isEmpty()) {
+      throw new Exception("No valid components found in definition for " + uid);
+    }
+    
+    
+    if(to.has("rotations")) {
+      List<Rotation> rots = new ArrayList<Rotation>();
+      for (JsonElement rot : to.get("rotations").getAsJsonArray()) {
+        if(!rot.isJsonNull()) {
+          Rotation r = Rotation.get(rot.getAsInt());
+          if(r != null) {
+            rots.add(r);
+          }
+        }
+      }
+      res.setRotations(rots);
+    }
+    
+    if(to.has("sitePreperations")) {
+
+      JsonArray arr = to.getAsJsonArray("sitePreperations");
+      for (JsonElement e : arr) {
+        JsonObject valObj = e.getAsJsonObject();
+        if(!valObj.isJsonNull() && valObj.has("type")) {
+          String id = valObj.get("type").getAsString();
+          ISitePreperation val = ruleFact.createPreperation(id, valObj);
+          if(val != null) {
+            res.addSitePreperation(val);
+          } else {
+            throw new Exception("Could not parse validator: " + id + " for template: " + uid);
+          }
+        }
+      }
+
+    }
+
+    } catch (Exception e) {
+      throw new Exception("TemplateParser: Could not parse template " + uid, e);
+    }
+
+    if(res == null || !res.isValid()) {
+      throw new Exception("GeneratorParser: Could not create a valid template for " + res + " uid: " + uid);
+    }
+
+    return res;
   }
 
 }

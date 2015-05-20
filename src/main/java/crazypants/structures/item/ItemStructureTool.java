@@ -14,7 +14,7 @@ import crazypants.structures.EnderStructures;
 import crazypants.structures.EnderStructuresTab;
 import crazypants.structures.gen.StructureRegister;
 import crazypants.structures.gen.structure.Structure.Rotation;
-import crazypants.structures.gen.structure.StructureTemplate;
+import crazypants.structures.gen.structure.StructureComponent;
 import crazypants.vec.Point3i;
 
 public class ItemStructureTool extends Item {
@@ -63,7 +63,7 @@ public class ItemStructureTool extends Item {
 
     String uid = getGenUid(stack, true);    
     if (uid != null) {
-      StructureTemplate st = StructureRegister.instance.getStructureTemplate(uid);
+      StructureComponent st = StructureRegister.instance.getStructureComponent(uid);
       if(st != null) {
         ForgeDirection dir = ForgeDirection.getOrientation(side);
         Point3i origin = new Point3i(x + dir.offsetX, y + dir.offsetY - 1, z + dir.offsetZ);
@@ -75,7 +75,7 @@ public class ItemStructureTool extends Item {
     return true;
   }
 
-  private void addMarkers(World world, StructureTemplate st, Point3i origin) {
+  private void addMarkers(World world, StructureComponent st, Point3i origin) {
     Point3i sz = st.getSize();
     world.setBlock(origin.x - 1, origin.y - 1, origin.z - 1, EnderStructures.blockStructureMarker);
     world.setBlock(origin.x - 1, origin.y  + sz.y, origin.z - 1, EnderStructures.blockStructureMarker);    
@@ -92,9 +92,9 @@ public class ItemStructureTool extends Item {
     if(curUid == null) {
       return setDefaultUid(stack);
     }
-    Iterator<StructureTemplate> it = StructureRegister.instance.getStructureTemplates().iterator();
+    Iterator<StructureComponent> it = StructureRegister.instance.getStructureComponents().iterator();
     while (it.hasNext()) {
-      StructureTemplate template = it.next();
+      StructureComponent template = it.next();
       if (curUid.equals(template.getUid())) {
         if (it.hasNext()) {
           String uid = it.next().getUid();
@@ -135,7 +135,7 @@ public class ItemStructureTool extends Item {
   }
   
   private String getFirstTemplateUid() {
-    Iterator<StructureTemplate> it = StructureRegister.instance.getStructureTemplates().iterator();
+    Iterator<StructureComponent> it = StructureRegister.instance.getStructureComponents().iterator();
     if(it.hasNext()) {
       return it.next().getUid();
     }
