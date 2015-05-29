@@ -9,7 +9,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import crazypants.structures.gen.StructureRegister;
-import crazypants.structures.gen.structure.Structure.Rotation;
+import crazypants.structures.gen.structure.Rotation;
 import crazypants.structures.gen.structure.StructureComponent;
 import crazypants.structures.gen.structure.StructureGenerator;
 import crazypants.structures.gen.structure.StructureTemplate;

@@ -8,6 +8,8 @@ import net.minecraftforge.common.BiomeDictionary.Type;
 import com.google.gson.JsonObject;
 
 import crazypants.structures.Log;
+import crazypants.structures.gen.structure.decorator.IDecorator;
+import crazypants.structures.gen.structure.decorator.LootTableDecorator;
 import crazypants.structures.gen.structure.preperation.ClearPreperation;
 import crazypants.structures.gen.structure.preperation.FillPreperation;
 import crazypants.structures.gen.structure.preperation.ISitePreperation;
@@ -68,6 +70,11 @@ public class DefaultRuleFactory extends CompositeRuleFactory {
 
     @Override
     public ISiteValidator createSiteValidator(String uid, JsonObject json) {    
+      return null;
+    }
+
+    @Override
+    public IDecorator createDecorator(String uid, JsonObject json) {    
       return null;
     }
         
@@ -234,6 +241,35 @@ public class DefaultRuleFactory extends CompositeRuleFactory {
     FillPrepFact() {
       super("FillPreperation");
     }
+
+    @Override
+    public ISitePreperation createPreperation(String uid, JsonObject json) {
+      FillPreperation res = new FillPreperation();
+      res.setClearPlants(JsonUtil.getBooleanElement(json, "clearPlants", res.isClearPlants()));
+      res.setBorder(JsonUtil.getBorder(json, res.getBorder()));
+      return res;
+    }
+        
+  }  
+  
+//-----------------------------------------------------------------
+  static class LootTableDecFact extends InnerFactory {
+
+    LootTableDecFact() {
+      super("LootTableInventory");
+    }
+
+    
+    
+    @Override
+    public IDecorator createDecorator(String uid, JsonObject json) {
+      LootTableDecorator res = new LootTableDecorator();
+      res.setCategory(JsonUtil.getStringElement(json, "category", null));
+      res.setTargets(JsonUtil.getStringArrayElement(json, "targets"));      
+      return super.createDecorator(uid, json);
+    }
+
+
 
     @Override
     public ISitePreperation createPreperation(String uid, JsonObject json) {

@@ -8,7 +8,8 @@ import java.util.Random;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import crazypants.structures.gen.ChunkBounds;
-import crazypants.structures.gen.structure.Structure.Rotation;
+import crazypants.structures.gen.structure.decorator.CompositeDecorator;
+import crazypants.structures.gen.structure.decorator.IDecorator;
 import crazypants.structures.gen.structure.preperation.CompositePreperation;
 import crazypants.structures.gen.structure.preperation.ISitePreperation;
 import crazypants.structures.gen.structure.validator.CompositeSiteValidator;
@@ -17,12 +18,15 @@ import crazypants.vec.Point3i;
 
 public class StructureTemplate {
   
-  private static final Random RND = new Random();
+  private static final Random RND = new Random(987345098532932115L);
   
-  private List<StructureComponent> components = new ArrayList<StructureComponent>();
-  private List<Rotation> rots = new ArrayList<Structure.Rotation>();
+  private List<Rotation> rots = new ArrayList<Rotation>();
+  
+  //TODO: Need offsets for components
+  private List<StructureComponent> components = new ArrayList<StructureComponent>();  
   private final CompositePreperation sitePreps = new CompositePreperation();
   private final CompositeSiteValidator siteVals = new CompositeSiteValidator();
+  private final CompositeDecorator decorators = new CompositeDecorator();
   
   private boolean canSpanChunks = true;
   private boolean generationRequiresLoadedChunks = canSpanChunks;
@@ -38,6 +42,10 @@ public class StructureTemplate {
     if(components != null) {
       this.components.addAll(components);
     }        
+  }
+  
+  public Structure createInstance() {
+    return new Structure(new Point3i(), getRndRotation(), this);
   }
 
   public boolean getCanSpanChunks() {
@@ -98,9 +106,11 @@ public class StructureTemplate {
       siteVals.add(val);
     }    
   }
-
-  public Structure createInstance(StructureGenerator gen) {
-    return new Structure(new Point3i(), getRndRotation(), this);
+  
+  public void addDecorator(IDecorator val) {
+    if(val != null) {
+      decorators.add(val);
+    }    
   }
 
   private Rotation getRndRotation() {
@@ -126,14 +136,27 @@ public class StructureTemplate {
     return components.get(0).getSurfaceOffset();
   }
 
-  public void build(Structure structure, World world, ChunkBounds bounds) {
-    sitePreps.prepareLocation(structure, world, RND, bounds);
+  public void build(Structure structure, World world, Random random, ChunkBounds bounds) {
+    sitePreps.prepareLocation(structure, world, random, bounds);
     Point3i orig = structure.getOrigin();
     components.get(0).build(world, orig.x, orig.y, orig.z, structure.getRotation(), bounds);   
+    decorators.decorate(structure, world, random, bounds);
   }
 
   public ISiteValidator getSiteValiditor() {
     return siteVals;
+  }
+
+  public Collection<Point3i> getTaggedLocations(String target) {
+    //TODO: Need to handle offset for components
+    List<Point3i> res = new ArrayList<Point3i>();
+    for(StructureComponent comp : components) {
+      List<Point3i> r = comp.getTaggedLocations(target);
+      if(r != null) {
+        res.addAll(r);
+      }
+    }
+    return res;
   }
 
 }

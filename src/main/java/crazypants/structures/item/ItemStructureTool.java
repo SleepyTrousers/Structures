@@ -13,7 +13,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import crazypants.structures.EnderStructures;
 import crazypants.structures.EnderStructuresTab;
 import crazypants.structures.gen.StructureRegister;
-import crazypants.structures.gen.structure.Structure.Rotation;
+import crazypants.structures.gen.structure.Rotation;
 import crazypants.structures.gen.structure.StructureComponent;
 import crazypants.vec.Point3i;
 

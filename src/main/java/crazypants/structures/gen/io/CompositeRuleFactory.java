@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.google.gson.JsonObject;
 
+import crazypants.structures.gen.structure.decorator.IDecorator;
 import crazypants.structures.gen.structure.preperation.ISitePreperation;
 import crazypants.structures.gen.structure.sampler.ILocationSampler;
 import crazypants.structures.gen.structure.validator.IChunkValidator;
@@ -75,5 +76,16 @@ public class CompositeRuleFactory implements IRuleFactory {
     }
     return null;
   }
+
+  @Override
+  public IDecorator createDecorator(String uid, JsonObject json) {    
+    IRuleFactory f = getFactory(uid);
+    if (f != null) {
+      return f.createDecorator(uid, json);
+    }
+    return null;
+  }
+  
+  
 
 }

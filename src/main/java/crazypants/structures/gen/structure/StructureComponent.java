@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +30,6 @@ import crazypants.structures.EnderStructures;
 import crazypants.structures.Log;
 import crazypants.structures.gen.ChunkBounds;
 import crazypants.structures.gen.StructureUtil;
-import crazypants.structures.gen.structure.Structure.Rotation;
 import crazypants.vec.Point3i;
 
 public class StructureComponent {
@@ -327,6 +327,11 @@ public class StructureComponent {
   @Override
   public String toString() {
     return "StructureTemplate [uid=" + uid + "]";
+  }
+
+  public List<Point3i> getTaggedLocations(String target) {
+    //TODO:
+    return Collections.emptyList();
   }
 
 }

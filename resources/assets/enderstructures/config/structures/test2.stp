@@ -22,17 +22,17 @@
                     "tolerance" : 2,
                     "sampleSpacing" : 4,
                     "maxSamples" : 50,
-                    "Border" : { "sizeXZ" : 1 }}                    
+                    "Border" : { "sizeXZ" : 2 }}                    
         
         ],
         
         "sitePreperations" : [
                   
             { "type": "ClearPreperation", 
-                      "clearPlants" : "true",    
+                      "clearPlants" : "false",    
                       "clearBellowGround" : "false",       
                       "Border" : {
-                          "up" : 3, "down" : 0, "north" : 1, "south" : 1, "east" : 1, "west" : 1
+                          "up" : 6, "down" : 0, "north" : 2, "south" : 2, "east" : 2, "west" : 2
                       }
             },
            
@@ -41,6 +41,21 @@
                       "Border" : {
                           "sizeXZ" : 1
                       }}           
-       ]
+       ],
+       
+       "decorators" : [
+        
+         { "type" : "LootTableInventory",
+                    "category" : "villageBlacksmith",  
+                    "comment_category" : "mineshaftCorridor, pyramidDesertyChest, pyramidJungleChest, pyramidJungleDispenser, strongholdCorridor, strongholdLibrary, strongholdCrossing, villageBlacksmith, bonusChest, dungeonChest",
+                    "targets" : ["inv0"]
+                    },
+                    
+         { "type" : "LootTableInventory",
+                    "table" : "bonusChest",                      
+                    "targets" : ["inv1"]
+                    }               
+        
+        ]
     }
 }

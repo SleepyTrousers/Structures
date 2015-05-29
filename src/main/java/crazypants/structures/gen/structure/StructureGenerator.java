@@ -77,7 +77,7 @@ public class StructureGenerator {
     if (structureTemplates.isEmpty()) {
       return null;
     }
-    return structureTemplates.get(RND.nextInt(structureTemplates.size())).createInstance(this);
+    return structureTemplates.get(RND.nextInt(structureTemplates.size())).createInstance();
   }
 
   public Collection<Structure> generate(WorldStructures structures, Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator,
@@ -114,11 +114,8 @@ public class StructureGenerator {
     for (int i = 0; i < attemptsPerChunk && res.size() < maxInChunk; i++) {
       Point3i origin = locSampler.generateCandidateLocation(struct, structures, world, random, chunkX, chunkZ);
       if (origin != null) {
-        struct.setOrigin(origin);
-        
+        struct.setOrigin(origin);        
         if(struct.getGenerationRequiresLoadedChunks()) {
-          //TODO: deal with extra tries: eg if tries per chunk is 2, and max in chunk is 1, we could actually
-          //call build twice
           DeferredGenTask task = new DeferredGenTask(chunkProvider, struct);
           if(task.canComplete(chunkX, chunkZ)) {
             if(task.build(structures, world, random)) {
@@ -148,7 +145,7 @@ public class StructureGenerator {
       return false;
     }
     
-    s.build(world, bounds);
+    s.build(world, random, bounds);
 
     //it is possible, when not deferring generation, that when this structure is build we will need to build it onto 
     //already loaded chunks
@@ -156,7 +153,7 @@ public class StructureGenerator {
       Collection<ChunkCoordIntPair> chunks = s.getChunkBounds().getChunks();
       for (ChunkCoordIntPair c : chunks) {
         if (!(c.chunkXPos == chunkX && c.chunkZPos == chunkZ) && chunkGenerator.chunkExists(c.chunkXPos, c.chunkZPos)) {
-          s.build(world, new ChunkBounds(c.chunkXPos, c.chunkZPos));
+          s.build(world, random, new ChunkBounds(c.chunkXPos, c.chunkZPos));
         }
       }
     }
@@ -171,7 +168,7 @@ public class StructureGenerator {
 
     for (Structure s : existing) {
       if (s.canSpanChunks() && !s.getGenerationRequiresLoadedChunks()) {
-        s.build(world, new ChunkBounds(chunkX, chunkZ));
+        s.build(world, random, new ChunkBounds(chunkX, chunkZ));
       }
     }
     return !existing.isEmpty();
@@ -248,11 +245,21 @@ public class StructureGenerator {
       return requiredChunks.isEmpty();
     }
     
+    public boolean isGenerated(WorldStructures existingStructures) {
+      //TODO: This is a bit dodgy as it is relying on Structure not having a proper equals method and essentially relying on an ==
+      //this is easily broken
+      Collection<Structure> structures = existingStructures.getStructuresWithOriginInChunk(structure.getChunkCoord(), structure.getTemplate().getUid());
+      return structures.contains(structure);
+    }
+    
     public boolean build(WorldStructures existingStructures, World world, Random random) {
+      if(isGenerated(existingStructures)) {
+        return false;
+      }
       if(getStructure().getTemplate() == null || !getStructure().getTemplate().getSiteValiditor().isValidBuildSite(getStructure(), existingStructures, world, random, null)) {
         return false;
       }
-      getStructure().build(world, null);
+      getStructure().build(world, random, null);
       return true;
     }
 

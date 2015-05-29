@@ -1,5 +1,9 @@
 package crazypants.structures.gen.structure;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -15,59 +19,6 @@ import crazypants.vec.Point3i;
 
 public class Structure {
 
-  public static enum Rotation {
-    DEG_0(0),
-    DEG_90(90),
-    DEG_180(180),
-    DEG_270(270);
-
-    final int val;
-
-    private Rotation(int val) {
-      this.val = val;
-    }
-
-    //Keeps all point +'ve
-    public void rotate(Point3i bc, int maxX, int maxZ) {
-      if(this == Rotation.DEG_0) {
-        return;
-      }
-      if(this == Rotation.DEG_90) {
-        bc.set(maxZ - bc.z, bc.y, bc.x);
-      } else if(this == Rotation.DEG_180) {
-        bc.set(maxX - bc.x, bc.y, maxZ - bc.z);
-      } else if(this == Rotation.DEG_270) {
-        bc.set(bc.z, bc.y, maxX - bc.x);
-      }
-    }
-
-    //must have an x/z origin of o 
-    public AxisAlignedBB rotate(AxisAlignedBB bb) {
-      if(this == Rotation.DEG_0 || this == Rotation.DEG_180) {
-        return bb;
-      }
-      Point3i sz = Structure.size(bb);
-      return AxisAlignedBB.getBoundingBox(0, 0, 0, sz.z, sz.y, sz.x);
-    }
-
-    public Rotation next() {
-      int ord = ordinal() + 1;
-      if(ord > values().length - 1) {
-        ord = 0;
-      }
-      return values()[ord];
-    }
-
-    public static Rotation get(int deg) {
-      for (Rotation r : values()) {
-        if(r.val == deg) {
-          return r;
-        }
-      }
-      return null;
-    }
-  }
-  
   private final Point3i origin;
   private final Rotation rotation;
   private final StructureTemplate template;
@@ -91,12 +42,10 @@ public class Structure {
     updateBounds();
   }
 
-  public Structure(NBTTagCompound root) {    
-    
-    template = StructureRegister.instance.getStructureTemplate(root.getString("template"), true);    
+  public Structure(NBTTagCompound root) {        
+    template = StructureRegister.instance.getStructureTemplate(root.getString("template"), true);      
     origin = new Point3i(root.getInteger("x"), root.getInteger("y"), root.getInteger("z"));
-    rotation = Rotation.values()[MathHelper.clamp_int(root.getShort("rotation"), 0, Rotation.values().length - 1)];
-    
+    rotation = Rotation.values()[MathHelper.clamp_int(root.getShort("rotation"), 0, Rotation.values().length - 1)];    
     updateBounds();
   }
 
@@ -159,8 +108,8 @@ public class Structure {
     return template.getCanSpanChunks();
   }
 
-  public void build(World world, ChunkBounds bounds) {
-    template.build(this, world,bounds);
+  public void build(World world, Random random, ChunkBounds bounds) {
+    template.build(this, world, random, bounds);
   }
   
   public boolean getGenerationRequiresLoadedChunks() {
@@ -198,6 +147,25 @@ public class Structure {
 
   public boolean isValidSite(WorldStructures existingStructures, World world, Random random, ChunkBounds bounds) {
     return template.getSiteValiditor().isValidBuildSite(this, existingStructures, world, random, bounds);
+  }
+
+  public Collection<Point3i> getTaggedLocations(String target) {
+    Collection<Point3i> locs = template.getTaggedLocations(target);
+    if(locs == null) {
+      return Collections.emptyList();
+    }
+    if(rotation == null || rotation == Rotation.DEG_0) {      
+      return locs;
+    }
+    //Need to rotate the points
+    List<Point3i> res = new ArrayList<Point3i>(locs.size());
+    for(Point3i l : locs) {
+      Point3i loc = new Point3i(l);
+      rotation.rotate(loc, size.x, size.z);
+      loc.add(origin);
+      res.add(loc);
+    }    
+    return res;
   }
 
 }
