@@ -7,10 +7,9 @@ import java.util.Set;
 
 import net.minecraft.world.World;
 import crazypants.structures.gen.WorldStructures;
-import crazypants.structures.gen.structure.Structure;
 import crazypants.structures.gen.structure.StructureGenerator;
 
-public class DimensionValidator implements ILocationValidator {
+public class DimensionValidator implements IChunkValidator {
 
   private Set<String> includes = new HashSet<String>();
   private Set<String> excludes = new HashSet<String>();
@@ -46,12 +45,5 @@ public class DimensionValidator implements ILocationValidator {
     }    
     return !excludes.contains(bName);
   }
-
-  @Override
-  public boolean isValidLocation(Structure structure, WorldStructures existingStructures, World world, Random random, int chunkX, int chunkZ) {
-    return true;
-  }
-
-  
 
 }

@@ -11,10 +11,25 @@
           {"uid" : "test"}
         ],
         
+        "siteValidators" : [
+        
+         { "type" : "SpacingValidator", 
+                    "minSpacing" : 20,
+                    "templateFilter" : []},
+                                            
+        { "type" : "LevelGroundValidator",
+                    "canSpawnOnWater" : "false",
+                    "tolerance" : 2,
+                    "sampleSpacing" : 4,
+                    "maxSamples" : 50,
+                    "Border" : { "sizeXZ" : 1 }}                    
+        
+        ],
+        
         "sitePreperations" : [
                   
             { "type": "ClearPreperation", 
-                      "clearPlants" : "true",           
+                      "clearPlants" : "true",          
                       "Border" : {
                           "up" : 3, "down" : 0, "north" : 1, "south" : 1, "east" : 1, "west" : 1
                       }

@@ -7,7 +7,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import crazypants.structures.gen.ChunkBounds;
 import crazypants.structures.gen.StructureUtil;
-import crazypants.structures.gen.WorldStructures;
 import crazypants.structures.gen.structure.Border;
 import crazypants.structures.gen.structure.Structure;
 
@@ -15,16 +14,16 @@ public class ClearPreperation implements ISitePreperation {
 
   private Border border = new Border();
 
-  private boolean clearPlants = true;  
+  private boolean clearPlants = true;
+
+  private boolean clearBellowGround = false;  
 
   public ClearPreperation() {
     border.setBorder(1, 1, 1, 1, 3, 0);
   }
 
   @Override
-  public boolean prepareLocation(Structure structure, WorldStructures structures, World world, Random random, int chunkX, int chunkZ) {
-
-    ChunkBounds clip = new ChunkBounds(chunkX, chunkZ);
+  public boolean prepareLocation(Structure structure, World world, Random random, ChunkBounds clip) {
 
     AxisAlignedBB bb = structure.getBounds();
     int minX = (int) bb.minX - border.get(ForgeDirection.WEST);
@@ -34,14 +33,14 @@ public class ClearPreperation implements ISitePreperation {
     int minZ = (int) bb.minZ - border.get(ForgeDirection.NORTH);
     int maxZ = (int) bb.maxZ + border.get(ForgeDirection.SOUTH);
 
-//    if(!clearBellowGround) {
-//      minY += structure.getTemplate().getSurfaceOffset();
-//    }
+    if(!clearBellowGround) {
+      minY += structure.getSurfaceOffset() + 1;
+    }
     
     for (int x = minX; x < maxX; x++) {
       for (int y = minY; y < maxY; y++) {
         for (int z = minZ; z < maxZ; z++) {
-          if(clip.isBlockInBounds(x, z) && (clearPlants || !StructureUtil.isPlant(world.getBlock(x, y, z), world, x, y, z))) {
+          if( (clip == null || clip.isBlockInBounds(x, z)) && (clearPlants || !StructureUtil.isPlant(world.getBlock(x, y, z), world, x, y, z))) {
             if(!world.isAirBlock(x, y, z)) {
               world.setBlockToAir(x, y, z);
             }
@@ -67,6 +66,14 @@ public class ClearPreperation implements ISitePreperation {
 
   public void setClearPlants(boolean clearPlants) {
     this.clearPlants = clearPlants;
+  }
+
+  public boolean getClearBellowGround() {
+    return clearBellowGround;
+  }
+
+  public void setClearBellowGround(boolean clearBellowGround) {
+    this.clearBellowGround = clearBellowGround;
   }
 
 }

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.world.World;
-import crazypants.structures.gen.WorldStructures;
+import crazypants.structures.gen.ChunkBounds;
 import crazypants.structures.gen.structure.Structure;
 
 public class CompositePreperation implements ISitePreperation {
@@ -20,9 +20,9 @@ public class CompositePreperation implements ISitePreperation {
   }
 
   @Override
-  public boolean prepareLocation(Structure structure, WorldStructures structures, World world, Random random, int chunkX, int chunkZ) {
+  public boolean prepareLocation(Structure structure, World world, Random random, ChunkBounds bounds) {
     for (ISitePreperation rule : preps) {
-      if(!rule.prepareLocation(structure, structures, world, random, chunkX, chunkZ)) {
+      if (!rule.prepareLocation(structure, world, random, bounds)) {
         return false;
       }
     }

@@ -78,7 +78,7 @@ public class WorldStructures {
       return;
     }
     for (Structure s : all) {
-      if(templateUid == null || templateUid.equals(s.getComponent().getUid())) {
+      if(templateUid == null || templateUid.equals(s.getUid())) {
         result.add(s);
       }
     }
@@ -90,7 +90,7 @@ public class WorldStructures {
       return;
     }
     for (Structure s : all) {
-      if(structureUid == null || structureUid.equals(s.getComponent().getUid())) {
+      if(structureUid == null || structureUid.equals(s.getUid())) {
         res.add(s);
       }
     }

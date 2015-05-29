@@ -4,10 +4,9 @@ import java.util.Random;
 
 import net.minecraft.world.World;
 import crazypants.structures.gen.WorldStructures;
-import crazypants.structures.gen.structure.Structure;
 import crazypants.structures.gen.structure.StructureGenerator;
 
-public class RandomValidator implements ILocationValidator {
+public class RandomValidator implements IChunkValidator {
 
   private float chancePerChunk;
 
@@ -33,11 +32,6 @@ public class RandomValidator implements ILocationValidator {
       return true;
     }
     return false;
-  }
-
-  @Override
-  public boolean isValidLocation(Structure structure, WorldStructures existingStructures, World world, Random random, int chunkX, int chunkZ) {
-    return true;
   }
 
 }

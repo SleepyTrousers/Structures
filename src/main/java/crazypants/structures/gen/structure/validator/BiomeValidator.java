@@ -5,11 +5,10 @@ import java.util.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import crazypants.structures.gen.WorldStructures;
-import crazypants.structures.gen.structure.Structure;
 import crazypants.structures.gen.structure.StructureGenerator;
 import crazypants.structures.gen.structure.validator.biome.IBiomeFilter;
 
-public class BiomeValidator implements ILocationValidator {
+public class BiomeValidator implements IChunkValidator {
 
   private final IBiomeFilter filter;
   
@@ -23,10 +22,4 @@ public class BiomeValidator implements ILocationValidator {
     return filter.isMatchingBiome(bgb);
   }
 
-  @Override
-  public boolean isValidLocation(Structure structure, WorldStructures existingStructures, World world, Random random, int chunkX, int chunkZ) {
-    return true;
-  }
-  
-  
 }

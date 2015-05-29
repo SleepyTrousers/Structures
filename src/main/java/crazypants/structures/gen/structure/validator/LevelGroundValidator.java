@@ -12,10 +12,9 @@ import crazypants.structures.gen.StructureUtil;
 import crazypants.structures.gen.WorldStructures;
 import crazypants.structures.gen.structure.Border;
 import crazypants.structures.gen.structure.Structure;
-import crazypants.structures.gen.structure.StructureGenerator;
 import crazypants.vec.Point3i;
 
-public class LevelGroundValidator implements ILocationValidator {
+public class LevelGroundValidator implements ISiteValidator {
 
   private boolean canSpawnOnWater = false;
 
@@ -32,18 +31,7 @@ public class LevelGroundValidator implements ILocationValidator {
   }
 
   @Override
-  public boolean isValidChunk(StructureGenerator template, WorldStructures structures, World world, Random random, int chunkX, int chunkZ) {
-    return true;
-  }
-
-  @Override
-  public boolean isValidLocation(Structure structure, WorldStructures existingStructures, World world, Random random, int chunkX, int chunkZ) {
-    
-    boolean clipOnChunkBounds = true;
-    ChunkBounds clip = null;
-    if(clipOnChunkBounds) {
-      clip = new ChunkBounds(chunkX, chunkZ);
-    }
+  public boolean isValidBuildSite(Structure structure, WorldStructures existingStructures, World world, Random random, ChunkBounds clip) {
 
     AxisAlignedBB bb = structure.getBounds();
     int minX = (int) bb.minX;
@@ -74,7 +62,7 @@ public class LevelGroundValidator implements ILocationValidator {
       for (int z = minZ - border.get(ForgeDirection.NORTH); z <= maxZ + border.get(ForgeDirection.SOUTH); z += zSpacing) {
 
         if(clip == null || clip.isBlockInBounds(x, z)) {
-          sampleLoc.set(x, structure.getOrigin().y + structure.getComponent().getSurfaceOffset(), z);
+          sampleLoc.set(x, structure.getOrigin().y + structure.getSurfaceOffset(), z);
           if(!testLocation(sampleLoc, world, minMax, surfacePos)) {
             return false;
           }
@@ -106,7 +94,7 @@ public class LevelGroundValidator implements ILocationValidator {
     
     if(heightRange > 2) {
       //TODO: relying on this change to be repsected is asking for trouble
-      structure.getOrigin().y = minMax[0] + ((heightRange - 1) / 2) - structure.getComponent().getSurfaceOffset();      
+      structure.getOrigin().y = minMax[0] + ((heightRange - 1) / 2) - structure.getSurfaceOffset();      
     }
 
     return true;

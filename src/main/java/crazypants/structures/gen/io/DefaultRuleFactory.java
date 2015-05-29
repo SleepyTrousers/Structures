@@ -15,7 +15,8 @@ import crazypants.structures.gen.structure.sampler.ILocationSampler;
 import crazypants.structures.gen.structure.sampler.SurfaceLocationSampler;
 import crazypants.structures.gen.structure.validator.BiomeValidator;
 import crazypants.structures.gen.structure.validator.DimensionValidator;
-import crazypants.structures.gen.structure.validator.ILocationValidator;
+import crazypants.structures.gen.structure.validator.IChunkValidator;
+import crazypants.structures.gen.structure.validator.ISiteValidator;
 import crazypants.structures.gen.structure.validator.LevelGroundValidator;
 import crazypants.structures.gen.structure.validator.RandomValidator;
 import crazypants.structures.gen.structure.validator.SpacingValidator;
@@ -56,7 +57,7 @@ public class DefaultRuleFactory extends CompositeRuleFactory {
     }
 
     @Override
-    public ILocationValidator createValidator(String uid, JsonObject json) {
+    public IChunkValidator createValidator(String uid, JsonObject json) {
       return null;
     }
 
@@ -64,6 +65,12 @@ public class DefaultRuleFactory extends CompositeRuleFactory {
     public ISitePreperation createPreperation(String uid, JsonObject json) {
       return null;
     }
+
+    @Override
+    public ISiteValidator createSiteValidator(String uid, JsonObject json) {    
+      return null;
+    }
+        
   }
 
   //-----------------------------------------------------------------
@@ -90,7 +97,7 @@ public class DefaultRuleFactory extends CompositeRuleFactory {
     }
     
     @Override
-    public ILocationValidator createValidator(String uid, JsonObject json) {
+    public IChunkValidator createValidator(String uid, JsonObject json) {
       RandomValidator res = new RandomValidator();
       res.setChancePerChunk(JsonUtil.getFloatElement(json, "chancePerChunk", res.getChancePerChunk()));
       return res;
@@ -105,7 +112,7 @@ public class DefaultRuleFactory extends CompositeRuleFactory {
     }
 
     @Override
-    public ILocationValidator createValidator(String uid, JsonObject json) {
+    public IChunkValidator createValidator(String uid, JsonObject json) {
       DimensionValidator res = new DimensionValidator();
       res.addAll(JsonUtil.getStringArrayElement(json, "names"), false);
       res.addAll(JsonUtil.getStringArrayElement(json, "namesExcluded"), true);      
@@ -122,14 +129,23 @@ public class DefaultRuleFactory extends CompositeRuleFactory {
     
     
     @Override
-    public ILocationValidator createValidator(String uid, JsonObject json) {
+    public IChunkValidator createValidator(String uid, JsonObject json) {
       SpacingValidator res = new SpacingValidator();
-      res.setMinSpacing(JsonUtil.getIntElement(json, "minSpacing", res.getMinSpacing()));      
-      res.setValidateLocation(JsonUtil.getBooleanElement(json, "validateLocation", res.isValidateLocation()));
-      res.setValidateChunk(JsonUtil.getBooleanElement(json, "validateChunk", res.isValidateChunk()));      
+      res.setMinSpacing(JsonUtil.getIntElement(json, "minSpacing", res.getMinSpacing()));                 
       res.setTemplateFilter(JsonUtil.getStringArrayElement(json, "templateFilter"));           
       return res;
     }
+
+
+    @Override
+    public ISiteValidator createSiteValidator(String uid, JsonObject json) {
+      SpacingValidator res = new SpacingValidator();
+      res.setMinSpacing(JsonUtil.getIntElement(json, "minSpacing", res.getMinSpacing()));                 
+      res.setTemplateFilter(JsonUtil.getStringArrayElement(json, "templateFilter"));           
+      return res;
+    }
+    
+    
   }
   
   //-----------------------------------------------------------------
@@ -139,7 +155,7 @@ public class DefaultRuleFactory extends CompositeRuleFactory {
     }
     
     @Override
-    public ILocationValidator createValidator(String uid, JsonObject json) {
+    public ISiteValidator createSiteValidator(String uid, JsonObject json) {
       LevelGroundValidator res = new LevelGroundValidator();
       res.setCanSpawnOnWater(JsonUtil.getBooleanElement(json, "canSpawnOnWater", res.isCanSpawnOnWater()));
       res.setTolerance(JsonUtil.getIntElement(json, "tolerance", res.getTolerance()));
@@ -158,7 +174,7 @@ public class DefaultRuleFactory extends CompositeRuleFactory {
     }
 
     @Override
-    public ILocationValidator createValidator(String uid, JsonObject json) {
+    public IChunkValidator createValidator(String uid, JsonObject json) {
       String typeElement = JsonUtil.getStringElement(json, "match", "any");
       IBiomeFilter filter;
       if("all".equals(typeElement)) {
@@ -205,6 +221,7 @@ public class DefaultRuleFactory extends CompositeRuleFactory {
     public ISitePreperation createPreperation(String uid, JsonObject json) {
       ClearPreperation res = new ClearPreperation();
       res.setClearPlants(JsonUtil.getBooleanElement(json, "clearPlants", res.isClearPlants()));
+      res.setClearBellowGround(JsonUtil.getBooleanElement(json, "clearBellowGround", res.getClearBellowGround()));
       res.setBorder(JsonUtil.getBorder(json, res.getBorder()));
       return res;
     }
@@ -226,9 +243,6 @@ public class DefaultRuleFactory extends CompositeRuleFactory {
       return res;
     }
         
-  }
-  
- 
-
+  }  
 
 }

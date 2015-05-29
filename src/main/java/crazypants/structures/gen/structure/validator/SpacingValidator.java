@@ -9,12 +9,13 @@ import java.util.Random;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import crazypants.structures.gen.BoundingCircle;
+import crazypants.structures.gen.ChunkBounds;
 import crazypants.structures.gen.WorldStructures;
 import crazypants.structures.gen.structure.Structure;
 import crazypants.structures.gen.structure.StructureGenerator;
 import crazypants.vec.Vector2d;
 
-public class SpacingValidator implements ILocationValidator {
+public class SpacingValidator implements IChunkValidator, ISiteValidator {
 
   private static final double CHUNK_RADIUS = new Vector2d().distance(new Vector2d(8, 8));
 
@@ -56,8 +57,7 @@ public class SpacingValidator implements ILocationValidator {
   }
 
   @Override
-  public boolean isValidLocation(Structure structure, WorldStructures existingStructures, World world, Random random, int chunkX, int chunkZ) {
-
+  public boolean isValidBuildSite(Structure structure, WorldStructures existingStructures, World world, Random random, ChunkBounds bounds) {
     if(!validateLocation) {
       return true;
     }
@@ -90,7 +90,7 @@ public class SpacingValidator implements ILocationValidator {
       ListIterator<Structure> iter = res.listIterator();
       while (iter.hasNext()) {
         Structure match = iter.next();
-        if(!templateFilter.contains(match.getComponent().getUid())) {
+        if(!templateFilter.contains(match.getUid())) {
           iter.remove();
         }
       }
@@ -103,22 +103,6 @@ public class SpacingValidator implements ILocationValidator {
 
   public void setMinSpacing(int minSpacing) {
     this.minSpacing = minSpacing;
-  }
-
-  public boolean isValidateChunk() {
-    return validateChunk;
-  }
-
-  public void setValidateChunk(boolean validateChunk) {
-    this.validateChunk = validateChunk;
-  }
-
-  public boolean isValidateLocation() {
-    return validateLocation;
-  }
-
-  public void setValidateLocation(boolean validateLocation) {
-    this.validateLocation = validateLocation;
   }
 
   public List<String> getTemplateFilter() {

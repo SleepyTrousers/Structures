@@ -16,7 +16,7 @@
               "canGenerateOnFluid" : "false"            
         },
         
-        "locationValidators" : [
+        "chunkValidators" : [
                     
             { "type" : "RandomValidator", 
                       "chancePerChunk" : 0.05 },
@@ -34,28 +34,9 @@
                       "namesExcluded" : ["Twilight Forest", "Dungeon"] },
             
             
-            { "type" : "SpacingValidator", 
-                      "minSpacing" : 20,
-                      "templateFilter" : [],
-                      "validateChunk" : "false",
-                      "validateLocation" : "true" },
-            
-            
             { "type" : "SpacingValidator",
                       "minSpacing" : 100,
-                      "templateFilter" : [ "test", "test2" ],
-                      "validateChunk" : "true",
-                      "validateLocation" : "false" },
-            
-            
-            { "type" : "LevelGroundValidator",
-                      "canSpawnOnWater" : "false",
-                      "tolerance" : 2,
-                      "sampleSpacing" : 4,
-                      "maxSamples" : 50,
-                      "Border" : {
-                        "sizeXZ" : 1
-                      }}                                
+                      "templateFilter" : [ "test", "test2" ] }                                
                                                            
        ]
        

@@ -9,7 +9,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import crazypants.structures.gen.ChunkBounds;
 import crazypants.structures.gen.StructureUtil;
-import crazypants.structures.gen.WorldStructures;
 import crazypants.structures.gen.structure.Border;
 import crazypants.structures.gen.structure.Structure;
 
@@ -31,7 +30,7 @@ public class FillPreperation implements ISitePreperation {
   }
 
   @Override
-  public boolean prepareLocation(Structure structure, WorldStructures structures, World world, Random random, int chunkX, int chunkZ) {
+  public boolean prepareLocation(Structure structure, World world, Random random, ChunkBounds clip) {
     Block fill = fillBlock;
     Block surf = surfaceBlock;
     if(useBiomeFillerBlock) {
@@ -49,8 +48,6 @@ public class FillPreperation implements ISitePreperation {
 //        surf = Blocks.glass;
     //    surfaceMeta = 4;
 
-    ChunkBounds clip = new ChunkBounds(chunkX, chunkZ);
-
     AxisAlignedBB bb = structure.getBounds();
 
     int minX = (int) bb.minX;
@@ -60,8 +57,7 @@ public class FillPreperation implements ISitePreperation {
 
     
     int minY = 0;
-//    int maxY = (int) bb.minY + structure.getTemplate().getSurfaceOffset();
-    int maxY = (int) bb.minY;
+    int maxY = (int) bb.minY + structure.getSurfaceOffset();
 
     Block curBlk;
     int curMeta;
@@ -74,7 +70,7 @@ public class FillPreperation implements ISitePreperation {
 //          startY = maxY + structure.getTemplate().getSurfaceOffset();
         }
         for (int y = startY; y > minY; y--) {
-          if(clip.isBlockInBounds(x, z)) {
+          if(clip == null || clip.isBlockInBounds(x, z)) {
             if(StructureUtil.isIgnoredAsSurface(world, x, z, y, world.getBlock(x, y, z), true, true)) {
               if(y >= maxY && world.isAirBlock(x, y + 1, z)) {
                 curBlk = surf;
