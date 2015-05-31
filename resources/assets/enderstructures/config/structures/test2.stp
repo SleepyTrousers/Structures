@@ -48,12 +48,12 @@
          { "type" : "LootTableInventory",
                     "category" : "villageBlacksmith",  
                     "comment_category" : "mineshaftCorridor, pyramidDesertyChest, pyramidJungleChest, pyramidJungleDispenser, strongholdCorridor, strongholdLibrary, strongholdCrossing, villageBlacksmith, bonusChest, dungeonChest",
-                    "targets" : ["inv0"]
+                    "targets" : ["inv0", "inv4"]
                     },
                     
          { "type" : "LootTableInventory",
                     "table" : "bonusChest",                      
-                    "targets" : ["inv1"]
+                    "targets" : ["inv1", "inv2", "inv3"]                    
                     }               
         
         ]

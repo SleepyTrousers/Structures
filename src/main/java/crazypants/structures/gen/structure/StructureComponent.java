@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.Map.Entry;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -39,6 +41,7 @@ public class StructureComponent {
   private final Point3i size;
 
   private final Map<StructureBlock, List<Point3i>> blocks = new HashMap<StructureBlock, List<Point3i>>();
+  private final Map<String, List<Point3i>> taggedLocations = new HashMap<String, List<Point3i>>();
 
   private final String uid;
   private final int surfaceOffset;
@@ -77,6 +80,7 @@ public class StructureComponent {
     fillerBlock = fb;
     topBlock = sufb;
 
+    int invNo = 0;
     int x;
     int y;
     int z;
@@ -90,6 +94,13 @@ public class StructureComponent {
           StructureBlock sb = new StructureBlock(blk, world.getBlockMetadata(x, y, z), world.getTileEntity(x, y, z));
           if (!sb.isAir()) {
             addBlock(sb, xIndex, yIndex, zIndex);
+            if (sb.getTileEntity() != null) {
+              TileEntity te = TileEntity.createAndLoadEntity(sb.getTileEntity());
+              if (te instanceof IInventory) {
+                taggedLocations.put("inv" + invNo, Collections.singletonList(new Point3i(xIndex, yIndex, zIndex)));
+                invNo++;
+              }
+            }
           }
         }
       }
@@ -138,6 +149,25 @@ public class StructureComponent {
       topBlock = null;
     }
 
+    if (root.hasKey("taggedLocations")) {
+      NBTTagList locs = (NBTTagList) root.getTag("taggedLocations");
+      if (locs != null) {
+        for (int i = 0; i < locs.tagCount(); i++) {
+          NBTTagCompound tag = locs.getCompoundTagAt(i);
+          String tagStr = tag.getString("tag");
+          if (tagStr != null && !tagStr.trim().isEmpty()) {
+            byte[] coordData = tag.getByteArray("coords");
+            int numCoords = tag.getInteger("numCoords");
+            if (coordData != null && numCoords > 0) {              
+              List<Point3i> points = new ArrayList<Point3i>();
+              readPoints(points, coordData, numCoords);
+              taggedLocations.put(tagStr, points);
+            }
+          }
+        }
+      }
+    }
+
     if (uid == null || bb == null || blocks.isEmpty()) {
       throw new IOException("Invalid NBT");
     }
@@ -162,6 +192,20 @@ public class StructureComponent {
       root.setTag("topBlock", topBlock.asNbt());
     }
 
+    if (taggedLocations != null && !taggedLocations.isEmpty()) {
+      NBTTagList locationsList = new NBTTagList();
+      for (Entry<String, List<Point3i>> e : taggedLocations.entrySet()) {
+        if (e.getValue() != null && !e.getValue().isEmpty()) {
+          NBTTagCompound loc = new NBTTagCompound();
+          loc.setString("tag", e.getKey());
+          loc.setInteger("numCoords", e.getValue().size());
+          loc.setByteArray("coords", writeToByteArray(e.getValue()));
+          locationsList.appendTag(loc);
+        }
+      }
+      root.setTag("taggedLocations", locationsList);
+    }
+
     NBTTagList entryList = new NBTTagList();
     root.setTag("data", entryList);
 
@@ -176,36 +220,52 @@ public class StructureComponent {
   }
 
   private void writeCoords(Entry<StructureBlock, List<Point3i>> entry, NBTTagCompound entryTag) {
+    byte[] bytes = writeToByteArray(entry.getValue());
+    entryTag.setByteArray("coords", bytes);
+    entryTag.setInteger("numCoords", entry.getValue().size());
+  }
+
+  private byte[] writeToByteArray(Collection<Point3i> coords) {
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     DataOutputStream dos = new DataOutputStream(bos);
     try {
-      for (Point3i coord : entry.getValue()) {
-        dos.writeShort((short) coord.x);
-        dos.writeShort((short) coord.y);
-        dos.writeShort((short) coord.z);
+      for (Point3i coord : coords) {
+        writePoint(dos, coord);
       }
     } catch (IOException e) {
       Log.error("StructureTemplate: Ccould not write coords: " + e);
     }
     byte[] bytes = bos.toByteArray();
-    entryTag.setByteArray("coords", bytes);
-    entryTag.setInteger("numCoords", entry.getValue().size());
+    return bytes;
   }
 
   private List<Point3i> readCoords(NBTTagCompound entryTag) {
-    List<Point3i> coords = new ArrayList<Point3i>();
     byte[] bytes = entryTag.getByteArray("coords");
     int numCoords = entryTag.getInteger("numCoords");
-    DataInputStream dis = new DataInputStream(new ByteArrayInputStream(bytes));
+    List<Point3i> coords = new ArrayList<Point3i>(numCoords);
+    readPoints(coords, bytes, numCoords);
+    return coords;
+  }
+
+  private void readPoints(List<Point3i> readInto, byte[] readFrom, int numCoords) {
+    DataInputStream dis = new DataInputStream(new ByteArrayInputStream(readFrom));
     try {
       for (int i = 0; i < numCoords; i++) {
-        coords.add(new Point3i(dis.readShort(), dis.readShort(), dis.readShort()));
+        readInto.add(readPoint(dis));
       }
     } catch (IOException e) {
       Log.error("StructureTemplate: Ccould not read coords: " + e);
     }
+  }
 
-    return coords;
+  private Point3i readPoint(DataInputStream dis) throws IOException {
+    return new Point3i(dis.readShort(), dis.readShort(), dis.readShort());
+  }
+
+  private void writePoint(DataOutputStream dos, Point3i coord) throws IOException {
+    dos.writeShort((short) coord.x);
+    dos.writeShort((short) coord.y);
+    dos.writeShort((short) coord.z);
   }
 
   public void write(OutputStream os) throws IOException {
@@ -324,14 +384,29 @@ public class StructureComponent {
     blocks.get(block).add(new Point3i(x, y, z));
   }
 
+  public void addTagForLocation(String tag, Point3i loc) {
+    if (tag == null || loc == null) {
+      return;
+    }
+    List<Point3i> res = taggedLocations.get(tag);
+    if (res == null) {
+      res = new ArrayList<Point3i>();
+      taggedLocations.put(tag, res);
+    }
+    res.add(loc);
+  }
+
+  public List<Point3i> getTaggedLocations(String tag) {
+    List<Point3i> res = taggedLocations.get(tag);
+    if (res == null) {
+      return Collections.emptyList();
+    }
+    return res;
+  }
+
   @Override
   public String toString() {
     return "StructureTemplate [uid=" + uid + "]";
-  }
-
-  public List<Point3i> getTaggedLocations(String target) {
-    //TODO:
-    return Collections.emptyList();
   }
 
 }

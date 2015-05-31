@@ -12,8 +12,8 @@ import org.apache.commons.io.IOUtils;
 
 import crazypants.IoUtil;
 import crazypants.structures.gen.StructureRegister;
-import crazypants.structures.gen.structure.StructureGenerator;
 import crazypants.structures.gen.structure.StructureComponent;
+import crazypants.structures.gen.structure.StructureGenerator;
 import crazypants.structures.gen.structure.StructureTemplate;
 
 public class StructureResourceManager {
@@ -104,6 +104,9 @@ public class StructureResourceManager {
   }
 
   private InputStream getStreamForComponent(String uid) {
+    if(uid.endsWith(COMPONENT_EXT)) {
+      return getStream(uid.substring(0, uid.length() - COMPONENT_EXT.length()));
+    }
     return getStream(uid + COMPONENT_EXT);
   }
   

@@ -8,11 +8,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import crazypants.structures.Log;
 import crazypants.structures.gen.StructureRegister;
 import crazypants.structures.gen.structure.Rotation;
 import crazypants.structures.gen.structure.StructureComponent;
 import crazypants.structures.gen.structure.StructureGenerator;
 import crazypants.structures.gen.structure.StructureTemplate;
+import crazypants.structures.gen.structure.decorator.IDecorator;
 import crazypants.structures.gen.structure.preperation.ISitePreperation;
 import crazypants.structures.gen.structure.sampler.ILocationSampler;
 import crazypants.structures.gen.structure.validator.IChunkValidator;
@@ -94,6 +96,7 @@ public class GeneratorParser {
       }
 
     } catch (Exception e) {
+      e.printStackTrace();
       throw new Exception("TemplateParser: Could not parse generator " + uid, e);
     }
 
@@ -180,6 +183,25 @@ public class GeneratorParser {
               res.addSitePreperation(val);
             } else {
               throw new Exception("Could not parse preperation: " + id + " for template: " + uid);
+            }
+          }
+        }
+
+      }
+      
+      if (to.has("decorators")) {
+
+        JsonArray arr = to.getAsJsonArray("decorators");
+        for (JsonElement e : arr) {
+          JsonObject valObj = e.getAsJsonObject();
+          if (!valObj.isJsonNull() && valObj.has("type")) {
+            String id = valObj.get("type").getAsString();
+            IDecorator dec = ruleFact.createDecorator(id, valObj);
+            if (dec != null) {
+              res.addDecorator(dec);
+            } else {
+              //throw new Exception("Could not parse decorator: " + id + " for template: " + uid);
+              Log.warn("Could not parse decorator with type: " + id + " in template " + uid);
             }
           }
         }

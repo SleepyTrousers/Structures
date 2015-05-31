@@ -38,6 +38,7 @@ public class Structure {
     } else {
       this.rotation = rotation;
     }
+    
     this.template = template;
     updateBounds();
   }
@@ -154,14 +155,16 @@ public class Structure {
     if(locs == null) {
       return Collections.emptyList();
     }
-    if(rotation == null || rotation == Rotation.DEG_0) {      
-      return locs;
-    }
+//    if(rotation == null || rotation == Rotation.DEG_0) {      
+//      return locs;
+//    }
     //Need to rotate the points
     List<Point3i> res = new ArrayList<Point3i>(locs.size());
     for(Point3i l : locs) {
       Point3i loc = new Point3i(l);
-      rotation.rotate(loc, size.x, size.z);
+      if(rotation != null && rotation != Rotation.DEG_0) {
+        rotation.rotate(loc, size.x, size.z);
+      }
       loc.add(origin);
       res.add(loc);
     }    

@@ -19,7 +19,7 @@ public class CompositeDecorator implements IDecorator {
   @Override
   public void decorate(Structure structure, World world, Random random, ChunkBounds bounds) {
     for(IDecorator d : decorators) {
-      d.decorate(structure, world, null, bounds);
+      d.decorate(structure, world, random, bounds);
     }
     
   }

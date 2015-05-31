@@ -37,7 +37,8 @@ public class DefaultRuleFactory extends CompositeRuleFactory {
     add(new LevGrndFact());
     add(new BiomeValFact());
     add(new FillPrepFact());
-    add(new ClearPrepFact());    
+    add(new ClearPrepFact());   
+    add(new LootTableDecFact());
   }
 
   static class InnerFactory implements IRuleFactory {
@@ -260,25 +261,13 @@ public class DefaultRuleFactory extends CompositeRuleFactory {
     }
 
     
-    
     @Override
     public IDecorator createDecorator(String uid, JsonObject json) {
       LootTableDecorator res = new LootTableDecorator();
       res.setCategory(JsonUtil.getStringElement(json, "category", null));
       res.setTargets(JsonUtil.getStringArrayElement(json, "targets"));      
-      return super.createDecorator(uid, json);
-    }
-
-
-
-    @Override
-    public ISitePreperation createPreperation(String uid, JsonObject json) {
-      FillPreperation res = new FillPreperation();
-      res.setClearPlants(JsonUtil.getBooleanElement(json, "clearPlants", res.isClearPlants()));
-      res.setBorder(JsonUtil.getBorder(json, res.getBorder()));
       return res;
-    }
-        
+    }    
   }  
 
 }

@@ -140,6 +140,9 @@ public class StructureTemplate {
     sitePreps.prepareLocation(structure, world, random, bounds);
     Point3i orig = structure.getOrigin();
     components.get(0).build(world, orig.x, orig.y, orig.z, structure.getRotation(), bounds);   
+    if(random == null) {
+      random = RND;
+    }
     decorators.decorate(structure, world, random, bounds);
   }
 

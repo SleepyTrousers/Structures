@@ -15,7 +15,6 @@ import crazypants.structures.Log;
 import crazypants.structures.gen.DefaultStructures;
 import crazypants.structures.gen.StructureRegister;
 import crazypants.structures.gen.io.StructureResourceManager;
-import crazypants.structures.gen.structure.StructureGenerator;
 import crazypants.structures.gen.structure.StructureComponent;
 
 public class ExportManager {
@@ -46,15 +45,28 @@ public class ExportManager {
     if(files == null) {
       return;
     }
+//    for(File f : files) {
+//      if(f != null && f.getName().endsWith(StructureResourceManager.GENERATOR_EXT)) {
+//        try {
+//          StructureGenerator gen = StructureRegister.instance.getResourceManager().loadGenerator(f);
+//          if(gen != null && gen.isValid()) {
+//            StructureRegister.instance.registerGenerator(gen);
+//          }
+//        } catch (Exception e) {
+//          Log.warn("Could not load exported generator: " + f.getAbsolutePath() + " Ex: " + e);
+//        }    
+//      }
+//    }
+    
     for(File f : files) {
-      if(f != null && f.getName().endsWith(StructureResourceManager.GENERATOR_EXT)) {
+      if(f != null && f.getName().endsWith(StructureResourceManager.COMPONENT_EXT)) {
         try {
-          StructureGenerator gen = StructureRegister.instance.getResourceManager().loadGenerator(f);
-          if(gen != null && gen.isValid()) {
-            StructureRegister.instance.registerGenerator(gen);
+          StructureComponent comp = StructureRegister.instance.getResourceManager().loadStructureComponent(f.getName());
+          if(comp != null) {
+            StructureRegister.instance.registerStructureComponent(comp);
           }
         } catch (Exception e) {
-          Log.warn("Could not load exported generator: " + f.getAbsolutePath() + " Ex: " + e);
+          Log.warn("Could not load exported componnet: " + f.getAbsolutePath() + " Ex: " + e);
         }    
       }
     }
