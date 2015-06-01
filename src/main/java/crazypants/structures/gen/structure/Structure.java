@@ -1,9 +1,6 @@
 package crazypants.structures.gen.structure;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Random;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -151,24 +148,7 @@ public class Structure {
   }
 
   public Collection<Point3i> getTaggedLocations(String target) {
-    Collection<Point3i> locs = template.getTaggedLocations(target);
-    if(locs == null) {
-      return Collections.emptyList();
-    }
-//    if(rotation == null || rotation == Rotation.DEG_0) {      
-//      return locs;
-//    }
-    //Need to rotate the points
-    List<Point3i> res = new ArrayList<Point3i>(locs.size());
-    for(Point3i l : locs) {
-      Point3i loc = new Point3i(l);
-      if(rotation != null && rotation != Rotation.DEG_0) {
-        rotation.rotate(loc, size.x, size.z);
-      }
-      loc.add(origin);
-      res.add(loc);
-    }    
-    return res;
+    return template.getTaggedLocations(target, origin.x, origin.y, origin.z, rotation);
   }
 
 }

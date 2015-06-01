@@ -17,17 +17,17 @@ import crazypants.structures.gen.structure.Rotation;
 import crazypants.structures.gen.structure.StructureComponent;
 import crazypants.vec.Point3i;
 
-public class ItemStructureTool extends Item {
+public class ItemComponentTool extends Item {
 
-  private static final String NAME = "itemStructureTool";
+  private static final String NAME = "itemComponentTool";
 
-  public static ItemStructureTool create() {
-    ItemStructureTool res = new ItemStructureTool();
+  public static ItemComponentTool create() {
+    ItemComponentTool res = new ItemComponentTool();
     res.init();
     return res;
   }
 
-  private ItemStructureTool() {
+  private ItemComponentTool() {
     setUnlocalizedName(NAME);
     setCreativeTab(EnderStructuresTab.tabEnderStructures);
     setTextureName(EnderStructures.MODID.toLowerCase() + ":" + NAME);
@@ -44,7 +44,7 @@ public class ItemStructureTool extends Item {
     if (!world.isRemote) {
       if (player.isSneaking()) {
         String uid = setNextUid(stack);
-        player.addChatComponentMessage(new ChatComponentText("Structure Generator set to " + uid));
+        player.addChatComponentMessage(new ChatComponentText("Component set to " + uid));
       }
     }
 
@@ -69,7 +69,7 @@ public class ItemStructureTool extends Item {
         Point3i origin = new Point3i(x + dir.offsetX, y + dir.offsetY - 1, z + dir.offsetZ);
         origin.y -= st.getSurfaceOffset();
         st.build(world, origin.x,origin.y,origin.z, Rotation.DEG_0, null);
-        addMarkers(world, st, origin);        
+        addMarkers(world, st, origin);             
       }
     }
     return true;

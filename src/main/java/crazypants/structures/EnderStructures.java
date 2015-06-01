@@ -21,7 +21,8 @@ import crazypants.structures.gen.ReloadConfigCommand;
 import crazypants.structures.gen.WorldGenerator;
 import crazypants.structures.item.ExportManager;
 import crazypants.structures.item.ItemClearTool;
-import crazypants.structures.item.ItemStructureTool;
+import crazypants.structures.item.ItemComponentTool;
+import crazypants.structures.item.ItemTemplateTool;
 
 @Mod(modid = MODID, name = MOD_NAME, version = VERSION, dependencies = "required-after:Forge@10.13.0.1150,)", guiFactory = "crazypants.structures.config.ConfigFactoryEnderStructures")
 public class EnderStructures {
@@ -40,7 +41,8 @@ public class EnderStructures {
   public static BlockClearMarker blockClearMarker;
   public static BlockGroundLevelMarker blockGroundLevelMarker;
   
-  public static ItemStructureTool itemStructureTool;
+  public static ItemComponentTool itemComponentTool;
+  public static ItemTemplateTool itemTemplateTool;
   public static ItemClearTool itemClearTool;
   public static WorldGenerator structureManager;  
 
@@ -53,7 +55,8 @@ public class EnderStructures {
     blockGroundLevelMarker = BlockGroundLevelMarker.create();
     blockClearMarker = BlockClearMarker.create();
     
-    itemStructureTool = ItemStructureTool.create();
+    itemComponentTool = ItemComponentTool.create();
+    itemTemplateTool = ItemTemplateTool.create();
     itemClearTool = ItemClearTool.create();
     structureManager = WorldGenerator.create();
   }

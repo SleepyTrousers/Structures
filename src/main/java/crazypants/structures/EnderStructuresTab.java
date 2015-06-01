@@ -29,7 +29,7 @@ public class EnderStructuresTab extends CreativeTabs {
 
   @Override
   public Item getTabIconItem() {
-    return EnderStructures.itemStructureTool;
+    return EnderStructures.itemComponentTool;
   }
 
 }

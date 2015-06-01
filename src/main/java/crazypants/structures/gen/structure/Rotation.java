@@ -28,6 +28,19 @@ public enum Rotation {
       bc.set(bc.z, bc.y, maxX - bc.x);
     }
   }
+  
+  public void rotate(Point3i bc) {
+    if(this == Rotation.DEG_0) {
+      return;
+    }
+    if(this == Rotation.DEG_90) {
+      bc.set(-bc.z, bc.y, bc.x);
+    } else if(this == Rotation.DEG_180) {
+      bc.set(-bc.x, bc.y, -bc.z);
+    } else if(this == Rotation.DEG_270) {
+      bc.set(bc.z, bc.y, -bc.x);
+    }
+  }
 
   //must have an x/z origin of o 
   public AxisAlignedBB rotate(AxisAlignedBB bb) {

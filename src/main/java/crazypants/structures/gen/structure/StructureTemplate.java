@@ -117,7 +117,7 @@ public class StructureTemplate {
     if(rots == null || rots.isEmpty()) {
       return Rotation.DEG_0;
     }
-    return rots.get(RND.nextInt(rots.size()));
+    return rots.get(RND.nextInt(rots.size()));    
   }
   
   public boolean isValid() {
@@ -157,6 +157,19 @@ public class StructureTemplate {
       List<Point3i> r = comp.getTaggedLocations(target);
       if(r != null) {
         res.addAll(r);
+      }
+    }
+    return res;
+  }
+  
+  public Collection<Point3i> getTaggedLocations(String target, int originX, int originY, int originZ, Rotation rotation) {
+    List<Point3i> res = new ArrayList<Point3i>();
+    for(StructureComponent comp : components) {
+      List<Point3i> locs = comp.getTaggedLocations(target);
+      for(Point3i p : locs) {
+        Point3i xFormed = new Point3i(p);
+        xFormed = comp.transformToWorld(originX, originY, originZ, rotation, xFormed);
+        res.add(xFormed);
       }
     }
     return res;

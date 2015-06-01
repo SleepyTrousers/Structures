@@ -10,8 +10,8 @@ import java.util.Set;
 import net.minecraft.nbt.NBTTagCompound;
 import crazypants.structures.Log;
 import crazypants.structures.gen.io.StructureResourceManager;
-import crazypants.structures.gen.structure.StructureGenerator;
 import crazypants.structures.gen.structure.StructureComponent;
+import crazypants.structures.gen.structure.StructureGenerator;
 import crazypants.structures.gen.structure.StructureTemplate;
 
 public class StructureRegister {
@@ -146,6 +146,10 @@ public class StructureRegister {
       }
     }
 
+  }
+
+  public Collection<StructureTemplate> getStructureTemplates() {
+    return templates.values();
   }
 
 }

@@ -30,6 +30,7 @@ public class LootTableDecorator implements IDecorator {
         if(inv != null) {
           WeightedRandomChestContent.generateChestContents(random, ChestGenHooks.getItems(category, random), inv, ChestGenHooks.getCount(category, random));      
         }
+//        world.setBlock(loc.x, loc.y + 1, loc.z, Blocks.diamond_block);
       }
     }     
   }

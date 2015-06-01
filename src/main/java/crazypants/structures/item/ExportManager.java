@@ -2,30 +2,26 @@ package crazypants.structures.item;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
 
 import org.apache.commons.io.IOUtils;
 
-import crazypants.IoUtil;
 import crazypants.structures.Log;
-import crazypants.structures.gen.DefaultStructures;
 import crazypants.structures.gen.StructureRegister;
 import crazypants.structures.gen.io.StructureResourceManager;
 import crazypants.structures.gen.structure.StructureComponent;
 
 public class ExportManager {
 
-  private static String MIN_TEMPLATE = "{" +
-      "\"StructureGenerator\" : { \"uid\" : \"$GEN_UID\"," +
-      "\"templates\" : [" +
-      "{\"uid\" : \"$TEMPLATE_UID\"}" +
-      "]," +
-      "\"LocationSampler\" : { \"type\" : \"SurfaceSampler\"} }" +      
-      "}";
+//  private static String MIN_TEMPLATE = "{" +
+//      "\"StructureGenerator\" : { \"uid\" : \"$GEN_UID\"," +
+//      "\"templates\" : [" +
+//      "{\"uid\" : \"$TEMPLATE_UID\"}" +
+//      "]," +
+//      "\"LocationSampler\" : { \"type\" : \"SurfaceSampler\"} }" +      
+//      "}";
 
   static final String STRUCT_NAME = "structure";
 
@@ -94,38 +90,38 @@ public class ExportManager {
     if(!createDefaultGenerator || !saved) {
       return;
     }
-    String txt = createDefaultGenFor(st.getUid());
-    File f = new File(EXPORT_DIR, st.getUid() + StructureResourceManager.GENERATOR_EXT);
-    if(txt != null) {
-      try {
-        IoUtil.writeToFile(txt, f);
-        entityPlayer.addChatComponentMessage(new ChatComponentText("Saved to " + f.getAbsolutePath()));
-      } catch (IOException e) {
-        entityPlayer.addChatComponentMessage(new ChatComponentText("Could not write generator to " + f.getAbsolutePath()));
-        e.printStackTrace();
-      }
-    }
+//    String txt = createDefaultGenFor(st.getUid());
+//    File f = new File(EXPORT_DIR, st.getUid() + StructureResourceManager.GENERATOR_EXT);
+//    if(txt != null) {
+//      try {
+//        IoUtil.writeToFile(txt, f);
+//        entityPlayer.addChatComponentMessage(new ChatComponentText("Saved to " + f.getAbsolutePath()));
+//      } catch (IOException e) {
+//        entityPlayer.addChatComponentMessage(new ChatComponentText("Could not write generator to " + f.getAbsolutePath()));
+//        e.printStackTrace();
+//      }
+//    }
 
   }
 
-  private static String createDefaultGenFor(String uid) {
-    String res = MIN_TEMPLATE;
-    
-    InputStream stream = ExportManager.class.getResourceAsStream(DefaultStructures.RESOURCE_PATH + "defaultTemplate.gen");
-    if(stream == null) {
-      return res;
-    }    
-    try {
-      res = IoUtil.readStream(stream);
-    } catch (IOException e) {    
-      e.printStackTrace();
-    }
-    if(res != null) {
-      res = res.replaceAll("TEMPLATE_UID", uid);
-      res = res.replaceAll("GENERATOR_UID", uid);
-    }    
-    return res;
-  }
+//  private static String createDefaultGenFor(String uid) {
+//    String res = MIN_TEMPLATE;
+//    
+//    InputStream stream = ExportManager.class.getResourceAsStream(DefaultStructures.RESOURCE_PATH + "defaultTemplate.gen");
+//    if(stream == null) {
+//      return res;
+//    }    
+//    try {
+//      res = IoUtil.readStream(stream);
+//    } catch (IOException e) {    
+//      e.printStackTrace();
+//    }
+//    if(res != null) {
+//      res = res.replaceAll("TEMPLATE_UID", uid);
+//      res = res.replaceAll("GENERATOR_UID", uid);
+//    }    
+//    return res;
+//  }
 
   private static boolean doWriteToFile(EntityPlayer entityPlayer, StructureComponent st) {
     boolean saved = false;
