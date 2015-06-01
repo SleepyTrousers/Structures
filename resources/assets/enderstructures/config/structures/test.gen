@@ -38,7 +38,43 @@
                       "minSpacing" : 100,
                       "templateFilter" : [ "test", "test2" ] }                                
                                                            
+       ],
+       
+       "chestGenHooksCategories" : [
+         {
+           "category" : "testCat1",
+           "minCount" : 1,
+           "maxCount" : 3,
+           "contents" : [
+             {
+               "itemStack" : { "uid" : "minecraft:sand", "meta" : 0},
+               "minSize" : 1,
+               "maxSize" : 3,
+               "weight" :  30     
+             },
+             {
+               "itemStack" : { "uid" : "minecraft:wool", "meta" : 6},
+               "minSize" : 1,
+               "maxSize" : 3,
+               "weight" :  30     
+             },    
+             {
+               "itemStack" : { "uid" : "minecraft:grass"},
+               "minSize" : 1,
+               "maxSize" : 64,
+               "weight" :  80     
+             },
+             {
+               "itemStack" : { "uid" : "minecraft:iron_sword"},
+               "minSize" : 1,
+               "maxSize" : 1,
+               "weight" :  50     
+             }              
+             
+           ]
+         }
        ]
+       
        
        
    }

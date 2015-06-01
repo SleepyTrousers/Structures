@@ -46,13 +46,13 @@
        "decorators" : [
         
          { "type" : "LootTableInventory",
-                    "category" : "villageBlacksmith",  
+                    "category" : "testCat1",  
                     "comment_category" : "mineshaftCorridor, pyramidDesertyChest, pyramidJungleChest, pyramidJungleDispenser, strongholdCorridor, strongholdLibrary, strongholdCrossing, villageBlacksmith, bonusChest, dungeonChest",
                     "targets" : ["inv0", "inv1", "inv2"]
                     },
                     
          { "type" : "LootTableInventory",
-                    "category" : "pyramidDesertyChest",                      
+                    "category" : "testCat1",                      
                     "targets" : ["inv3", "inv4", "inv5"]                    
                     }               
         

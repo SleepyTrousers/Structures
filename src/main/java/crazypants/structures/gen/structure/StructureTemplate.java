@@ -113,7 +113,7 @@ public class StructureTemplate {
     }    
   }
 
-  private Rotation getRndRotation() {
+  private Rotation getRndRotation() {        
     if(rots == null || rots.isEmpty()) {
       return Rotation.DEG_0;
     }

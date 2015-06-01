@@ -94,6 +94,8 @@ public class GeneratorParser {
           }
         }
       }
+      
+      ChestGenParser.parseChestGen(to);
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -107,6 +109,8 @@ public class GeneratorParser {
     return res;
 
   }
+
+  
 
   public StructureTemplate parseTemplateConfig(StructureRegister reg, String json) throws Exception {
 
@@ -207,6 +211,8 @@ public class GeneratorParser {
         }
 
       }
+      
+      ChestGenParser.parseChestGen(to);
 
     } catch (Exception e) {
       throw new Exception("TemplateParser: Could not parse template " + uid, e);
