@@ -22,12 +22,21 @@ public class StructureUtil {
   /**
    * If true, this block should be ignored (treated as 'air') when determining
    * the surface height.
+   *
+   * @param world
+   * @param x
+   * @param z
+   * @param y
+   * @param blk
+   * @param ignorePlants
+   * @param ignoreFluids
+   * @return
    */
   public static boolean isIgnoredAsSurface(World world, int x, int z, int y, Block blk, boolean ignorePlants, boolean ignoreFluids) {
     //the first one will get a lot of hits, so it gets its own check
     return blk == Blocks.air || blk == Blocks.snow_layer || blk == Blocks.web || blk.isAir(world, x, y, z) ||
         (ignorePlants && StructureUtil.isPlant(blk, world, x, y, z) ||
-        (ignoreFluids && FluidRegistry.lookupFluidForBlock(blk) != null));
+            (ignoreFluids && FluidRegistry.lookupFluidForBlock(blk) != null));
   }
 
   public static Block getSurfaceBlock(World world, int x, int z, Point3i blockLocationResult, boolean ignorePlants, boolean ignoreFluids) {
@@ -52,7 +61,7 @@ public class StructureUtil {
     if(blk == null) {
       return null;
     }
-    
+
     if(y == maxY && !StructureUtil.isIgnoredAsSurface(world, x, z, y + 1, blk, ignorePlants, ignoreFluids)) {
       //found a solid block in the first sample, so need to check if it has 'air/ignored' block above it
       return null;
