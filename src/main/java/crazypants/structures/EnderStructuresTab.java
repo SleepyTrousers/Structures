@@ -2,10 +2,11 @@ package crazypants.structures;
 
 import static crazypants.structures.EnderStructures.MODID;
 import static crazypants.structures.EnderStructures.MOD_NAME;
+
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class EnderStructuresTab extends CreativeTabs {
 

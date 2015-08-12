@@ -2,14 +2,6 @@ package crazypants.structures.item;
 
 import java.util.Iterator;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
-import cpw.mods.fml.common.registry.GameRegistry;
 import crazypants.structures.EnderStructures;
 import crazypants.structures.EnderStructuresTab;
 import crazypants.structures.gen.StructureRegister;
@@ -17,10 +9,19 @@ import crazypants.structures.gen.structure.Structure;
 import crazypants.structures.gen.structure.StructureComponent;
 import crazypants.structures.gen.structure.StructureTemplate;
 import crazypants.vec.Point3i;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class ItemTemplateTool extends Item {
 
-  private static final String NAME = "itemTemplateTool";
+  private static final String NAME = "templateTool";
 
   public static ItemTemplateTool create() {
     ItemTemplateTool res = new ItemTemplateTool();
@@ -30,8 +31,7 @@ public class ItemTemplateTool extends Item {
 
   private ItemTemplateTool() {
     setUnlocalizedName(NAME);
-    setCreativeTab(EnderStructuresTab.tabEnderStructures);
-    setTextureName(EnderStructures.MODID.toLowerCase() + ":" + NAME);
+    setCreativeTab(EnderStructuresTab.tabEnderStructures);    
     setHasSubtypes(false);
   }
 
@@ -53,9 +53,9 @@ public class ItemTemplateTool extends Item {
   }
 
   @Override
-  public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
+  public boolean onItemUse(ItemStack stack, EntityPlayer playerIn, World world, BlockPos pos, EnumFacing dir, float hitX, float hitY, float hitZ) {
 
-    if (world.getBlock(x, y, z) == EnderStructures.blockStructureMarker) {
+    if (world.getBlockState(pos).getBlock() == EnderStructures.blockStructureMarker) {
       return true;
     }
     if (world.isRemote) {
@@ -64,16 +64,15 @@ public class ItemTemplateTool extends Item {
 
     String uid = getGenUid(stack, true);    
     if (uid != null) {
-      buildComponent(world, x, y, z, side, uid);
+      buildComponent(world, pos, dir, uid);
     }
     return true;
   }
 
-  private void buildComponent(World world, int x, int y, int z, int side, String uid) {
+  private void buildComponent(World world, BlockPos pos, EnumFacing dir, String uid) {
     StructureTemplate st = StructureRegister.instance.getStructureTemplate(uid, true);
-    if(st != null) {
-      ForgeDirection dir = ForgeDirection.getOrientation(side);
-      Point3i origin = new Point3i(x + dir.offsetX, y + dir.offsetY - 1, z + dir.offsetZ);
+    if(st != null) {      
+      Point3i origin = new Point3i(pos, dir);
       origin.y -= st.getSurfaceOffset();
       Structure structure = st.createInstance();
       structure.setOrigin(origin);
@@ -108,8 +107,8 @@ public class ItemTemplateTool extends Item {
 
   private String getGenUid(ItemStack stack, boolean setDefaultIfNull) {   
     String result = null;
-    if (stack.stackTagCompound != null && stack.stackTagCompound.hasKey("genUid")) {      
-      result = stack.stackTagCompound.getString("genUid");
+    if (stack.hasTagCompound() && stack.getTagCompound().hasKey("genUid")) {      
+      result = stack.getTagCompound().getString("genUid");
     }
     if(setDefaultIfNull && result == null) {
       result = setDefaultUid(stack);
@@ -118,13 +117,13 @@ public class ItemTemplateTool extends Item {
   }
   
   private void setGenUid(ItemStack stack, String uid) {
-    if (stack.stackTagCompound == null) {      
-      stack.stackTagCompound = new NBTTagCompound();
+    if (!stack.hasTagCompound()) {      
+      stack.setTagCompound(new NBTTagCompound());
     }
     if(uid == null) {
-      stack.stackTagCompound.removeTag("genUid");
+      stack.getTagCompound().removeTag("genUid");
     } else {
-      stack.stackTagCompound.setString("genUid", uid);
+      stack.getTagCompound().setString("genUid", uid);
     }
   }
   

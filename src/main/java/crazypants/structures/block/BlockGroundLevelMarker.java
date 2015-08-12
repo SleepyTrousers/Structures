@@ -1,10 +1,9 @@
 package crazypants.structures.block;
 
+import crazypants.structures.EnderStructuresTab;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import cpw.mods.fml.common.registry.GameRegistry;
-import crazypants.structures.EnderStructures;
-import crazypants.structures.EnderStructuresTab;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class BlockGroundLevelMarker extends Block {
 
@@ -19,12 +18,11 @@ public class BlockGroundLevelMarker extends Block {
   protected BlockGroundLevelMarker() {
     super(Material.rock);
     setHardness(0.5F);
-    setBlockName(NAME);
+    setUnlocalizedName(NAME);
     setStepSound(Block.soundTypeStone);
     setHarvestLevel("pickaxe", 0);
     setCreativeTab(EnderStructuresTab.tabEnderStructures);
-    setLightOpacity(0);
-    setBlockTextureName(EnderStructures.MODID.toLowerCase() + ":" + NAME);
+    setLightOpacity(0);    
   }
 
   protected void init() {

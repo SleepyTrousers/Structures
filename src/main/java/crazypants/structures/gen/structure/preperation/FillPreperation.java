@@ -2,23 +2,18 @@ package crazypants.structures.gen.structure.preperation;
 
 import java.util.Random;
 
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 import crazypants.structures.gen.ChunkBounds;
 import crazypants.structures.gen.StructureUtil;
 import crazypants.structures.gen.structure.Border;
 import crazypants.structures.gen.structure.Structure;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.world.World;
 
 public class FillPreperation implements ISitePreperation {
-
-  private Block fillBlock;
-  private int fillMeta = 0;
-
-  private Block surfaceBlock;
-  private int surfaceMeta = 0;
 
   private boolean useBiomeFillerBlock = true;
   private boolean clearPlants = true;
@@ -31,14 +26,15 @@ public class FillPreperation implements ISitePreperation {
 
   @Override
   public boolean prepareLocation(Structure structure, World world, Random random, ChunkBounds clip) {
-    Block fill = fillBlock;
-    Block surf = surfaceBlock;
+    IBlockState fill = null;
+    IBlockState surf = null;
     if(useBiomeFillerBlock) {
-      fill = world.getBiomeGenForCoords(structure.getOrigin().x, structure.getOrigin().z).fillerBlock;
-      surf = world.getBiomeGenForCoords(structure.getOrigin().x, structure.getOrigin().z).topBlock;
+      BlockPos bp = new BlockPos(structure.getOrigin().x, 64, structure.getOrigin().z);
+      fill = world.getBiomeGenForCoords(bp).fillerBlock;      
+      surf = world.getBiomeGenForCoords(bp).topBlock;      
     }
     if(fill == null) {
-      fill = Blocks.cobblestone;
+      fill = Blocks.cobblestone.getDefaultState();
     }
     if(surf == null) {
       surf = fill;
@@ -59,10 +55,10 @@ public class FillPreperation implements ISitePreperation {
     int minY = 0;
     int maxY = (int) bb.minY + structure.getSurfaceOffset();
 
-    Block curBlk;
-    int curMeta;
-    for (int x = minX - border.get(ForgeDirection.WEST); x < maxX + border.get(ForgeDirection.EAST); x++) {
-      for (int z = minZ - border.get(ForgeDirection.NORTH); z < maxZ + border.get(ForgeDirection.SOUTH); z++) {
+    IBlockState curBlk;
+//    int curMeta;
+    for (int x = minX - border.get(EnumFacing.WEST); x < maxX + border.get(EnumFacing.EAST); x++) {
+      for (int z = minZ - border.get(EnumFacing.NORTH); z < maxZ + border.get(EnumFacing.SOUTH); z++) {
 
         int startY = maxY;
         if(x < minX || x >= maxX || z < minZ || z >= maxZ) {
@@ -71,15 +67,13 @@ public class FillPreperation implements ISitePreperation {
         }
         for (int y = startY; y > minY; y--) {
           if(clip == null || clip.isBlockInBounds(x, z)) {
-            if(StructureUtil.isIgnoredAsSurface(world, x, z, y, world.getBlock(x, y, z), true, true)) {
-              if(y >= maxY && world.isAirBlock(x, y + 1, z)) {
-                curBlk = surf;
-                curMeta = surfaceMeta;
+            if(StructureUtil.isIgnoredAsSurface(world, x, z, y, world.getBlockState(new BlockPos(x, y, z)), true, true)) {
+              if(y >= maxY && world.isAirBlock(new BlockPos(x, y + 1, z))) {
+                curBlk = surf;               
               } else {
                 curBlk = fill;
-                curMeta = fillMeta;
-              }
-              world.setBlock(x, y, z, curBlk, curMeta, 2);
+              }                            
+              world.setBlockState(new BlockPos(x, y, z), curBlk, 2);
             } else {
               y = 0; //done for the x,z
             }

@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import net.minecraftforge.common.util.ForgeDirection;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import crazypants.structures.gen.structure.Border;
+import net.minecraft.util.EnumFacing;
 
 public class JsonUtil {
 
@@ -87,9 +86,9 @@ public class JsonUtil {
     }    
     Border border = new Border();    
     if(obj.has("sizeXZ")) {
-      border.setBorderXZ(getIntElement(obj, "sizeXZ", border.get(ForgeDirection.NORTH)));
+      border.setBorderXZ(getIntElement(obj, "sizeXZ", border.get(EnumFacing.NORTH)));
     }
-    for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+    for(EnumFacing dir : EnumFacing.values()) {
       border.set(dir, JsonUtil.getIntElement(obj, dir.name().toLowerCase(), border.get(dir)));
     }
     return border;

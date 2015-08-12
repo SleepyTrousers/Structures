@@ -8,6 +8,7 @@ import crazypants.structures.gen.StructureUtil;
 import crazypants.structures.gen.WorldStructures;
 import crazypants.structures.gen.structure.Structure;
 import crazypants.vec.Point3i;
+import crazypants.vec.VecUtil;
 
 public class SurfaceLocationSampler implements ILocationSampler {
 
@@ -61,7 +62,7 @@ public class SurfaceLocationSampler implements ILocationSampler {
     Point3i loc = new Point3i();
 
     blk = StructureUtil.getSurfaceBlock(world, x, z, loc, true, !canPlaceInFluid);
-    if(blk != world.getBiomeGenForCoords(x, z).topBlock && blk != world.getBiomeGenForCoords(x, z).fillerBlock) {
+    if(blk != world.getBiomeGenForCoords(VecUtil.getCenterOfChunk(x, z)).topBlock && blk != world.getBiomeGenForCoords(VecUtil.getCenterOfChunk(x, z)).fillerBlock) {
       return null;
     }
 

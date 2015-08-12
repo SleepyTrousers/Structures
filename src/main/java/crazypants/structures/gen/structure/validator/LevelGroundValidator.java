@@ -2,17 +2,17 @@ package crazypants.structures.gen.structure.validator;
 
 import java.util.Random;
 
-import net.minecraft.block.Block;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.FluidRegistry;
 import crazypants.structures.gen.ChunkBounds;
 import crazypants.structures.gen.StructureUtil;
 import crazypants.structures.gen.WorldStructures;
 import crazypants.structures.gen.structure.Border;
 import crazypants.structures.gen.structure.Structure;
 import crazypants.vec.Point3i;
+import net.minecraft.block.Block;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.world.World;
+import net.minecraftforge.fluids.FluidRegistry;
 
 public class LevelGroundValidator implements ISiteValidator {
 
@@ -58,8 +58,8 @@ public class LevelGroundValidator implements ISiteValidator {
     int[] minMax = new int[] { Integer.MAX_VALUE, -Integer.MAX_VALUE };
     Point3i sampleLoc = new Point3i(structure.getOrigin());
     Point3i surfacePos = new Point3i();
-    for (int x = minX - border.get(ForgeDirection.WEST); x <= maxX + border.get(ForgeDirection.EAST); x += xSpacing) {
-      for (int z = minZ - border.get(ForgeDirection.NORTH); z <= maxZ + border.get(ForgeDirection.SOUTH); z += zSpacing) {
+    for (int x = minX - border.get(EnumFacing.WEST); x <= maxX + border.get(EnumFacing.EAST); x += xSpacing) {
+      for (int z = minZ - border.get(EnumFacing.NORTH); z <= maxZ + border.get(EnumFacing.SOUTH); z += zSpacing) {
 
         if(clip == null || clip.isBlockInBounds(x, z)) {
           sampleLoc.set(x, structure.getOrigin().y + structure.getSurfaceOffset(), z);

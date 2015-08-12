@@ -191,7 +191,7 @@ public class WorldStructures {
   }
 
   private File getWorldSaveFile(World world) {
-    File res = new File(getWorldSaveDir(world), "structures_dim" + world.provider.dimensionId + ".nbt");
+    File res = new File(getWorldSaveDir(world), "structures_dim" + world.provider.getDimensionId() + ".nbt");
     return res;
   }
 

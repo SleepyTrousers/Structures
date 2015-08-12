@@ -1,22 +1,22 @@
 package crazypants.structures.block;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import crazypants.structures.EnderStructures;
 import crazypants.structures.EnderStructuresTab;
 import crazypants.structures.gen.StructureRegister;
 import crazypants.structures.gen.structure.StructureComponent;
 import crazypants.structures.item.ExportManager;
 import crazypants.vec.Point3i;
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class BlockStructureMarker extends Block {
 
@@ -31,7 +31,7 @@ public class BlockStructureMarker extends Block {
   protected BlockStructureMarker() {
     super(Material.rock);
     setHardness(0.5F);
-    setBlockName(NAME);
+    setUnlocalizedName(NAME);
     setStepSound(Block.soundTypeStone);
     setHarvestLevel("pickaxe", 0);
     setCreativeTab(EnderStructuresTab.tabEnderStructures);
@@ -40,15 +40,12 @@ public class BlockStructureMarker extends Block {
   protected void init() {
     GameRegistry.registerBlock(this, NAME);    
   }
+  
+  
+  
 
   @Override
-  @SideOnly(Side.CLIENT)
-  public void registerBlockIcons(IIconRegister iIconRegister) {
-    blockIcon = iIconRegister.registerIcon(EnderStructures.MODID.toLowerCase() + ":" + NAME);
-  }
-
-  @Override
-  public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float par7, float par8, float par9) {
+  public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer entityPlayer, EnumFacing side, float hitX, float hitY, float hitZ) {
     if(entityPlayer.isSneaking()) {
       return false;
     }
@@ -57,12 +54,12 @@ public class BlockStructureMarker extends Block {
     if(world.isRemote) {
       return true;
     }
-    generateAndExport(world, x, y, z, entityPlayer);
+    generateAndExport(world, pos, entityPlayer);
     return true;
   }
 
-  public StructureComponent generateAndExport(World world, int x, int y, int z, EntityPlayer entityPlayer) {
-    StructureComponent st = generateTemplate(ExportManager.instance.getNextExportUid(), world, x, y, z, entityPlayer);
+  public StructureComponent generateAndExport(World world, BlockPos pos, EntityPlayer entityPlayer) {
+    StructureComponent st = generateTemplate(ExportManager.instance.getNextExportUid(), world, pos, entityPlayer);
     if(st != null) {
       ExportManager.writeToFile(entityPlayer, st, true);
       StructureRegister.instance.registerStructureComponent(st);
@@ -71,8 +68,8 @@ public class BlockStructureMarker extends Block {
     return st;
   }
   
-  public static StructureComponent generateTemplate(String name, IBlockAccess world, int x, int y, int z, EntityPlayer entityPlayer) {
-    StructureBounds bb = getStructureBounds(world, x, y, z, entityPlayer);
+  public static StructureComponent generateTemplate(String name, IBlockAccess world, BlockPos pos, EntityPlayer entityPlayer) {
+    StructureBounds bb = getStructureBounds(world, pos.getX(), pos.getY(), pos.getZ(), entityPlayer);
     if(bb == null) {      
       return null;
     }
@@ -100,7 +97,7 @@ public class BlockStructureMarker extends Block {
     min.y += 1;
     min.z += 1;
     Point3i max = new Point3i(Math.max(x, xLoc.x), Math.max(y, yLoc.y), Math.max(z, zLoc.z));    
-    AxisAlignedBB bb = AxisAlignedBB.getBoundingBox(min.x, min.y,min.z, max.x,max.y,max.z);  
+    AxisAlignedBB bb = new AxisAlignedBB(min.x, min.y,min.z, max.x,max.y,max.z);  
     
     
     int surfaceOffset = 0;
@@ -119,7 +116,7 @@ public class BlockStructureMarker extends Block {
     Point3i tst = new Point3i(x, y, z);
     do {
       tst.add(axis);
-      if(world.getBlock(tst.x, tst.y, tst.z) == blk) {
+      if(world.getBlockState(tst.pos()).getBlock() == blk) {
         return tst;
       }
       steps++;

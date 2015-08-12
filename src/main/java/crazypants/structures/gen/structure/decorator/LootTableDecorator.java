@@ -6,6 +6,7 @@ import java.util.Random;
 
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ChestGenHooks;
@@ -36,7 +37,7 @@ public class LootTableDecorator implements IDecorator {
   }
 
   private IInventory getInventory(World world, Point3i loc) {
-    TileEntity te = world.getTileEntity(loc.x, loc.y, loc.z);
+    TileEntity te = world.getTileEntity(new BlockPos(loc.x, loc.y, loc.z));
     if(te instanceof IInventory) {
       return (IInventory)te;
     }

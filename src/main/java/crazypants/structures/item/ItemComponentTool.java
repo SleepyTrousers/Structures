@@ -2,24 +2,25 @@ package crazypants.structures.item;
 
 import java.util.Iterator;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
-import cpw.mods.fml.common.registry.GameRegistry;
 import crazypants.structures.EnderStructures;
 import crazypants.structures.EnderStructuresTab;
 import crazypants.structures.gen.StructureRegister;
 import crazypants.structures.gen.structure.Rotation;
 import crazypants.structures.gen.structure.StructureComponent;
 import crazypants.vec.Point3i;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class ItemComponentTool extends Item {
 
-  private static final String NAME = "itemComponentTool";
+  private static final String NAME = "componentTool";
 
   public static ItemComponentTool create() {
     ItemComponentTool res = new ItemComponentTool();
@@ -29,8 +30,7 @@ public class ItemComponentTool extends Item {
 
   private ItemComponentTool() {
     setUnlocalizedName(NAME);
-    setCreativeTab(EnderStructuresTab.tabEnderStructures);
-    setTextureName(EnderStructures.MODID.toLowerCase() + ":" + NAME);
+    setCreativeTab(EnderStructuresTab.tabEnderStructures);    
     setHasSubtypes(false);
   }
 
@@ -52,9 +52,9 @@ public class ItemComponentTool extends Item {
   }
 
   @Override
-  public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
+  public boolean onItemUse(ItemStack stack, EntityPlayer playerIn, World world, BlockPos pos, EnumFacing dir, float hitX, float hitY, float hitZ) {
 
-    if (world.getBlock(x, y, z) == EnderStructures.blockStructureMarker) {
+    if (world.getBlockState(pos).getBlock() == EnderStructures.blockStructureMarker) {
       return true;
     }
     if (world.isRemote) {
@@ -64,9 +64,8 @@ public class ItemComponentTool extends Item {
     String uid = getGenUid(stack, true);    
     if (uid != null) {
       StructureComponent st = StructureRegister.instance.getStructureComponent(uid);
-      if(st != null) {
-        ForgeDirection dir = ForgeDirection.getOrientation(side);
-        Point3i origin = new Point3i(x + dir.offsetX, y + dir.offsetY - 1, z + dir.offsetZ);
+      if(st != null) {        
+        Point3i origin = new Point3i(pos, dir);
         origin.y -= st.getSurfaceOffset();
         st.build(world, origin.x,origin.y,origin.z, Rotation.DEG_0, null);
         addMarkers(world, st, origin);             
@@ -77,13 +76,13 @@ public class ItemComponentTool extends Item {
 
   private void addMarkers(World world, StructureComponent st, Point3i origin) {
     Point3i sz = st.getSize();
-    world.setBlock(origin.x - 1, origin.y - 1, origin.z - 1, EnderStructures.blockStructureMarker);
-    world.setBlock(origin.x - 1, origin.y  + sz.y, origin.z - 1, EnderStructures.blockStructureMarker);    
-    world.setBlock(origin.x + sz.x, origin.y - 1, origin.z - 1, EnderStructures.blockStructureMarker);
-    world.setBlock(origin.x - 1, origin.y - 1, origin.z + sz.z, EnderStructures.blockStructureMarker);
+    world.setBlockState(new BlockPos(origin.x - 1, origin.y - 1, origin.z - 1), EnderStructures.blockStructureMarker.getDefaultState());
+    world.setBlockState(new BlockPos(origin.x - 1, origin.y  + sz.y, origin.z - 1), EnderStructures.blockStructureMarker.getDefaultState());    
+    world.setBlockState(new BlockPos(origin.x + sz.x, origin.y - 1, origin.z - 1), EnderStructures.blockStructureMarker.getDefaultState());
+    world.setBlockState(new BlockPos(origin.x - 1, origin.y - 1, origin.z + sz.z), EnderStructures.blockStructureMarker.getDefaultState());
     
     if(st.getSurfaceOffset() > 0) {
-      world.setBlock(origin.x - 1, origin.y + st.getSurfaceOffset(), origin.z - 1, EnderStructures.blockGroundLevelMarker);
+      world.setBlockState(new BlockPos(origin.x - 1, origin.y + st.getSurfaceOffset(), origin.z - 1), EnderStructures.blockGroundLevelMarker.getDefaultState());
     }
   }
 
@@ -114,8 +113,8 @@ public class ItemComponentTool extends Item {
 
   private String getGenUid(ItemStack stack, boolean setDefaultIfNull) {   
     String result = null;
-    if (stack.stackTagCompound != null && stack.stackTagCompound.hasKey("genUid")) {      
-      result = stack.stackTagCompound.getString("genUid");
+    if (stack.hasTagCompound() && stack.getTagCompound().hasKey("genUid")) {      
+      result = stack.getTagCompound().getString("genUid");
     }
     if(setDefaultIfNull && result == null) {
       result = setDefaultUid(stack);
@@ -124,13 +123,13 @@ public class ItemComponentTool extends Item {
   }
   
   private void setGenUid(ItemStack stack, String uid) {
-    if (stack.stackTagCompound == null) {      
-      stack.stackTagCompound = new NBTTagCompound();
+    if (!stack.hasTagCompound()) {      
+      stack.setTagCompound(new NBTTagCompound());
     }
     if(uid == null) {
-      stack.stackTagCompound.removeTag("genUid");
+      stack.getTagCompound().removeTag("genUid");
     } else {
-      stack.stackTagCompound.setString("genUid", uid);
+      stack.getTagCompound().setString("genUid", uid);
     }
   }
   

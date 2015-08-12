@@ -1,15 +1,15 @@
 package crazypants.structures.gen.io;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.WeightedRandomChestContent;
-import net.minecraftforge.common.ChestGenHooks;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.WeightedRandomChestContent;
+import net.minecraftforge.common.ChestGenHooks;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry.UniqueIdentifier;
 
 public final class ChestGenParser {
 
@@ -74,10 +74,11 @@ public final class ChestGenParser {
       return null;
     }
     UniqueIdentifier u = new UniqueIdentifier(uid);
-    ItemStack res = GameRegistry.findItemStack(u.modId, u.name, 1);
-    if (res == null) {
-      return res;
+    Item item = GameRegistry.findItem(u.modId, u.name);
+    if(item == null) {
+      return null;
     }
+    ItemStack res = new ItemStack(item, 1);   
     res.setItemDamage(JsonUtil.getIntElement(obj, "meta", res.getItemDamage()));
 
     return res;

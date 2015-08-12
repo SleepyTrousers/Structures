@@ -1,13 +1,14 @@
 package crazypants.structures.gen.structure;
 
-import net.minecraft.block.Block;
+import crazypants.structures.Log;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.IBlockAccess;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
-import crazypants.structures.Log;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry.UniqueIdentifier;
 
 public class StructureBlock {
 
@@ -37,16 +38,16 @@ public class StructureBlock {
     blockMeta = 0;
   }
 
-  public StructureBlock(Block b) {
-    this(b,0,null);
+  public StructureBlock(IBlockState b) {
+    this(b,null);
   }
   
-  public StructureBlock(Block b, int meta, TileEntity te) {
-    if(b == null) {
+  public StructureBlock(IBlockState b, TileEntity te) {
+    if(b == null || b.getBlock() == null) {
       Log.warn("StructureBlock.StructureBlock: Null block");
-      b = Blocks.air;
+      b = Blocks.air.getDefaultState();
     }
-    UniqueIdentifier uid = GameRegistry.findUniqueIdentifierFor(b);
+    UniqueIdentifier uid = GameRegistry.findUniqueIdentifierFor(b.getBlock());
     if(uid == null) {
       modId = "minecraft";
       blockName = "air";
@@ -55,7 +56,8 @@ public class StructureBlock {
       modId = uid.modId;
       blockName = uid.name;
     }
-    blockMeta = (short) meta;
+    blockMeta = (short)b.getBlock().getMetaFromState(b);
+    
     if(te != null) {
       tileEntity = new NBTTagCompound();
       te.writeToNBT(tileEntity);
@@ -65,7 +67,7 @@ public class StructureBlock {
   }
 
   public StructureBlock(IBlockAccess ba, int x, int y, int z) {
-    this(ba.getBlock(x, y, z), ba.getBlockMetadata(x, y, z), ba.getTileEntity(x, y, z));
+    this(ba.getBlockState(new BlockPos(x, y, z)), ba.getTileEntity(new BlockPos(x, y, z)));
   }
 
   public boolean isAir() {

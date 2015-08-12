@@ -3,15 +3,7 @@ package crazypants.structures;
 import static crazypants.structures.EnderStructures.MODID;
 import static crazypants.structures.EnderStructures.MOD_NAME;
 import static crazypants.structures.EnderStructures.VERSION;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.event.FMLServerStoppedEvent;
+
 import crazypants.structures.block.BlockClearMarker;
 import crazypants.structures.block.BlockGroundLevelMarker;
 import crazypants.structures.block.BlockStructureMarker;
@@ -23,8 +15,17 @@ import crazypants.structures.item.ExportManager;
 import crazypants.structures.item.ItemClearTool;
 import crazypants.structures.item.ItemComponentTool;
 import crazypants.structures.item.ItemTemplateTool;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
 
-@Mod(modid = MODID, name = MOD_NAME, version = VERSION, dependencies = "required-after:Forge@10.13.0.1150,)", guiFactory = "crazypants.structures.config.ConfigFactoryEnderStructures")
+@Mod(modid = MODID, name = MOD_NAME, version = VERSION, dependencies = "required-after:Forge@[11.14.1.1341,)", guiFactory = "crazypants.structures.config.ConfigFactoryEnderStructures")
 public class EnderStructures {
 
   public static final String MODID = "EnderStructures";

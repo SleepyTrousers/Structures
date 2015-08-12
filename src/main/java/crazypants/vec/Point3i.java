@@ -1,5 +1,7 @@
 package crazypants.vec;
 
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 
 public class Point3i {
 
@@ -32,6 +34,12 @@ public class Point3i {
     z = other.z;
   }
 
+  public Point3i(BlockPos pos, EnumFacing dir) {
+    x = pos.getX() + dir.getFrontOffsetX();
+    y = pos.getY() + dir.getFrontOffsetY();
+    z = pos.getZ() + dir.getFrontOffsetZ();
+  }
+
   public void add(Point3i other) {
     x += other.x;
     y += other.y;
@@ -54,6 +62,10 @@ public class Point3i {
 
   public double distance(Point3i v) {
     return Math.sqrt(distanceSquared(v));
+  }
+  
+  public BlockPos pos() {
+    return new BlockPos(x,y,z);
   }
 
   @Override

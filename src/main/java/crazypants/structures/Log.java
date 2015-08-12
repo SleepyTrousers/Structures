@@ -1,6 +1,6 @@
 package crazypants.structures;
 
-import cpw.mods.fml.common.FMLLog;
+import net.minecraftforge.fml.common.FMLLog;
 
 
 public final class Log {

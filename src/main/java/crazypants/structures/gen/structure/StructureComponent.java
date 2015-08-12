@@ -15,7 +15,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import crazypants.structures.EnderStructures;
+import crazypants.structures.Log;
+import crazypants.structures.gen.ChunkBounds;
+import crazypants.structures.gen.StructureUtil;
+import crazypants.vec.Point3i;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.CompressedStreamTools;
@@ -23,16 +29,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraftforge.common.util.ForgeDirection;
-import cpw.mods.fml.common.registry.GameRegistry;
-import crazypants.structures.EnderStructures;
-import crazypants.structures.Log;
-import crazypants.structures.gen.ChunkBounds;
-import crazypants.structures.gen.StructureUtil;
-import crazypants.vec.Point3i;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class StructureComponent {
 
@@ -53,7 +55,7 @@ public class StructureComponent {
 
     this.uid = uid;
 
-    bb = worldBnds.getOffsetBoundingBox(-worldBnds.minX, -worldBnds.minY, -worldBnds.minZ);
+    bb = worldBnds.offset(-worldBnds.minX, -worldBnds.minY, -worldBnds.minZ);
 
     size = new Point3i((int) Math.abs(worldBnds.maxX - worldBnds.minX), (int) Math.abs(worldBnds.maxY - worldBnds.minY), (int) Math.abs(worldBnds.maxZ
         - worldBnds.minZ));
@@ -64,7 +66,7 @@ public class StructureComponent {
     StructureBlock fb = null;
     StructureBlock sufb = null;
     if (markBiomeFillerForMerge) {
-      BiomeGenBase biome = world.getBiomeGenForCoords((int) worldBnds.minX, (int) worldBnds.minZ);
+      BiomeGenBase biome = world.getBiomeGenForCoords(new BlockPos(worldBnds.minX, 64, worldBnds.minZ));
       if (biome != null) {
         if (biome.topBlock != null) {
           sufb = new StructureBlock(biome.fillerBlock);
@@ -90,8 +92,7 @@ public class StructureComponent {
           x = (int) worldBnds.minX + xIndex;
           y = (int) worldBnds.minY + yIndex;
           z = (int) worldBnds.minZ + zIndex;
-          Block blk = world.getBlock(x, y, z);
-          StructureBlock sb = new StructureBlock(blk, world.getBlockMetadata(x, y, z), world.getTileEntity(x, y, z));
+          StructureBlock sb = new StructureBlock(world.getBlockState(new BlockPos(x, y, z)), world.getTileEntity(new BlockPos(x,y,z)));
           if (!sb.isAir()) {
             addBlock(sb, xIndex, yIndex, zIndex);
             if (sb.getTileEntity() != null) {
@@ -124,7 +125,7 @@ public class StructureComponent {
       blocks.put(sb, coords);
     }
 
-    bb = AxisAlignedBB.getBoundingBox(root.getInteger("minX"), root.getInteger("minY"), root.getInteger("minZ"), root.getInteger("maxX"),
+    bb = new AxisAlignedBB(root.getInteger("minX"), root.getInteger("minY"), root.getInteger("minZ"), root.getInteger("maxX"),
         root.getInteger("maxY"), root.getInteger("maxZ"));
 
     size = new Point3i((int) Math.abs(bb.maxX - bb.minX), (int) Math.abs(bb.maxY - bb.minY), (int) Math.abs(bb.maxZ - bb.minZ));
@@ -288,9 +289,9 @@ public class StructureComponent {
       rot = Rotation.DEG_0;
     }
 
-    Block fillBlk = null;
-    Block surfBlk = null;
-    BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
+    IBlockState fillBlk = null;
+    IBlockState surfBlk = null;
+    BiomeGenBase biome = world.getBiomeGenForCoords(new BlockPos(x, 128, z));
     if (biome != null) {
       fillBlk = biome.fillerBlock;
       surfBlk = biome.topBlock;
@@ -311,12 +312,12 @@ public class StructureComponent {
     }
   }
 
-  private void fillBlocks(World world, int x, int y, int z, Rotation rot, ChunkBounds genBounds, List<Point3i> coords, Block filler) {
+  private void fillBlocks(World world, int x, int y, int z, Rotation rot, ChunkBounds genBounds, List<Point3i> coords, IBlockState filler) {
     for (Point3i coord : coords) {
       Point3i bc = transformToWorld(x, y, z, rot, coord);
       if ((genBounds == null || genBounds.isBlockInBounds(bc.x, bc.z))
-          && StructureUtil.isIgnoredAsSurface(world, x, z, y, world.getBlock(x, y, z), true, false)) {
-        world.setBlock(bc.x, bc.y, bc.z, filler, 0, 2);
+          && StructureUtil.isIgnoredAsSurface(world, x, z, y, world.getBlockState(new BlockPos(x, y, z)), true, false)) {
+        world.setBlockState(new BlockPos(bc.x, bc.y, bc.z), filler, 2);
       }
     }
     return;
@@ -335,23 +336,20 @@ public class StructureComponent {
         Point3i bc = transformToWorld(x, y, z, rot, coord);
         if (genBounds == null || genBounds.isBlockInBounds(bc.x, bc.z)) {
 
-          world.setBlock(bc.x, bc.y, bc.z, block, sb.getMetaData(), 2);
-
+          world.setBlockState(bc.pos(), block.getStateFromMeta(sb.getMetaData()), 2);
           if (sb.getTileEntity() != null) {
             TileEntity te = TileEntity.createAndLoadEntity(sb.getTileEntity());
             if (te != null) {
-              te.xCoord = bc.x;
-              te.yCoord = bc.y;
-              te.zCoord = bc.z;
-              world.setTileEntity(bc.x, bc.y, bc.z, te);
+              te.setPos(bc.pos());
+              world.setTileEntity(bc.pos(), te);
             }
           }
           //Chest will change the meta on block placed, so need to set it back
-          if (world.getBlockMetadata(bc.x, bc.y, bc.z) != sb.getMetaData()) {
-            world.setBlockMetadataWithNotify(bc.x, bc.y, bc.z, sb.getMetaData(), 3);
-          }
+//          if (world.getBlockMetadata(bc.x, bc.y, bc.z) != sb.getMetaData()) {
+//            world.setBlockMetadataWithNotify(bc.x, bc.y, bc.z, sb.getMetaData(), 3);
+//          }
           for (int i = 0; i < rot.ordinal(); i++) {
-            block.rotateBlock(world, bc.x, bc.y, bc.z, ForgeDirection.UP);
+            block.rotateBlock(world, bc.pos(), EnumFacing.UP);
           }
         }
       }

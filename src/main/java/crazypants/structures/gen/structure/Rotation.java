@@ -48,7 +48,8 @@ public enum Rotation {
       return bb;
     }
     Point3i sz = Structure.size(bb);
-    return AxisAlignedBB.getBoundingBox(0, 0, 0, sz.z, sz.y, sz.x);
+    
+    return new AxisAlignedBB(0, 0, 0, sz.z, sz.y, sz.x);
   }
 
   public Rotation next() {

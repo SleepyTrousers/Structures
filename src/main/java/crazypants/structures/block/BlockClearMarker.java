@@ -1,15 +1,11 @@
 package crazypants.structures.block;
 
+import crazypants.structures.EnderStructuresTab;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import crazypants.structures.EnderStructures;
-import crazypants.structures.EnderStructuresTab;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class BlockClearMarker extends Block {
 
@@ -24,7 +20,7 @@ public class BlockClearMarker extends Block {
   protected BlockClearMarker() {
     super(Material.rock);
     setHardness(0.5F);
-    setBlockName(NAME);
+    setUnlocalizedName(NAME);
     setStepSound(Block.soundTypeStone);
     setHarvestLevel("pickaxe", 0);
     setCreativeTab(EnderStructuresTab.tabEnderStructures);
@@ -35,11 +31,11 @@ public class BlockClearMarker extends Block {
     GameRegistry.registerBlock(this, NAME);
   }
 
-  @Override
-  @SideOnly(Side.CLIENT)
-  public void registerBlockIcons(IIconRegister iIconRegister) {
-    blockIcon = iIconRegister.registerIcon(EnderStructures.MODID.toLowerCase() + ":" + NAME);
-  }
+//  @Override
+//  @SideOnly(Side.CLIENT)
+//  public void registerBlockIcons(IIconRegister iIconRegister) {
+//    blockIcon = iIconRegister.registerIcon(EnderStructures.MODID.toLowerCase() + ":" + NAME);
+//  }
 
   public AxisAlignedBB getCollisionBoundingBoxFromPool(World p_149668_1_, int p_149668_2_, int p_149668_3_, int p_149668_4_) {
     return null;

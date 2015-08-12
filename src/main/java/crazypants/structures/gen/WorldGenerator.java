@@ -7,17 +7,17 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import crazypants.structures.gen.structure.Structure;
+import crazypants.structures.gen.structure.StructureGenerator;
+import crazypants.vec.Point3i;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
-import cpw.mods.fml.common.IWorldGenerator;
-import cpw.mods.fml.common.event.FMLServerStoppedEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.registry.GameRegistry;
-import crazypants.structures.gen.structure.Structure;
-import crazypants.structures.gen.structure.StructureGenerator;
-import crazypants.vec.Point3i;
+import net.minecraftforge.fml.common.IWorldGenerator;
+import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class WorldGenerator implements IWorldGenerator {
 
@@ -53,7 +53,7 @@ public class WorldGenerator implements IWorldGenerator {
       return;
     }
 
-    Point3i p = new Point3i(world.provider.dimensionId, chunkX, chunkZ);
+    Point3i p = new Point3i(world.provider.getDimensionId(), chunkX, chunkZ);
     if(generating.contains(p)) {
       //guard against recurse gen
       return;
@@ -109,7 +109,7 @@ public class WorldGenerator implements IWorldGenerator {
     if(world == null) {
       return null;
     }
-    return worldManagers.get(world.provider.dimensionId);
+    return worldManagers.get(world.provider.getDimensionId());
   }
 
   public WorldStructures getWorldManOrCreate(World world) {
@@ -117,7 +117,7 @@ public class WorldGenerator implements IWorldGenerator {
     if(res == null) {
       res = new WorldStructures(world);
       res.load();
-      worldManagers.put(world.provider.dimensionId, res);
+      worldManagers.put(world.provider.getDimensionId(), res);
     }
     return res;
   }

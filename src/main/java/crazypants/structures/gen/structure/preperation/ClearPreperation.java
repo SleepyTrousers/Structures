@@ -2,13 +2,14 @@ package crazypants.structures.gen.structure.preperation;
 
 import java.util.Random;
 
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 import crazypants.structures.gen.ChunkBounds;
 import crazypants.structures.gen.StructureUtil;
 import crazypants.structures.gen.structure.Border;
 import crazypants.structures.gen.structure.Structure;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.world.World;
 
 public class ClearPreperation implements ISitePreperation {
 
@@ -26,12 +27,12 @@ public class ClearPreperation implements ISitePreperation {
   public boolean prepareLocation(Structure structure, World world, Random random, ChunkBounds clip) {
 
     AxisAlignedBB bb = structure.getBounds();
-    int minX = (int) bb.minX - border.get(ForgeDirection.WEST);
-    int maxX = (int) bb.maxX + border.get(ForgeDirection.EAST);
-    int minY = (int) bb.minY - border.get(ForgeDirection.DOWN);
-    int maxY = (int) bb.maxY + border.get(ForgeDirection.UP);
-    int minZ = (int) bb.minZ - border.get(ForgeDirection.NORTH);
-    int maxZ = (int) bb.maxZ + border.get(ForgeDirection.SOUTH);
+    int minX = (int) bb.minX - border.get(EnumFacing.WEST);
+    int maxX = (int) bb.maxX + border.get(EnumFacing.EAST);
+    int minY = (int) bb.minY - border.get(EnumFacing.DOWN);
+    int maxY = (int) bb.maxY + border.get(EnumFacing.UP);
+    int minZ = (int) bb.minZ - border.get(EnumFacing.NORTH);
+    int maxZ = (int) bb.maxZ + border.get(EnumFacing.SOUTH);
 
     if(!clearBellowGround) {
       minY += structure.getSurfaceOffset() + 1;
@@ -40,9 +41,9 @@ public class ClearPreperation implements ISitePreperation {
     for (int x = minX; x < maxX; x++) {
       for (int y = minY; y < maxY; y++) {
         for (int z = minZ; z < maxZ; z++) {
-          if( (clip == null || clip.isBlockInBounds(x, z)) && (clearPlants || !StructureUtil.isPlant(world.getBlock(x, y, z), world, x, y, z))) {
-            if(!world.isAirBlock(x, y, z)) {
-              world.setBlockToAir(x, y, z);
+          if( (clip == null || clip.isBlockInBounds(x, z)) && (clearPlants || !StructureUtil.isPlant(world.getBlockState(new BlockPos(x, y, z)).getBlock(), world, x, y, z))) {
+            if(!world.isAirBlock(new BlockPos(x, y, z))) {
+              world.setBlockToAir(new BlockPos(x, y, z));
             }
           }
         }
