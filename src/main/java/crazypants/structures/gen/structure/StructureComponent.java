@@ -34,7 +34,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class StructureComponent {
 
@@ -323,10 +322,10 @@ public class StructureComponent {
     return;
   }
 
-  private void placeBlocks(World world, int x, int y, int z, Rotation rot, ChunkBounds genBounds, StructureBlock sb, List<Point3i> coords) {
-    Block block = GameRegistry.findBlock(sb.getModId(), sb.getBlockName());
+  private void placeBlocks(World world, int x, int y, int z, Rotation rot, ChunkBounds genBounds, StructureBlock sb, List<Point3i> coords) {    
+    Block block = Block.getBlockFromName(sb.getModId() + ":" + sb.getBlockName());
     if (block == null) {
-      Log.error("Could not find block " + sb.getModId() + ":" + sb.getBlockName() + " when generating structure: " + uid);
+      Log.error("StructureComponent:placeBlocks Could not find block " + sb.getModId() + ":" + sb.getBlockName() + " when generating structure: " + uid);
     } else {
       if (block == EnderStructures.blockClearMarker) {
         block = Blocks.air;

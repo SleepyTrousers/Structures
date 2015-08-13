@@ -62,7 +62,7 @@ public class SurfaceLocationSampler implements ILocationSampler {
     Point3i loc = new Point3i();
 
     blk = StructureUtil.getSurfaceBlock(world, x, z, loc, true, !canPlaceInFluid);
-    if(blk != world.getBiomeGenForCoords(VecUtil.getCenterOfChunk(x, z)).topBlock && blk != world.getBiomeGenForCoords(VecUtil.getCenterOfChunk(x, z)).fillerBlock) {
+    if(blk != world.getBiomeGenForCoords(VecUtil.getCenterOfChunk(x, z)).topBlock.getBlock() && blk != world.getBiomeGenForCoords(VecUtil.getCenterOfChunk(x, z)).fillerBlock.getBlock()) {
       return null;
     }
 
