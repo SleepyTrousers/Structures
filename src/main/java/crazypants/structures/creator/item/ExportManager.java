@@ -1,4 +1,4 @@
-package crazypants.structures.item;
+package crazypants.structures.creator.item;
 
 import java.io.File;
 import java.io.FileOutputStream;

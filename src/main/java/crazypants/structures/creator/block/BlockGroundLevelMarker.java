@@ -1,10 +1,10 @@
-package crazypants.structures.block;
+package crazypants.structures.creator.block;
 
+import cpw.mods.fml.common.registry.GameRegistry;
+import crazypants.structures.creator.EnderStructuresCreator;
+import crazypants.structures.creator.EnderStructuresCreatorTab;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import cpw.mods.fml.common.registry.GameRegistry;
-import crazypants.structures.EnderStructures;
-import crazypants.structures.EnderStructuresTab;
 
 public class BlockGroundLevelMarker extends Block {
 
@@ -22,9 +22,9 @@ public class BlockGroundLevelMarker extends Block {
     setBlockName(NAME);
     setStepSound(Block.soundTypeStone);
     setHarvestLevel("pickaxe", 0);
-    setCreativeTab(EnderStructuresTab.tabEnderStructures);
+    setCreativeTab(EnderStructuresCreatorTab.tabEnderStructures);
     setLightOpacity(0);
-    setBlockTextureName(EnderStructures.MODID.toLowerCase() + ":" + NAME);
+    setBlockTextureName(EnderStructuresCreator.MODID.toLowerCase() + ":" + NAME);
   }
 
   protected void init() {

@@ -1,13 +1,13 @@
 package crazypants.structures.gen.structure;
 
+import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
+import crazypants.structures.Log;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
-import crazypants.structures.Log;
 
 public class StructureBlock {
 
@@ -71,10 +71,6 @@ public class StructureBlock {
   public boolean isAir() {
     return "minecraft".equals(getModId()) && "air".equals(getBlockName());
   }
-  
-//  public boolean isClearMarker() {
-//    return EnderStructures.MODID.equals(getModId()) && BlockClearMarker.NAME.equals(getBlockName());
-//  }
 
   public NBTTagCompound asNbt() {
     NBTTagCompound res = new NBTTagCompound();
@@ -155,5 +151,7 @@ public class StructureBlock {
   public NBTTagCompound getTileEntity() {
     return tileEntity;
   }
+
+  
 
 }

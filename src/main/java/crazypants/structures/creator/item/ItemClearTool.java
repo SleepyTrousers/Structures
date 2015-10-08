@@ -1,14 +1,14 @@
-package crazypants.structures.item;
+package crazypants.structures.creator.item;
 
+import cpw.mods.fml.common.registry.GameRegistry;
+import crazypants.structures.creator.EnderStructuresCreator;
+import crazypants.structures.creator.EnderStructuresCreatorTab;
+import crazypants.vec.Point3i;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import cpw.mods.fml.common.registry.GameRegistry;
-import crazypants.structures.EnderStructures;
-import crazypants.structures.EnderStructuresTab;
-import crazypants.vec.Point3i;
 
 public class ItemClearTool extends Item {
 
@@ -22,8 +22,8 @@ public class ItemClearTool extends Item {
 
   private ItemClearTool() {
     setUnlocalizedName(NAME);
-    setCreativeTab(EnderStructuresTab.tabEnderStructures);
-    setTextureName(EnderStructures.MODID.toLowerCase() + ":" + NAME);
+    setCreativeTab(EnderStructuresCreatorTab.tabEnderStructures);
+    setTextureName(EnderStructuresCreator.MODID.toLowerCase() + ":" + NAME);
     setHasSubtypes(false);
   }
 
@@ -53,7 +53,7 @@ public class ItemClearTool extends Item {
       return filled;
     }
     
-    world.setBlock(bc.x, bc.y, bc.z, EnderStructures.blockClearMarker);
+    world.setBlock(bc.x, bc.y, bc.z, EnderStructuresCreator.blockClearMarker);
     filled++;
     if (filled >= 100) {
       return filled;

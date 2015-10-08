@@ -1,7 +1,0 @@
-tile.blockStructureMarker.name=Structure Marker
-tile.blockClearMarker.name=Clear Marker
-tile.blockGroundLevelMarker.name=Ground Level Marker
-
-item.itemComponentTool.name=Component Tool
-item.itemTemplateTool.name=Template Tool
-item.itemClearTool.name=Clear Tool

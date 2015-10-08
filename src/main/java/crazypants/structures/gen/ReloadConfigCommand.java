@@ -3,10 +3,10 @@ package crazypants.structures.gen;
 import java.util.ArrayList;
 import java.util.List;
 
+import crazypants.structures.creator.item.ExportManager;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.ChatComponentText;
-import crazypants.structures.item.ExportManager;
 
 public class ReloadConfigCommand implements ICommand {
 

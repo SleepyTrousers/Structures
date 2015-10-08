@@ -1,17 +1,18 @@
-package crazypants.structures;
+package crazypants.structures.creator;
 
 import static crazypants.structures.EnderStructures.MODID;
 import static crazypants.structures.EnderStructures.MOD_NAME;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
 
-public class EnderStructuresTab extends CreativeTabs {
+public class EnderStructuresCreatorTab extends CreativeTabs {
 
-  public static final CreativeTabs tabEnderStructures = new EnderStructuresTab();
+  public static final CreativeTabs tabEnderStructures = new EnderStructuresCreatorTab();
 
-  public EnderStructuresTab() {
+  public EnderStructuresCreatorTab() {
     super(MODID);
   }
 
@@ -29,7 +30,7 @@ public class EnderStructuresTab extends CreativeTabs {
 
   @Override
   public Item getTabIconItem() {
-    return EnderStructures.itemComponentTool;
+    return EnderStructuresCreator.itemComponentTool;
   }
 
 }

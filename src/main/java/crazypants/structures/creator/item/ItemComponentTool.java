@@ -1,7 +1,14 @@
-package crazypants.structures.item;
+package crazypants.structures.creator.item;
 
 import java.util.Iterator;
 
+import cpw.mods.fml.common.registry.GameRegistry;
+import crazypants.structures.creator.EnderStructuresCreator;
+import crazypants.structures.creator.EnderStructuresCreatorTab;
+import crazypants.structures.gen.StructureRegister;
+import crazypants.structures.gen.structure.Rotation;
+import crazypants.structures.gen.structure.StructureComponent;
+import crazypants.vec.Point3i;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -9,29 +16,21 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import cpw.mods.fml.common.registry.GameRegistry;
-import crazypants.structures.EnderStructures;
-import crazypants.structures.EnderStructuresTab;
-import crazypants.structures.gen.StructureRegister;
-import crazypants.structures.gen.structure.Structure;
-import crazypants.structures.gen.structure.StructureComponent;
-import crazypants.structures.gen.structure.StructureTemplate;
-import crazypants.vec.Point3i;
 
-public class ItemTemplateTool extends Item {
+public class ItemComponentTool extends Item {
 
-  private static final String NAME = "itemTemplateTool";
+  private static final String NAME = "itemComponentTool";
 
-  public static ItemTemplateTool create() {
-    ItemTemplateTool res = new ItemTemplateTool();
+  public static ItemComponentTool create() {
+    ItemComponentTool res = new ItemComponentTool();
     res.init();
     return res;
   }
 
-  private ItemTemplateTool() {
+  private ItemComponentTool() {
     setUnlocalizedName(NAME);
-    setCreativeTab(EnderStructuresTab.tabEnderStructures);
-    setTextureName(EnderStructures.MODID.toLowerCase() + ":" + NAME);
+    setCreativeTab(EnderStructuresCreatorTab.tabEnderStructures);
+    setTextureName(EnderStructuresCreator.MODID.toLowerCase() + ":" + NAME);
     setHasSubtypes(false);
   }
 
@@ -45,7 +44,7 @@ public class ItemTemplateTool extends Item {
     if (!world.isRemote) {
       if (player.isSneaking()) {
         String uid = setNextUid(stack);
-        player.addChatComponentMessage(new ChatComponentText("Template set to " + uid));
+        player.addChatComponentMessage(new ChatComponentText("Component set to " + uid));
       }
     }
 
@@ -55,7 +54,7 @@ public class ItemTemplateTool extends Item {
   @Override
   public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
 
-    if (world.getBlock(x, y, z) == EnderStructures.blockStructureMarker) {
+    if (world.getBlock(x, y, z) == EnderStructuresCreator.blockStructureMarker) {
       return true;
     }
     if (world.isRemote) {
@@ -64,20 +63,27 @@ public class ItemTemplateTool extends Item {
 
     String uid = getGenUid(stack, true);    
     if (uid != null) {
-      buildComponent(world, x, y, z, side, uid);
+      StructureComponent st = StructureRegister.instance.getStructureComponent(uid);
+      if(st != null) {
+        ForgeDirection dir = ForgeDirection.getOrientation(side);
+        Point3i origin = new Point3i(x + dir.offsetX, y + dir.offsetY - 1, z + dir.offsetZ);
+        origin.y -= st.getSurfaceOffset();
+        st.build(world, origin.x,origin.y,origin.z, Rotation.DEG_0, null);
+        addMarkers(world, st, origin);             
+      }
     }
     return true;
   }
 
-  private void buildComponent(World world, int x, int y, int z, int side, String uid) {
-    StructureTemplate st = StructureRegister.instance.getStructureTemplate(uid, true);
-    if(st != null) {
-      ForgeDirection dir = ForgeDirection.getOrientation(side);
-      Point3i origin = new Point3i(x + dir.offsetX, y + dir.offsetY - 1, z + dir.offsetZ);
-      origin.y -= st.getSurfaceOffset();
-      Structure structure = st.createInstance();
-      structure.setOrigin(origin);
-      structure.build(world, world.rand, null);                  
+  private void addMarkers(World world, StructureComponent st, Point3i origin) {
+    Point3i sz = st.getSize();
+    world.setBlock(origin.x - 1, origin.y - 1, origin.z - 1, EnderStructuresCreator.blockStructureMarker);
+    world.setBlock(origin.x - 1, origin.y  + sz.y, origin.z - 1, EnderStructuresCreator.blockStructureMarker);    
+    world.setBlock(origin.x + sz.x, origin.y - 1, origin.z - 1, EnderStructuresCreator.blockStructureMarker);
+    world.setBlock(origin.x - 1, origin.y - 1, origin.z + sz.z, EnderStructuresCreator.blockStructureMarker);
+    
+    if(st.getSurfaceOffset() > 0) {
+      world.setBlock(origin.x - 1, origin.y + st.getSurfaceOffset(), origin.z - 1, EnderStructuresCreator.blockGroundLevelMarker);
     }
   }
 
@@ -86,9 +92,9 @@ public class ItemTemplateTool extends Item {
     if(curUid == null) {
       return setDefaultUid(stack);
     }
-    Iterator<StructureTemplate> it = StructureRegister.instance.getStructureTemplates().iterator();
+    Iterator<StructureComponent> it = StructureRegister.instance.getStructureComponents().iterator();
     while (it.hasNext()) {
-      StructureTemplate template = it.next();
+      StructureComponent template = it.next();
       if (curUid.equals(template.getUid())) {
         if (it.hasNext()) {
           String uid = it.next().getUid();
@@ -135,5 +141,5 @@ public class ItemTemplateTool extends Item {
     }
     return null;
   }
-  
+
 }
