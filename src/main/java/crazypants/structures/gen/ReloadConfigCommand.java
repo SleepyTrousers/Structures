@@ -3,7 +3,6 @@ package crazypants.structures.gen;
 import java.util.ArrayList;
 import java.util.List;
 
-import crazypants.structures.creator.item.ExportManager;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.ChatComponentText;
@@ -43,7 +42,7 @@ public class ReloadConfigCommand implements ICommand {
   @Override
   public void processCommand(ICommandSender sender, String[] args) {    
     StructureRegister.instance.reload();    
-    ExportManager.instance.loadExportFolder();
+//    ExportManager.instance.loadExportFolder();
     sender.addChatMessage(new ChatComponentText("Reloaded Structure Generation Configs"));
   }
 
