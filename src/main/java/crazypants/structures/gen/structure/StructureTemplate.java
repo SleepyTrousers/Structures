@@ -5,25 +5,29 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
+import crazypants.structures.api.gen.IDecorator;
+import crazypants.structures.api.gen.ISitePreperation;
+import crazypants.structures.api.gen.ISiteValidator;
+import crazypants.structures.api.gen.IStructure;
+import crazypants.structures.api.gen.IStructureComponent;
+import crazypants.structures.api.gen.IStructureTemplate;
+import crazypants.structures.api.util.ChunkBounds;
+import crazypants.structures.api.util.Point3i;
+import crazypants.structures.api.util.Rotation;
+import crazypants.structures.gen.structure.decorator.CompositeDecorator;
+import crazypants.structures.gen.structure.preperation.CompositePreperation;
+import crazypants.structures.gen.structure.validator.CompositeSiteValidator;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
-import crazypants.structures.gen.ChunkBounds;
-import crazypants.structures.gen.structure.decorator.CompositeDecorator;
-import crazypants.structures.gen.structure.decorator.IDecorator;
-import crazypants.structures.gen.structure.preperation.CompositePreperation;
-import crazypants.structures.gen.structure.preperation.ISitePreperation;
-import crazypants.structures.gen.structure.validator.CompositeSiteValidator;
-import crazypants.structures.gen.structure.validator.ISiteValidator;
-import crazypants.vec.Point3i;
 
-public class StructureTemplate {
+public class StructureTemplate implements IStructureTemplate {
   
   private static final Random RND = new Random(987345098532932115L);
   
   private List<Rotation> rots = new ArrayList<Rotation>();
   
   //TODO: Need offsets for components
-  private List<StructureComponent> components = new ArrayList<StructureComponent>();  
+  private List<IStructureComponent> components = new ArrayList<IStructureComponent>();  
   private final CompositePreperation sitePreps = new CompositePreperation();
   private final CompositeSiteValidator siteVals = new CompositeSiteValidator();
   private final CompositeDecorator decorators = new CompositeDecorator();
@@ -37,17 +41,19 @@ public class StructureTemplate {
     this.uid = uid;
   }
   
-  public StructureTemplate(String uid, Collection<StructureComponent> components) {
+  public StructureTemplate(String uid, Collection<IStructureComponent> components) {
     this(uid);
     if(components != null) {
       this.components.addAll(components);
     }        
   }
   
-  public Structure createInstance() {
+  @Override
+  public IStructure createInstance() {
     return new Structure(new Point3i(), getRndRotation(), this);
   }
 
+  @Override
   public boolean getCanSpanChunks() {
     return canSpanChunks;
   }
@@ -56,6 +62,7 @@ public class StructureTemplate {
     this.canSpanChunks = canSpanChunks;
   }
 
+  @Override
   public boolean getGenerationRequiresLoadedChunks() {
     return generationRequiresLoadedChunks;
   }
@@ -64,10 +71,12 @@ public class StructureTemplate {
     this.generationRequiresLoadedChunks = generationRequiresLoadedChunks;
   }
 
-  public List<StructureComponent> getComponents() {
+  @Override
+  public List<IStructureComponent> getComponents() {
     return components;
   }
 
+  @Override
   public List<Rotation> getRotations() {
     return rots;
   }
@@ -80,17 +89,18 @@ public class StructureTemplate {
     this.rots = rots;
   }
   
-  public void addComponent(StructureComponent st) {
+  public void addComponent(IStructureComponent st) {
     if(components == null) {
-      components = new ArrayList<StructureComponent>();
+      components = new ArrayList<IStructureComponent>();
     }
     components.add(st);    
   }
 
-  public void setComponents(List<StructureComponent> components) {
+  public void setComponents(List<IStructureComponent> components) {
     this.components = components;
   }
 
+  @Override
   public String getUid() {
     return uid;
   }
@@ -120,23 +130,28 @@ public class StructureTemplate {
     return rots.get(RND.nextInt(rots.size()));    
   }
   
+  @Override
   public boolean isValid() {
     return components != null && !components.isEmpty();
   }
 
+  @Override
   public AxisAlignedBB getBounds() {
     return components.get(0).getBounds();
   }
 
+  @Override
   public Point3i getSize() {
     return components.get(0).getSize();
   }
 
+  @Override
   public int getSurfaceOffset() {
     return components.get(0).getSurfaceOffset();
   }
 
-  public void build(Structure structure, World world, Random random, ChunkBounds bounds) {
+  @Override
+  public void build(IStructure structure, World world, Random random, ChunkBounds bounds) {
     sitePreps.prepareLocation(structure, world, random, bounds);
     Point3i orig = structure.getOrigin();
     components.get(0).build(world, orig.x, orig.y, orig.z, structure.getRotation(), bounds);   
@@ -146,30 +161,19 @@ public class StructureTemplate {
     decorators.decorate(structure, world, random, bounds);
   }
 
+  @Override
   public ISiteValidator getSiteValiditor() {
     return siteVals;
   }
 
+  @Override
   public Collection<Point3i> getTaggedLocations(String target) {
     //TODO: Need to handle offset for components
     List<Point3i> res = new ArrayList<Point3i>();
-    for(StructureComponent comp : components) {
+    for(IStructureComponent comp : components) {
       List<Point3i> r = comp.getTaggedLocations(target);
       if(r != null) {
         res.addAll(r);
-      }
-    }
-    return res;
-  }
-  
-  public Collection<Point3i> getTaggedLocations(String target, int originX, int originY, int originZ, Rotation rotation) {
-    List<Point3i> res = new ArrayList<Point3i>();
-    for(StructureComponent comp : components) {
-      List<Point3i> locs = comp.getTaggedLocations(target);
-      for(Point3i p : locs) {
-        Point3i xFormed = new Point3i(p);
-        xFormed = comp.transformToWorld(originX, originY, originZ, rotation, xFormed);
-        res.add(xFormed);
       }
     }
     return res;

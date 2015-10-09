@@ -2,12 +2,13 @@ package crazypants.structures.gen.structure.sampler;
 
 import java.util.Random;
 
+import crazypants.structures.api.gen.ILocationSampler;
+import crazypants.structures.api.gen.IStructure;
+import crazypants.structures.api.gen.IWorldStructures;
+import crazypants.structures.api.util.Point3i;
+import crazypants.structures.api.util.StructureUtil;
 import net.minecraft.block.Block;
 import net.minecraft.world.World;
-import crazypants.structures.gen.StructureUtil;
-import crazypants.structures.gen.WorldStructures;
-import crazypants.structures.gen.structure.Structure;
-import crazypants.vec.Point3i;
 
 public class SurfaceLocationSampler implements ILocationSampler {
 
@@ -36,13 +37,13 @@ public class SurfaceLocationSampler implements ILocationSampler {
   }
 
   @Override
-  public Point3i generateCandidateLocation(Structure structure, WorldStructures structures, World world,
-      Random random, int chunkX, int chunkZ) {
+  public Point3i generateCandidateLocation(IStructure structure, IWorldStructures structures, Random random,
+      int chunkX, int chunkZ) {
 
-    return findStartPos(structure, chunkX, chunkZ, world);
+    return findStartPos(structure, chunkX, chunkZ, structures.getWorld());
   }
 
-  protected Point3i findStartPos(Structure structure, int chunkX, int chunkZ, World world) {     
+  protected Point3i findStartPos(IStructure structure, int chunkX, int chunkZ, World world) {     
     Point3i candidate;
     if(structure.canSpanChunks()) {
       candidate = getRandomBlock(world, chunkX, chunkZ, 16, 16, distanceFromSurface - structure.getSurfaceOffset(), structure.getSize().y);

@@ -1,4 +1,4 @@
-package crazypants.structures.gen;
+package crazypants.structures.api.util;
 
 import java.util.ArrayList;
 import java.util.Collection;

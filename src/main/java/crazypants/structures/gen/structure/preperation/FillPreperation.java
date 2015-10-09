@@ -7,10 +7,11 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import crazypants.structures.gen.ChunkBounds;
-import crazypants.structures.gen.StructureUtil;
+import crazypants.structures.api.gen.ISitePreperation;
+import crazypants.structures.api.gen.IStructure;
+import crazypants.structures.api.util.ChunkBounds;
+import crazypants.structures.api.util.StructureUtil;
 import crazypants.structures.gen.structure.Border;
-import crazypants.structures.gen.structure.Structure;
 
 public class FillPreperation implements ISitePreperation {
 
@@ -30,7 +31,7 @@ public class FillPreperation implements ISitePreperation {
   }
 
   @Override
-  public boolean prepareLocation(Structure structure, World world, Random random, ChunkBounds clip) {
+  public boolean prepareLocation(IStructure structure, World world, Random random, ChunkBounds clip) {
     Block fill = fillBlock;
     Block surf = surfaceBlock;
     if(useBiomeFillerBlock) {

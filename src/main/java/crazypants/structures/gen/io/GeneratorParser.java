@@ -9,16 +9,18 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import crazypants.structures.Log;
+import crazypants.structures.api.gen.IChunkValidator;
+import crazypants.structures.api.gen.IDecorator;
+import crazypants.structures.api.gen.ILocationSampler;
+import crazypants.structures.api.gen.ISitePreperation;
+import crazypants.structures.api.gen.ISiteValidator;
+import crazypants.structures.api.gen.IStructureComponent;
+import crazypants.structures.api.gen.IStructureGenerator;
+import crazypants.structures.api.gen.IStructureTemplate;
+import crazypants.structures.api.util.Rotation;
 import crazypants.structures.gen.StructureRegister;
-import crazypants.structures.gen.structure.Rotation;
-import crazypants.structures.gen.structure.StructureComponent;
 import crazypants.structures.gen.structure.StructureGenerator;
 import crazypants.structures.gen.structure.StructureTemplate;
-import crazypants.structures.gen.structure.decorator.IDecorator;
-import crazypants.structures.gen.structure.preperation.ISitePreperation;
-import crazypants.structures.gen.structure.sampler.ILocationSampler;
-import crazypants.structures.gen.structure.validator.IChunkValidator;
-import crazypants.structures.gen.structure.validator.ISiteValidator;
 
 public class GeneratorParser {
 
@@ -31,7 +33,7 @@ public class GeneratorParser {
     return ruleFact;
   }
 
-  public StructureGenerator parseGeneratorConfig(StructureRegister reg, String json) throws Exception {
+  public IStructureGenerator parseGeneratorConfig(StructureRegister reg, String json) throws Exception {
     String uid = null;
     StructureGenerator res = null;
     try {
@@ -56,7 +58,7 @@ public class GeneratorParser {
         JsonObject valObj = e.getAsJsonObject();
         if (!valObj.isJsonNull() && valObj.has("uid")) {
           String tpUid = valObj.get("uid").getAsString();
-          StructureTemplate st = reg.getStructureTemplate(tpUid, true);
+          IStructureTemplate st = reg.getStructureTemplate(tpUid, true);
           if (st != null) {
             res.addStructureTemaplate(st);
           }
@@ -133,7 +135,7 @@ public class GeneratorParser {
         JsonObject valObj = e.getAsJsonObject();
         if (!valObj.isJsonNull() && valObj.has("uid")) {
           String tpUid = valObj.get("uid").getAsString();
-          StructureComponent st = reg.getStructureComponent(tpUid, true);
+          IStructureComponent st = reg.getStructureComponent(tpUid, true);
           if (st != null) {
             res.addComponent(st);
           }

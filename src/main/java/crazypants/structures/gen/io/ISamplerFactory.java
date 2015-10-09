@@ -2,7 +2,7 @@ package crazypants.structures.gen.io;
 
 import com.google.gson.JsonObject;
 
-import crazypants.structures.gen.structure.sampler.ILocationSampler;
+import crazypants.structures.api.gen.ILocationSampler;
 
 public interface ISamplerFactory extends IFactory {
 

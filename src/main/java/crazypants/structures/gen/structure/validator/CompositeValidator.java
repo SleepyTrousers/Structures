@@ -6,8 +6,9 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.world.World;
-import crazypants.structures.gen.WorldStructures;
-import crazypants.structures.gen.structure.StructureGenerator;
+import crazypants.structures.api.gen.IChunkValidator;
+import crazypants.structures.api.gen.IStructureGenerator;
+import crazypants.structures.api.gen.IWorldStructures;
 
 public class CompositeValidator implements IChunkValidator {
 
@@ -18,7 +19,7 @@ public class CompositeValidator implements IChunkValidator {
   }
 
   @Override
-  public boolean isValidChunk(StructureGenerator generator, WorldStructures structures, World world, Random random, int chunkX, int chunkZ) {
+  public boolean isValidChunk(IStructureGenerator generator, IWorldStructures structures, World world, Random random, int chunkX, int chunkZ) {
     for (IChunkValidator rule : validators) {
       if(!rule.isValidChunk(generator, structures, world, random, chunkX, chunkZ)) {
 //        System.out.println("CompositeValidator.isValidChunk: Failed rule: " + rule);

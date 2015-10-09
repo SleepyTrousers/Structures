@@ -1,23 +1,21 @@
 package crazypants.structures.gen;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import cpw.mods.fml.common.IWorldGenerator;
+import cpw.mods.fml.common.event.FMLServerStoppedEvent;
+import cpw.mods.fml.common.registry.GameRegistry;
+import crazypants.structures.EnderStructures;
+import crazypants.structures.api.gen.IStructure;
+import crazypants.structures.api.gen.IStructureGenerator;
+import crazypants.structures.api.gen.IWorldStructures;
+import crazypants.structures.api.util.Point3i;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.world.WorldEvent;
-import cpw.mods.fml.common.IWorldGenerator;
-import cpw.mods.fml.common.event.FMLServerStoppedEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.registry.GameRegistry;
-import crazypants.structures.gen.structure.Structure;
-import crazypants.structures.gen.structure.StructureGenerator;
-import crazypants.vec.Point3i;
 
 public class WorldGenerator implements IWorldGenerator {
 
@@ -28,8 +26,6 @@ public class WorldGenerator implements IWorldGenerator {
   }
 
   public static boolean GEN_ENABLED_DEBUG = true;
-
-  private final Map<Integer, WorldStructures> worldManagers = new HashMap<Integer, WorldStructures>();
 
   private final Set<Point3i> generating = new HashSet<Point3i>();
   private final Set<Point3i> deffered = new HashSet<Point3i>();
@@ -73,11 +69,10 @@ public class WorldGenerator implements IWorldGenerator {
       long zSeed = fmlRandom.nextLong() >> 2 + 1L;
       long chunkSeed = (xSeed * chunkX + zSeed * chunkZ) ^ worldSeed;
 
-      WorldStructures structures = getWorldManOrCreate(world);
-
-      for (StructureGenerator template : StructureRegister.instance.getGenerators()) {
+      IWorldStructures structures = EnderStructures.structureRuntime.getStructuresForWorld(world);
+      for (IStructureGenerator template : StructureRegister.instance.getGenerators()) {
         Random r = new Random(chunkSeed ^ template.getUid().hashCode());
-        Collection<Structure> s = template.generate(structures, r, chunkX, chunkZ, world, chunkGenerator, chunkProvider);
+        Collection<IStructure> s = template.generate(structures, r, chunkX, chunkZ, world, chunkGenerator, chunkProvider);
         if(s != null) {
           structures.addAll(s);
         }
@@ -92,34 +87,8 @@ public class WorldGenerator implements IWorldGenerator {
     }
   }
 
-  public void serverStopped(FMLServerStoppedEvent event) {
-    worldManagers.clear();    
+  public void serverStopped(FMLServerStoppedEvent event) {       
     generating.clear();
-  }
-
-  @SubscribeEvent
-  public void eventWorldSave(WorldEvent.Save evt) {
-    WorldStructures wm = getWorldManOrCreate(evt.world);
-    if(wm != null) {
-      wm.save();
-    }
-  }
-
-  public WorldStructures getWorldMan(World world) {
-    if(world == null) {
-      return null;
-    }
-    return worldManagers.get(world.provider.dimensionId);
-  }
-
-  public WorldStructures getWorldManOrCreate(World world) {
-    WorldStructures res = getWorldMan(world);
-    if(res == null) {
-      res = new WorldStructures(world);
-      res.load();
-      worldManagers.put(world.provider.dimensionId, res);
-    }
-    return res;
   }
 
 }

@@ -1,7 +1,6 @@
-package crazypants.structures.gen.structure;
+package crazypants.structures.api.util;
 
 import net.minecraft.util.AxisAlignedBB;
-import crazypants.vec.Point3i;
 
 public enum Rotation {
   DEG_0(0),
@@ -47,7 +46,7 @@ public enum Rotation {
     if(this == Rotation.DEG_0 || this == Rotation.DEG_180) {
       return bb;
     }
-    Point3i sz = Structure.size(bb);
+    Point3i sz = VecUtil.size(bb);
     return AxisAlignedBB.getBoundingBox(0, 0, 0, sz.z, sz.y, sz.x);
   }
 

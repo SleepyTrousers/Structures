@@ -8,17 +8,17 @@ import net.minecraftforge.common.BiomeDictionary.Type;
 import com.google.gson.JsonObject;
 
 import crazypants.structures.Log;
-import crazypants.structures.gen.structure.decorator.IDecorator;
+import crazypants.structures.api.gen.IChunkValidator;
+import crazypants.structures.api.gen.IDecorator;
+import crazypants.structures.api.gen.ILocationSampler;
+import crazypants.structures.api.gen.ISitePreperation;
+import crazypants.structures.api.gen.ISiteValidator;
 import crazypants.structures.gen.structure.decorator.LootTableDecorator;
 import crazypants.structures.gen.structure.preperation.ClearPreperation;
 import crazypants.structures.gen.structure.preperation.FillPreperation;
-import crazypants.structures.gen.structure.preperation.ISitePreperation;
-import crazypants.structures.gen.structure.sampler.ILocationSampler;
 import crazypants.structures.gen.structure.sampler.SurfaceLocationSampler;
 import crazypants.structures.gen.structure.validator.BiomeValidator;
 import crazypants.structures.gen.structure.validator.DimensionValidator;
-import crazypants.structures.gen.structure.validator.IChunkValidator;
-import crazypants.structures.gen.structure.validator.ISiteValidator;
 import crazypants.structures.gen.structure.validator.LevelGroundValidator;
 import crazypants.structures.gen.structure.validator.RandomValidator;
 import crazypants.structures.gen.structure.validator.SpacingValidator;
@@ -89,7 +89,7 @@ public class DefaultRuleFactory extends CompositeRuleFactory {
     }
 
     @Override
-    public crazypants.structures.gen.structure.sampler.ILocationSampler createSampler(String uid, JsonObject json) {
+    public crazypants.structures.api.gen.ILocationSampler createSampler(String uid, JsonObject json) {
       SurfaceLocationSampler res = new SurfaceLocationSampler();
       res.setDistanceFromSurface(JsonUtil.getIntElement(json, "distanceFromSurface", res.getDistanceFromSurface()));      
       res.setCanGenerateOnFluid(JsonUtil.getBooleanElement(json, "canGenerateOnFluid", res.isCanPlaceInFluid()));      

@@ -2,7 +2,7 @@ package crazypants.structures.gen.io;
 
 import com.google.gson.JsonObject;
 
-import crazypants.structures.gen.structure.validator.ISiteValidator;
+import crazypants.structures.api.gen.ISiteValidator;
 
 public interface ISiteValidatorFactory {
 

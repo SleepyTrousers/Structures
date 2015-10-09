@@ -6,14 +6,16 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Random;
 
+import crazypants.structures.api.gen.IChunkValidator;
+import crazypants.structures.api.gen.ISiteValidator;
+import crazypants.structures.api.gen.IStructure;
+import crazypants.structures.api.gen.IStructureGenerator;
+import crazypants.structures.api.gen.IWorldStructures;
+import crazypants.structures.api.util.BoundingCircle;
+import crazypants.structures.api.util.ChunkBounds;
+import crazypants.structures.api.util.Vector2d;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
-import crazypants.structures.gen.BoundingCircle;
-import crazypants.structures.gen.ChunkBounds;
-import crazypants.structures.gen.WorldStructures;
-import crazypants.structures.gen.structure.Structure;
-import crazypants.structures.gen.structure.StructureGenerator;
-import crazypants.vec.Vector2d;
 
 public class SpacingValidator implements IChunkValidator, ISiteValidator {
 
@@ -46,7 +48,7 @@ public class SpacingValidator implements IChunkValidator, ISiteValidator {
   }
 
   @Override
-  public boolean isValidChunk(StructureGenerator template, WorldStructures structures, World world, Random random, int chunkX, int chunkZ) {
+  public boolean isValidChunk(IStructureGenerator template, IWorldStructures structures, World world, Random random, int chunkX, int chunkZ) {
 
     if(!validateChunk) {
       return true;
@@ -57,7 +59,7 @@ public class SpacingValidator implements IChunkValidator, ISiteValidator {
   }
 
   @Override
-  public boolean isValidBuildSite(Structure structure, WorldStructures existingStructures, World world, Random random, ChunkBounds bounds) {
+  public boolean isValidBuildSite(IStructure structure, IWorldStructures existingStructures, World world, Random random, ChunkBounds bounds) {
     if(!validateLocation) {
       return true;
     }
@@ -66,13 +68,13 @@ public class SpacingValidator implements IChunkValidator, ISiteValidator {
     return areMatchingStructuresInBounds(existingStructures, bc);
   }
 
-  private boolean areMatchingStructuresInBounds(WorldStructures existingStructures, BoundingCircle bc) {
-    List<Structure> res = new ArrayList<Structure>();    
+  private boolean areMatchingStructuresInBounds(IWorldStructures existingStructures, BoundingCircle bc) {
+    List<IStructure> res = new ArrayList<IStructure>();    
     for (ChunkCoordIntPair chunk : bc.getChunks()) {
       if(bc.intersects(new BoundingCircle(chunk.getCenterXPos(), chunk.getCenterZPosition(), CHUNK_RADIUS))) {
         getStructuresIntersectingChunk(chunk, existingStructures, res);
         if(!res.isEmpty()) {
-          for (Structure s : res) {
+          for (IStructure s : res) {
             if(s.getBoundingCircle().intersects(bc)) {
               return false;
             }
@@ -84,12 +86,12 @@ public class SpacingValidator implements IChunkValidator, ISiteValidator {
     return true;
   }
 
-  private void getStructuresIntersectingChunk(ChunkCoordIntPair chunk, WorldStructures structures, List<Structure> res) {
+  private void getStructuresIntersectingChunk(ChunkCoordIntPair chunk, IWorldStructures structures, List<IStructure> res) {
     structures.getStructuresIntersectingChunk(chunk, null, res);
     if(!templateFilter.isEmpty() && !res.isEmpty()) {
-      ListIterator<Structure> iter = res.listIterator();
+      ListIterator<IStructure> iter = res.listIterator();
       while (iter.hasNext()) {
-        Structure match = iter.next();
+        IStructure match = iter.next();
         if(!templateFilter.contains(match.getUid())) {
           iter.remove();
         }

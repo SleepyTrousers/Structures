@@ -2,7 +2,7 @@ package crazypants.structures.gen.io;
 
 import com.google.gson.JsonObject;
 
-import crazypants.structures.gen.structure.decorator.IDecorator;
+import crazypants.structures.api.gen.IDecorator;
 
 public interface IDecoratorFactory {
 

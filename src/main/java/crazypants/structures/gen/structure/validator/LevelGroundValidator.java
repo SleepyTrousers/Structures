@@ -7,12 +7,13 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidRegistry;
-import crazypants.structures.gen.ChunkBounds;
-import crazypants.structures.gen.StructureUtil;
-import crazypants.structures.gen.WorldStructures;
+import crazypants.structures.api.gen.ISiteValidator;
+import crazypants.structures.api.gen.IStructure;
+import crazypants.structures.api.gen.IWorldStructures;
+import crazypants.structures.api.util.ChunkBounds;
+import crazypants.structures.api.util.Point3i;
+import crazypants.structures.api.util.StructureUtil;
 import crazypants.structures.gen.structure.Border;
-import crazypants.structures.gen.structure.Structure;
-import crazypants.vec.Point3i;
 
 public class LevelGroundValidator implements ISiteValidator {
 
@@ -31,7 +32,7 @@ public class LevelGroundValidator implements ISiteValidator {
   }
 
   @Override
-  public boolean isValidBuildSite(Structure structure, WorldStructures existingStructures, World world, Random random, ChunkBounds clip) {
+  public boolean isValidBuildSite(IStructure structure, IWorldStructures existingStructures, World world, Random random, ChunkBounds clip) {
 
     AxisAlignedBB bb = structure.getBounds();
     int minX = (int) bb.minX;

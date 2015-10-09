@@ -9,9 +9,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ChestGenHooks;
-import crazypants.structures.gen.ChunkBounds;
-import crazypants.structures.gen.structure.Structure;
-import crazypants.vec.Point3i;
+import crazypants.structures.api.gen.IDecorator;
+import crazypants.structures.api.gen.IStructure;
+import crazypants.structures.api.util.ChunkBounds;
+import crazypants.structures.api.util.Point3i;
 
 public class LootTableDecorator implements IDecorator {
 
@@ -22,7 +23,7 @@ public class LootTableDecorator implements IDecorator {
   }
   
   @Override
-  public void decorate(Structure structure, World world, Random random, ChunkBounds bounds) {       
+  public void decorate(IStructure structure, World world, Random random, ChunkBounds bounds) {       
     for(String target : targets) {
       Collection<Point3i> locs = structure.getTaggedLocations(target);
       for(Point3i loc : locs) {

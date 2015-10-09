@@ -10,19 +10,22 @@ import java.util.ListIterator;
 import java.util.Random;
 import java.util.Set;
 
+import crazypants.structures.Log;
+import crazypants.structures.api.gen.IChunkValidator;
+import crazypants.structures.api.gen.ILocationSampler;
+import crazypants.structures.api.gen.IStructure;
+import crazypants.structures.api.gen.IStructureGenerator;
+import crazypants.structures.api.gen.IStructureTemplate;
+import crazypants.structures.api.gen.IWorldStructures;
+import crazypants.structures.api.util.ChunkBounds;
+import crazypants.structures.api.util.Point3i;
+import crazypants.structures.gen.structure.sampler.SurfaceLocationSampler;
+import crazypants.structures.gen.structure.validator.CompositeValidator;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
-import crazypants.structures.Log;
-import crazypants.structures.gen.ChunkBounds;
-import crazypants.structures.gen.WorldStructures;
-import crazypants.structures.gen.structure.sampler.ILocationSampler;
-import crazypants.structures.gen.structure.sampler.SurfaceLocationSampler;
-import crazypants.structures.gen.structure.validator.CompositeValidator;
-import crazypants.structures.gen.structure.validator.IChunkValidator;
-import crazypants.vec.Point3i;
 
-public class StructureGenerator {
+public class StructureGenerator implements IStructureGenerator {
 
   private static final Random RND = new Random();
 
@@ -36,7 +39,7 @@ public class StructureGenerator {
   //Max number of structures of this type that be generated in a single chunk
   private int maxInChunk = 1;
 
-  private final List<StructureTemplate> structureTemplates = new ArrayList<StructureTemplate>();
+  private final List<IStructureTemplate> structureTemplates = new ArrayList<IStructureTemplate>();
   
   private final List<DeferredGenTask> deferredGenTasks = new ArrayList<DeferredGenTask>();
 
@@ -60,12 +63,12 @@ public class StructureGenerator {
     locSampler = new SurfaceLocationSampler();
   }
 
-  public void addStructureTemaplate(StructureTemplate structureTemplate) {
+  public void addStructureTemaplate(IStructureTemplate structureTemplate) {
     if (structureTemplate != null) {
       structureTemplates.add(structureTemplate);
     }
     canSpanChunks = false;
-    for(StructureTemplate tp : structureTemplates) {      
+    for(IStructureTemplate tp : structureTemplates) {      
       if(tp.getCanSpanChunks()) {
         canSpanChunks = true;
         return;
@@ -73,14 +76,15 @@ public class StructureGenerator {
     }
   }
 
-  public Structure createStructure() {
+  public IStructure createStructure() {
     if (structureTemplates.isEmpty()) {
       return null;
     }
     return structureTemplates.get(RND.nextInt(structureTemplates.size())).createInstance();
   }
 
-  public Collection<Structure> generate(WorldStructures structures, Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator,
+  @Override
+  public Collection<IStructure> generate(IWorldStructures structures, Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator,
       IChunkProvider chunkProvider) {
 
     if (canSpanChunks) { 
@@ -88,7 +92,7 @@ public class StructureGenerator {
       continueBuildingExistingStructrures(structures, random, chunkX, chunkZ, world, chunkGenerator, chunkProvider);            
     }
     
-    List<Structure> res = new ArrayList<Structure>();
+    List<IStructure> res = new ArrayList<IStructure>();
         
     //Check to see if any deferred tasks can now be completed with the creation of this chunk
     ListIterator<DeferredGenTask> liter = deferredGenTasks.listIterator();
@@ -106,13 +110,13 @@ public class StructureGenerator {
       return Collections.emptyList();
     }
 
-    Structure struct = createStructure();
+    IStructure struct = createStructure();
     if (struct == null) {
       return Collections.emptyList();
     }
     
     for (int i = 0; i < attemptsPerChunk && res.size() < maxInChunk; i++) {
-      Point3i origin = locSampler.generateCandidateLocation(struct, structures, world, random, chunkX, chunkZ);
+      Point3i origin = locSampler.generateCandidateLocation(struct, structures, random, chunkX, chunkZ);
       if (origin != null) {
         struct.setOrigin(origin);        
         if(struct.getGenerationRequiresLoadedChunks()) {
@@ -137,7 +141,7 @@ public class StructureGenerator {
     return res;
   }
 
-  public boolean buildStructureInChunk(Structure s, WorldStructures structures, Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator,
+  public boolean buildStructureInChunk(IStructure s, IWorldStructures structures, Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator,
       IChunkProvider chunkProvider) {
 
     ChunkBounds bounds = new ChunkBounds(chunkX, chunkZ);
@@ -160,13 +164,13 @@ public class StructureGenerator {
     return true;
   }
 
-  protected boolean continueBuildingExistingStructrures(WorldStructures structures, Random random, int chunkX, int chunkZ, World world,
+  protected boolean continueBuildingExistingStructrures(IWorldStructures structures, Random random, int chunkX, int chunkZ, World world,
       IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
 
-    Collection<Structure> existing = new ArrayList<Structure>();
+    Collection<IStructure> existing = new ArrayList<IStructure>();
     structures.getStructuresIntersectingChunk(new ChunkCoordIntPair(chunkX, chunkZ), uid, existing);
 
-    for (Structure s : existing) {
+    for (IStructure s : existing) {
       if (s.canSpanChunks() && !s.getGenerationRequiresLoadedChunks()) {
         s.build(world, random, new ChunkBounds(chunkX, chunkZ));
       }
@@ -185,14 +189,18 @@ public class StructureGenerator {
     }
   }
 
+//  @Override
+  @Override
   public String getUid() {
     return uid;
   }
 
+//  @Override
   public int getMaxAttemptsPerChunk() {
     return attemptsPerChunk;
   }
 
+//  @Override
   public ILocationSampler getLocationSampler() {
     return locSampler;
   }
@@ -201,6 +209,7 @@ public class StructureGenerator {
     this.locSampler = locSampler;
   }
 
+  //@Override
   public int getAttemptsPerChunk() {
     return attemptsPerChunk;
   }
@@ -209,6 +218,7 @@ public class StructureGenerator {
     this.attemptsPerChunk = attemptsPerChunk;
   }
 
+//  @Override
   public int getMaxInChunk() {
     return maxInChunk;
   }
@@ -217,7 +227,8 @@ public class StructureGenerator {
     this.maxInChunk = maxInChunk;
   }
 
-  public List<StructureTemplate> getTemplates() {
+//  @Override
+  public List<IStructureTemplate> getTemplates() {
     return structureTemplates;
   }
 
@@ -228,10 +239,10 @@ public class StructureGenerator {
   
   private static class DeferredGenTask {
     
-    private final Structure structure;
+    private final IStructure structure;
     private final Set<ChunkCoordIntPair> requiredChunks = new HashSet<ChunkCoordIntPair>();
     
-    public DeferredGenTask(IChunkProvider cp, Structure structure) {    
+    public DeferredGenTask(IChunkProvider cp, IStructure structure) {    
       this.structure = structure;      
       for(ChunkCoordIntPair cc : structure.getChunkBounds().getChunks()) {
         if(!cp.chunkExists(cc.chunkXPos, cc.chunkZPos)) {
@@ -245,14 +256,14 @@ public class StructureGenerator {
       return requiredChunks.isEmpty();
     }
     
-    public boolean isGenerated(WorldStructures existingStructures) {
+    public boolean isGenerated(IWorldStructures existingStructures) {
       //TODO: This is a bit dodgy as it is relying on Structure not having a proper equals method and essentially relying on an ==
       //this is easily broken
-      Collection<Structure> structures = existingStructures.getStructuresWithOriginInChunk(structure.getChunkCoord(), structure.getTemplate().getUid());
+      Collection<IStructure> structures = existingStructures.getStructuresWithOriginInChunk(structure.getChunkCoord(), structure.getTemplate().getUid());
       return structures.contains(structure);
     }
     
-    public boolean build(WorldStructures existingStructures, World world, Random random) {
+    public boolean build(IWorldStructures existingStructures, World world, Random random) {
       if(isGenerated(existingStructures)) {
         return false;
       }
@@ -263,7 +274,7 @@ public class StructureGenerator {
       return true;
     }
 
-    public Structure getStructure() {
+    public IStructure getStructure() {
       return structure;
     }
     

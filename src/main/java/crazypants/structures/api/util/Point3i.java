@@ -1,4 +1,4 @@
-package crazypants.vec;
+package crazypants.structures.api.util;
 
 
 public class Point3i {

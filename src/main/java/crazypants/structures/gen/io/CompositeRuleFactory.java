@@ -7,11 +7,11 @@ import java.util.Map;
 
 import com.google.gson.JsonObject;
 
-import crazypants.structures.gen.structure.decorator.IDecorator;
-import crazypants.structures.gen.structure.preperation.ISitePreperation;
-import crazypants.structures.gen.structure.sampler.ILocationSampler;
-import crazypants.structures.gen.structure.validator.IChunkValidator;
-import crazypants.structures.gen.structure.validator.ISiteValidator;
+import crazypants.structures.api.gen.IChunkValidator;
+import crazypants.structures.api.gen.IDecorator;
+import crazypants.structures.api.gen.ILocationSampler;
+import crazypants.structures.api.gen.ISitePreperation;
+import crazypants.structures.api.gen.ISiteValidator;
 
 public class CompositeRuleFactory implements IRuleFactory {
 

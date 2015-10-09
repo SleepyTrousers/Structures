@@ -6,8 +6,9 @@ import java.util.Random;
 import java.util.Set;
 
 import net.minecraft.world.World;
-import crazypants.structures.gen.WorldStructures;
-import crazypants.structures.gen.structure.StructureGenerator;
+import crazypants.structures.api.gen.IChunkValidator;
+import crazypants.structures.api.gen.IStructureGenerator;
+import crazypants.structures.api.gen.IWorldStructures;
 
 public class DimensionValidator implements IChunkValidator {
 
@@ -38,7 +39,7 @@ public class DimensionValidator implements IChunkValidator {
   }
   
   @Override
-  public boolean isValidChunk(StructureGenerator template, WorldStructures structures, World world, Random random, int chunkX, int chunkZ) {
+  public boolean isValidChunk(IStructureGenerator template, IWorldStructures structures, World world, Random random, int chunkX, int chunkZ) {
     String bName = world.getBiomeGenForCoords(chunkX, chunkZ).biomeName;
     if(!includes.isEmpty() && !includes.contains(bName)) {
       return false;

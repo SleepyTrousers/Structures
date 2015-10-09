@@ -1,4 +1,4 @@
-package crazypants.structures.gen;
+package crazypants.structures.api.util;
 
 import java.util.Random;
 
@@ -8,7 +8,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.IShearable;
 import net.minecraftforge.fluids.FluidRegistry;
-import crazypants.vec.Point3i;
 
 public class StructureUtil {
 

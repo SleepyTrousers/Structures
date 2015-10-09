@@ -4,8 +4,9 @@ import java.util.Random;
 
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
-import crazypants.structures.gen.WorldStructures;
-import crazypants.structures.gen.structure.StructureGenerator;
+import crazypants.structures.api.gen.IChunkValidator;
+import crazypants.structures.api.gen.IStructureGenerator;
+import crazypants.structures.api.gen.IWorldStructures;
 import crazypants.structures.gen.structure.validator.biome.IBiomeFilter;
 
 public class BiomeValidator implements IChunkValidator {
@@ -17,7 +18,7 @@ public class BiomeValidator implements IChunkValidator {
   }
 
   @Override
-  public boolean isValidChunk(StructureGenerator template, WorldStructures structures, World world, Random random, int chunkX, int chunkZ) {                
+  public boolean isValidChunk(IStructureGenerator template, IWorldStructures structures, World world, Random random, int chunkX, int chunkZ) {                
     BiomeGenBase bgb = world.getBiomeGenForCoords((chunkX << 4) + 1, (chunkZ << 4) + 1);            
     return filter.isMatchingBiome(bgb);
   }

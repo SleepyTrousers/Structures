@@ -40,6 +40,19 @@
                       "Border" : {
                           "sizeXZ" : 1
                       }}           
+       ],
+       
+       "behaviours" : [
+           
+           { "type": "GuardianSpawner",
+             "minTimeBetweenSpawns":1000,
+             "maxTimeBetweenSpawns":1200,
+             "mobs" : [
+               {"name":"Creeper", "count":3}
+             ]}
+             
+       
        ]
+       
     }
 }

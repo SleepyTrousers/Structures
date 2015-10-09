@@ -1,12 +1,9 @@
-package crazypants.structures.gen;
+package crazypants.structures.api.util;
 
 import java.util.Collection;
 
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.ChunkCoordIntPair;
-import crazypants.structures.gen.structure.Structure;
-import crazypants.vec.Point3i;
-import crazypants.vec.Vector2d;
 
 public class BoundingCircle {
 
@@ -15,7 +12,7 @@ public class BoundingCircle {
   private final double radius2;
 
   public BoundingCircle(AxisAlignedBB bb) {
-    Point3i size = Structure.size(bb);
+    Point3i size = VecUtil.size(bb);
     origin.x = (int)bb.minX + (size.x/2);
     origin.y = (int)bb.minZ + (size.z/2);
     radius = origin.distance(new Vector2d(bb.minX, bb.minZ));

@@ -15,7 +15,7 @@ public class ReloadConfigCommand implements ICommand {
   
   public ReloadConfigCommand() {
     names.add(NAME);
-    names.add("rSG");
+    names.add("rsg");
   }
   
   @Override

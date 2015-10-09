@@ -7,12 +7,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import net.minecraft.nbt.NBTTagCompound;
 import crazypants.structures.Log;
+import crazypants.structures.api.gen.IStructureComponent;
+import crazypants.structures.api.gen.IStructureGenerator;
+import crazypants.structures.api.gen.IStructureTemplate;
 import crazypants.structures.gen.io.StructureResourceManager;
-import crazypants.structures.gen.structure.StructureComponent;
-import crazypants.structures.gen.structure.StructureGenerator;
-import crazypants.structures.gen.structure.StructureTemplate;
+import crazypants.structures.gen.structure.StructureComponentNBT;
+import net.minecraft.nbt.NBTTagCompound;
 
 public class StructureRegister {
 
@@ -24,9 +25,9 @@ public class StructureRegister {
     return reg;
   }
 
-  private final Map<String, StructureGenerator> generators = new HashMap<String, StructureGenerator>();
-  private Map<String, StructureTemplate> templates = new HashMap<String, StructureTemplate>();
-  private final Map<String, StructureComponent> components = new HashMap<String, StructureComponent>();
+  private final Map<String, IStructureGenerator> generators = new HashMap<String, IStructureGenerator>();
+  private Map<String, IStructureTemplate> templates = new HashMap<String, IStructureTemplate>();
+  private final Map<String, IStructureComponent> components = new HashMap<String, IStructureComponent>();
   //Keep these separately so they can be retried ever reload attempt
   private final Set<String> genUids = new HashSet<String>();
   
@@ -46,24 +47,24 @@ public class StructureRegister {
   }
 
   public void registerJsonGenerator(String json) throws Exception {
-    StructureGenerator tp = resourceManager.parseJsonGenerator(json);
+    IStructureGenerator tp = resourceManager.parseJsonGenerator(json);
     registerGenerator(tp);
   }
 
-  public void registerGenerator(StructureGenerator gen) {
+  public void registerGenerator(IStructureGenerator gen) {
     generators.put(gen.getUid(), gen);
     genUids.add(gen.getUid());
   }
 
-  public StructureGenerator getGenerator(String uid) {
+  public IStructureGenerator getGenerator(String uid) {
     return getGenerator(uid, false);
   }
   
-  public StructureGenerator getGenerator(String uid, boolean doLoadIfNull) {
+  public IStructureGenerator getGenerator(String uid, boolean doLoadIfNull) {
     if(uid == null) {
       return null;
     }
-    StructureGenerator res = generators.get(uid);    
+    IStructureGenerator res = generators.get(uid);    
     if(res != null || !doLoadIfNull) {
       return res;
     }    
@@ -80,31 +81,31 @@ public class StructureRegister {
     return res;
   }
 
-  public Collection<StructureGenerator> getGenerators() {
+  public Collection<IStructureGenerator> getGenerators() {
     return generators.values();
   }
 
   public void registerStructureComponent(String uid, NBTTagCompound nbt) throws IOException {
-    components.put(uid, new StructureComponent(nbt));
+    components.put(uid, new StructureComponentNBT(nbt));
   }
 
-  public void registerStructureComponent(StructureComponent st) {
+  public void registerStructureComponent(IStructureComponent st) {
     components.put(st.getUid(), st);
   }
   
-  public Collection<StructureComponent> getStructureComponents() {
+  public Collection<IStructureComponent> getStructureComponents() {
     return components.values();    
   }
 
-  public StructureComponent getStructureComponent(String uid) {
+  public IStructureComponent getStructureComponent(String uid) {
     return getStructureComponent(uid, false);
   }
   
-  public StructureComponent getStructureComponent(String uid, boolean doLoadIfNull) {
+  public IStructureComponent getStructureComponent(String uid, boolean doLoadIfNull) {
     if(!doLoadIfNull || components.containsKey(uid)) {
       return components.get(uid);
     }
-    StructureComponent sd = null;
+    StructureComponentNBT sd = null;
     try {
       sd = resourceManager.loadStructureComponent(uid);
     } catch (IOException e) {
@@ -115,11 +116,11 @@ public class StructureRegister {
     return sd;
   }
   
-  public StructureTemplate getStructureTemplate(String uid, boolean doLoadIfNull) {
+  public IStructureTemplate getStructureTemplate(String uid, boolean doLoadIfNull) {
     if(!doLoadIfNull || templates.containsKey(uid)) {
       return templates.get(uid);
     }
-    StructureTemplate sd = null;
+    IStructureTemplate sd = null;
     try {
       sd = resourceManager.loadTemplate(uid);
     } catch (Exception e) {
@@ -134,7 +135,7 @@ public class StructureRegister {
     components.clear();
     generators.clear();
     for (String uid : genUids) { 
-      StructureGenerator tmp;
+      IStructureGenerator tmp;
       try {
         tmp = resourceManager.loadGenerator(uid);
         if(tmp != null) {
@@ -148,7 +149,7 @@ public class StructureRegister {
 
   }
 
-  public Collection<StructureTemplate> getStructureTemplates() {
+  public Collection<IStructureTemplate> getStructureTemplates() {
     return templates.values();
   }
 

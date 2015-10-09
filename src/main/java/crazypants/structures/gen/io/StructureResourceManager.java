@@ -11,9 +11,10 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 
 import crazypants.IoUtil;
+import crazypants.structures.api.gen.IStructureGenerator;
+import crazypants.structures.api.gen.IStructureTemplate;
 import crazypants.structures.gen.StructureRegister;
-import crazypants.structures.gen.structure.StructureComponent;
-import crazypants.structures.gen.structure.StructureGenerator;
+import crazypants.structures.gen.structure.StructureComponentNBT;
 import crazypants.structures.gen.structure.StructureTemplate;
 
 public class StructureResourceManager {
@@ -42,15 +43,15 @@ public class StructureResourceManager {
     parser.getRuleFactory().add(fact);
   }
 
-  public StructureGenerator loadGenerator(String uid) throws Exception {
+  public IStructureGenerator loadGenerator(String uid) throws Exception {
     return parseJsonGenerator(loadGeneratorText(uid));
   }
   
-  public StructureGenerator loadGenerator(File fromFile) throws Exception {
+  public IStructureGenerator loadGenerator(File fromFile) throws Exception {
     return parseJsonGenerator(loadText(fromFile));
   }
 
-  public StructureGenerator parseJsonGenerator(String json) throws Exception {
+  public IStructureGenerator parseJsonGenerator(String json) throws Exception {
     return parser.parseGeneratorConfig(register, json);
   }
   
@@ -66,14 +67,14 @@ public class StructureResourceManager {
     return IoUtil.readStream(str);
   }
 
-  public StructureComponent loadStructureComponent(String uid) throws IOException {
+  public StructureComponentNBT loadStructureComponent(String uid) throws IOException {
     InputStream stream = null;
     try {
       stream = getStreamForComponent(uid);
       if(stream == null) {
         throw new IOException("StructureResourceManager: Could find resources for template: " + uid);        
       }
-      return new StructureComponent(stream);
+      return new StructureComponentNBT(stream);
     } finally {
       IOUtils.closeQuietly(stream);
     }
@@ -91,7 +92,7 @@ public class StructureResourceManager {
     return parseJsonTemplate(loadTemplateText(uid));
   }
 
-  public StructureTemplate loadTemplate(File fromFile) throws Exception {
+  public IStructureTemplate loadTemplate(File fromFile) throws Exception {
     return parseJsonTemplate(loadText(fromFile));
   }
 

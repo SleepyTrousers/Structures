@@ -31,20 +31,22 @@ public class EnderStructures {
   @SidedProxy(clientSide = "crazypants.structures.ClientProxy", serverSide = "crazypants.structures.CommonProxy")
   public static CommonProxy proxy;
 
+  public static WorldGenerator structureGenerator;
   
-  
-  public static WorldGenerator structureManager;  
+  public static StructureRuntime structureRuntime;
 
   @EventHandler
   public void preInit(FMLPreInitializationEvent event) {
-    Config.load(event);       
-    structureManager = WorldGenerator.create();
+    Config.load(event);
+    structureRuntime = StructureRuntime.create();
+    structureGenerator = WorldGenerator.create();    
   }
 
 
   @EventHandler
   public void serverStopped(FMLServerStoppedEvent event) {
-    structureManager.serverStopped(event);
+    structureGenerator.serverStopped(event);
+    structureRuntime.serverStopped(event);
   }
 
   @EventHandler

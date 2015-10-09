@@ -17,9 +17,12 @@ import java.util.Map.Entry;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import crazypants.structures.Log;
-import crazypants.structures.gen.ChunkBounds;
-import crazypants.structures.gen.StructureUtil;
-import crazypants.vec.Point3i;
+import crazypants.structures.api.gen.IStructureComponent;
+import crazypants.structures.api.util.ChunkBounds;
+import crazypants.structures.api.util.Point3i;
+import crazypants.structures.api.util.Rotation;
+import crazypants.structures.api.util.StructureUtil;
+import crazypants.structures.api.util.VecUtil;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
@@ -30,7 +33,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class StructureComponent {
+public class StructureComponentNBT implements IStructureComponent {
 
   private final AxisAlignedBB bb;
 
@@ -53,7 +56,7 @@ public class StructureComponent {
   //
   //  }
 
-  public StructureComponent(AxisAlignedBB bb, Point3i size, String uid, int surfaceOffset, StructureBlock fillerBlock, StructureBlock topBlock) {
+  public StructureComponentNBT(AxisAlignedBB bb, Point3i size, String uid, int surfaceOffset, StructureBlock fillerBlock, StructureBlock topBlock) {
     this.bb = bb;
     this.size = size;
     this.uid = uid;
@@ -62,11 +65,11 @@ public class StructureComponent {
     this.topBlock = topBlock;
   }
 
-  public StructureComponent(InputStream is) throws IOException {
+  public StructureComponentNBT(InputStream is) throws IOException {
     this(CompressedStreamTools.read(new DataInputStream(is)));
   }
 
-  public StructureComponent(NBTTagCompound root) throws IOException {
+  public StructureComponentNBT(NBTTagCompound root) throws IOException {
     uid = root.getString("uid");
 
     NBTTagList dataList = (NBTTagList) root.getTag("data");
@@ -228,14 +231,17 @@ public class StructureComponent {
     CompressedStreamTools.write(root, new DataOutputStream(os));
   }
 
+  @Override
   public String getUid() {
     return uid;
   }
 
+  @Override
   public int getSurfaceOffset() {
     return surfaceOffset;
   }
 
+  @Override
   public void build(World world, int x, int y, int z, Rotation rot, ChunkBounds genBounds) {
 
     if(rot == null) {
@@ -267,7 +273,7 @@ public class StructureComponent {
 
   private void fillBlocks(World world, int x, int y, int z, Rotation rot, ChunkBounds genBounds, List<Point3i> coords, Block filler) {
     for (Point3i coord : coords) {
-      Point3i bc = transformToWorld(x, y, z, rot, coord);
+      Point3i bc = VecUtil.transformStructureCoodToWorld(x, y, z, rot, size, coord);
       if((genBounds == null || genBounds.isBlockInBounds(bc.x, bc.z))
           && StructureUtil.isIgnoredAsSurface(world, x, z, y, world.getBlock(x, y, z), true, false)) {
         world.setBlock(bc.x, bc.y, bc.z, filler, 0, 2);
@@ -288,7 +294,7 @@ public class StructureComponent {
       //      }
 
       for (Point3i coord : coords) {
-        Point3i bc = transformToWorld(x, y, z, rot, coord);
+        Point3i bc = VecUtil.transformStructureCoodToWorld(x, y, z, rot, size, coord);
         if(genBounds == null || genBounds.isBlockInBounds(bc.x, bc.z)) {
 
           world.setBlock(bc.x, bc.y, bc.z, block, sb.getMetaData(), 2);
@@ -314,17 +320,12 @@ public class StructureComponent {
     }
   }
 
-  public Point3i transformToWorld(int x, int y, int z, Rotation rot, Point3i coord) {
-    Point3i bc = new Point3i(coord);
-    rot.rotate(bc, size.x - 1, size.z - 1);
-    bc.add(x, y, z);
-    return bc;
-  }
-
+  @Override
   public AxisAlignedBB getBounds() {
     return bb;
   }
 
+  @Override
   public Point3i getSize() {
     return size;
   }
@@ -352,6 +353,7 @@ public class StructureComponent {
     res.add(loc);
   }
 
+  @Override
   public List<Point3i> getTaggedLocations(String tag) {
     List<Point3i> res = taggedLocations.get(tag);
     if(res == null) {
