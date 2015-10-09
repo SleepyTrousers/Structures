@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import crazypants.structures.Log;
 import crazypants.structures.api.gen.IStructure;
@@ -65,9 +64,9 @@ public class WorldStructures implements IWorldStructures {
 
   @Override
   public void addAll(Collection<IStructure> structures) {
-    if(!structures.isEmpty()) {
-      System.out.println("WorldStructures.addAll: " + StringUtils.join(structures, " ; "));
-    }
+//    if(!structures.isEmpty()) {
+//      System.out.println("WorldStructures.addAll: " + StringUtils.join(structures, " ; "));
+//    }
     for (IStructure s : structures) {
       add(s);
     }

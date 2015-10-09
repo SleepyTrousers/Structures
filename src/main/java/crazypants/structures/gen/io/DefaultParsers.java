@@ -2,9 +2,6 @@ package crazypants.structures.gen.io;
 
 import java.util.List;
 
-import net.minecraftforge.common.BiomeDictionary;
-import net.minecraftforge.common.BiomeDictionary.Type;
-
 import com.google.gson.JsonObject;
 
 import crazypants.structures.Log;
@@ -26,10 +23,12 @@ import crazypants.structures.gen.structure.validator.biome.BiomeDescriptor;
 import crazypants.structures.gen.structure.validator.biome.BiomeFilterAll;
 import crazypants.structures.gen.structure.validator.biome.BiomeFilterAny;
 import crazypants.structures.gen.structure.validator.biome.IBiomeFilter;
+import net.minecraftforge.common.BiomeDictionary;
+import net.minecraftforge.common.BiomeDictionary.Type;
 
-public class DefaultRuleFactory extends CompositeRuleFactory {
-
-  public DefaultRuleFactory() {    
+public class DefaultParsers {
+  
+  public static void register() {        
     add(new SurfaceSamplerFact());
     add(new RandomValFac());
     add(new DimValFact());    
@@ -41,55 +40,19 @@ public class DefaultRuleFactory extends CompositeRuleFactory {
     add(new LootTableDecFact());
   }
 
-  static class InnerFactory implements IRuleFactory {
-
-    final String uid;
-
-    InnerFactory(String uid) {
-      this.uid = uid;
-    }
-
-    @Override
-    public boolean canCreate(String uid) {      
-      return this.uid.equals(uid);
-    }
-
-    @Override
-    public ILocationSampler createSampler(String uid, JsonObject json) {
-      return null;
-    }
-
-    @Override
-    public IChunkValidator createValidator(String uid, JsonObject json) {
-      return null;
-    }
-
-    @Override
-    public ISitePreperation createPreperation(String uid, JsonObject json) {
-      return null;
-    }
-
-    @Override
-    public ISiteValidator createSiteValidator(String uid, JsonObject json) {    
-      return null;
-    }
-
-    @Override
-    public IDecorator createDecorator(String uid, JsonObject json) {    
-      return null;
-    }
-        
+  private static void add(AbstractSingleParserFactory fact) {
+    ParserRegister.instance.register(fact);    
   }
 
   //-----------------------------------------------------------------
-  static class SurfaceSamplerFact extends InnerFactory {
+  static class SurfaceSamplerFact extends AbstractSingleParserFactory {
 
     SurfaceSamplerFact() {
       super("SurfaceSampler");
     }
 
     @Override
-    public crazypants.structures.api.gen.ILocationSampler createSampler(String uid, JsonObject json) {
+    public ILocationSampler createSampler(String uid, JsonObject json) {
       SurfaceLocationSampler res = new SurfaceLocationSampler();
       res.setDistanceFromSurface(JsonUtil.getIntElement(json, "distanceFromSurface", res.getDistanceFromSurface()));      
       res.setCanGenerateOnFluid(JsonUtil.getBooleanElement(json, "canGenerateOnFluid", res.isCanPlaceInFluid()));      
@@ -99,28 +62,29 @@ public class DefaultRuleFactory extends CompositeRuleFactory {
   }
 
   //-----------------------------------------------------------------
-  static class RandomValFac extends InnerFactory {
+  static class RandomValFac extends AbstractSingleParserFactory {
     RandomValFac() {
       super("RandomValidator");
     }
     
     @Override
-    public IChunkValidator createValidator(String uid, JsonObject json) {
+    public IChunkValidator createChunkValidator(String uid, JsonObject json) {
       RandomValidator res = new RandomValidator();
       res.setChancePerChunk(JsonUtil.getFloatElement(json, "chancePerChunk", res.getChancePerChunk()));
       return res;
     }
+
   }
   
   //-----------------------------------------------------------------
-  static class DimValFact extends InnerFactory {
+  static class DimValFact extends AbstractSingleParserFactory {
 
     DimValFact() {
       super("DimensionValidator");
     }
 
     @Override
-    public IChunkValidator createValidator(String uid, JsonObject json) {
+    public IChunkValidator createChunkValidator(String uid, JsonObject json) {
       DimensionValidator res = new DimensionValidator();
       res.addAll(JsonUtil.getStringArrayElement(json, "names"), false);
       res.addAll(JsonUtil.getStringArrayElement(json, "namesExcluded"), true);      
@@ -129,7 +93,7 @@ public class DefaultRuleFactory extends CompositeRuleFactory {
   }
   
   //-----------------------------------------------------------------
-  static class SpacingValFact extends InnerFactory {
+  static class SpacingValFact extends AbstractSingleParserFactory {
     
     public SpacingValFact() {
       super("SpacingValidator");
@@ -137,7 +101,7 @@ public class DefaultRuleFactory extends CompositeRuleFactory {
     
     
     @Override
-    public IChunkValidator createValidator(String uid, JsonObject json) {
+    public IChunkValidator createChunkValidator(String uid, JsonObject json) {
       SpacingValidator res = new SpacingValidator();
       res.setMinSpacing(JsonUtil.getIntElement(json, "minSpacing", res.getMinSpacing()));                 
       res.setTemplateFilter(JsonUtil.getStringArrayElement(json, "templateFilter"));           
@@ -157,7 +121,7 @@ public class DefaultRuleFactory extends CompositeRuleFactory {
   }
   
   //-----------------------------------------------------------------
-  static class LevGrndFact extends InnerFactory {
+  static class LevGrndFact extends AbstractSingleParserFactory {
     public LevGrndFact() {
       super("LevelGroundValidator");
     }
@@ -175,14 +139,14 @@ public class DefaultRuleFactory extends CompositeRuleFactory {
   }
   
   //-----------------------------------------------------------------
-  static class BiomeValFact extends InnerFactory {
+  static class BiomeValFact extends AbstractSingleParserFactory {
 
     BiomeValFact() {
       super("BiomeValidator");
     }
 
     @Override
-    public IChunkValidator createValidator(String uid, JsonObject json) {
+    public IChunkValidator createChunkValidator(String uid, JsonObject json) {
       String typeElement = JsonUtil.getStringElement(json, "match", "any");
       IBiomeFilter filter;
       if("all".equals(typeElement)) {
@@ -219,7 +183,7 @@ public class DefaultRuleFactory extends CompositeRuleFactory {
   }
   
   //-----------------------------------------------------------------
-  static class ClearPrepFact extends InnerFactory {
+  static class ClearPrepFact extends AbstractSingleParserFactory  {
 
     ClearPrepFact() {
       super("ClearPreperation");
@@ -237,7 +201,7 @@ public class DefaultRuleFactory extends CompositeRuleFactory {
   }
 
   //-----------------------------------------------------------------
-  static class FillPrepFact extends InnerFactory {
+  static class FillPrepFact extends AbstractSingleParserFactory {
 
     FillPrepFact() {
       super("FillPreperation");
@@ -254,7 +218,7 @@ public class DefaultRuleFactory extends CompositeRuleFactory {
   }  
   
 //-----------------------------------------------------------------
-  static class LootTableDecFact extends InnerFactory {
+  static class LootTableDecFact extends AbstractSingleParserFactory {
 
     LootTableDecFact() {
       super("LootTableInventory");

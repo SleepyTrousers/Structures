@@ -38,10 +38,6 @@ public class StructureResourceManager {
   public void addResourcePath(String resourcePath) {
     resourcePaths.add(new ResourcePath(resourcePath, false));
   }
-  
-  public void addRuleFactory(IRuleFactory fact) {
-    parser.getRuleFactory().add(fact);
-  }
 
   public IStructureGenerator loadGenerator(String uid) throws Exception {
     return parseJsonGenerator(loadGeneratorText(uid));

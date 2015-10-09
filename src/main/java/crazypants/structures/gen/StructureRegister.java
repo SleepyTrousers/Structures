@@ -35,11 +35,11 @@ public class StructureRegister {
   private StructureResourceManager resourceManager;
   
 
-  private StructureRegister() {
+  private StructureRegister() {    
   }
 
   private void init() {
-    resourceManager = new StructureResourceManager(this);
+    resourceManager = new StructureResourceManager(this);    
   }
 
   public StructureResourceManager getResourceManager() {

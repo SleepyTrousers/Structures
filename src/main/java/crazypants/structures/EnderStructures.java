@@ -39,7 +39,7 @@ public class EnderStructures {
   public void preInit(FMLPreInitializationEvent event) {
     Config.load(event);
     structureRuntime = StructureRuntime.create();
-    structureGenerator = WorldGenerator.create();    
+    structureGenerator = WorldGenerator.create();       
   }
 
 

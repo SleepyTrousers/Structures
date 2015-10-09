@@ -4,8 +4,8 @@ import com.google.gson.JsonObject;
 
 import crazypants.structures.api.gen.IChunkValidator;
 
-public interface IValidatorFactory extends IFactory {
+public interface IChunkValidatorParser extends IParser {
 
-  IChunkValidator createValidator(String uid, JsonObject json);
+  IChunkValidator createChunkValidator(String uid, JsonObject json);
 
 }

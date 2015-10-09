@@ -24,12 +24,12 @@ import crazypants.structures.gen.structure.StructureTemplate;
 
 public class GeneratorParser {
 
-  private final CompositeRuleFactory ruleFact = new DefaultRuleFactory();
+  private final ParserRegister ruleFact = ParserRegister.instance;
 
   public GeneratorParser() {
   }
 
-  public CompositeRuleFactory getRuleFactory() {
+  public ParserRegister getRuleFactory() {
     return ruleFact;
   }
 
@@ -86,7 +86,7 @@ public class GeneratorParser {
             JsonObject valObj = e.getAsJsonObject();
             if (!valObj.isJsonNull() && valObj.has("type")) {
               String id = valObj.get("type").getAsString();
-              IChunkValidator val = ruleFact.createValidator(id, valObj);
+              IChunkValidator val = ruleFact.createChunkValidator(id, valObj);
               if (val != null) {
                 res.addChunkValidator(val);
               } else {
@@ -217,7 +217,7 @@ public class GeneratorParser {
       ChestGenParser.parseChestGen(to);
 
     } catch (Exception e) {
-      throw new Exception("TemplateParser: Could not parse template " + uid, e);
+      throw new Exception("TemplateParser: Could not parse generator template " + uid + ". " + e.getMessage(), e);
     }
 
     if (res == null || !res.isValid()) {
