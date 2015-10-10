@@ -1,4 +1,4 @@
-package crazypants.structures.gen.io;
+package crazypants.structures.api.io;
 
 import com.google.gson.JsonObject;
 

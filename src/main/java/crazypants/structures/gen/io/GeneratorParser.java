@@ -24,13 +24,9 @@ import crazypants.structures.gen.structure.StructureTemplate;
 
 public class GeneratorParser {
 
-  private final ParserRegister ruleFact = ParserRegister.instance;
+  private final ParserRegister parsers = ParserRegister.instance;
 
   public GeneratorParser() {
-  }
-
-  public ParserRegister getRuleFactory() {
-    return ruleFact;
   }
 
   public IStructureGenerator parseGeneratorConfig(StructureRegister reg, String json) throws Exception {
@@ -71,7 +67,7 @@ public class GeneratorParser {
       if (to.has("LocationSampler")) {
         JsonObject ls = to.getAsJsonObject("LocationSampler");
         String samType = ls.get("type").getAsString();
-        ILocationSampler samp = ruleFact.createSampler(samType, ls);
+        ILocationSampler samp = parsers.createSampler(samType, ls);
         if (samp != null) {
           res.setLocationSampler(samp);
         } else {
@@ -86,7 +82,7 @@ public class GeneratorParser {
             JsonObject valObj = e.getAsJsonObject();
             if (!valObj.isJsonNull() && valObj.has("type")) {
               String id = valObj.get("type").getAsString();
-              IChunkValidator val = ruleFact.createChunkValidator(id, valObj);
+              IChunkValidator val = parsers.createChunkValidator(id, valObj);
               if (val != null) {
                 res.addChunkValidator(val);
               } else {
@@ -165,7 +161,7 @@ public class GeneratorParser {
           JsonObject valObj = e.getAsJsonObject();
           if (!valObj.isJsonNull() && valObj.has("type")) {
             String id = valObj.get("type").getAsString();
-            ISiteValidator val = ruleFact.createSiteValidator(id, valObj);
+            ISiteValidator val = parsers.createSiteValidator(id, valObj);
             if (val != null) {
               res.addSiteValidator(val);
             } else {
@@ -184,7 +180,7 @@ public class GeneratorParser {
           JsonObject valObj = e.getAsJsonObject();
           if (!valObj.isJsonNull() && valObj.has("type")) {
             String id = valObj.get("type").getAsString();
-            ISitePreperation val = ruleFact.createPreperation(id, valObj);
+            ISitePreperation val = parsers.createPreperation(id, valObj);
             if (val != null) {
               res.addSitePreperation(val);
             } else {
@@ -202,7 +198,7 @@ public class GeneratorParser {
           JsonObject valObj = e.getAsJsonObject();
           if (!valObj.isJsonNull() && valObj.has("type")) {
             String id = valObj.get("type").getAsString();
-            IDecorator dec = ruleFact.createDecorator(id, valObj);
+            IDecorator dec = parsers.createDecorator(id, valObj);
             if (dec != null) {
               res.addDecorator(dec);
             } else {

@@ -4,11 +4,15 @@ import static crazypants.structures.EnderStructures.MODID;
 import static crazypants.structures.EnderStructures.MOD_NAME;
 import static crazypants.structures.EnderStructures.VERSION;
 
+import com.google.common.collect.ImmutableList;
+
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLInterModComms.IMCEvent;
+import cpw.mods.fml.common.event.FMLInterModComms.IMCMessage;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
@@ -32,16 +36,15 @@ public class EnderStructures {
   public static CommonProxy proxy;
 
   public static WorldGenerator structureGenerator;
-  
+
   public static StructureRuntime structureRuntime;
 
   @EventHandler
   public void preInit(FMLPreInitializationEvent event) {
     Config.load(event);
     structureRuntime = StructureRuntime.create();
-    structureGenerator = WorldGenerator.create();       
+    structureGenerator = WorldGenerator.create();
   }
-
 
   @EventHandler
   public void serverStopped(FMLServerStoppedEvent event) {
@@ -61,12 +64,31 @@ public class EnderStructures {
   }
 
   @EventHandler
-  public void postInit(FMLPostInitializationEvent event) {   
-    addRecipes();    
+  public void postInit(FMLPostInitializationEvent event) {
+    addRecipes();
     DefaultStructures.registerStructures();
   }
 
-  private void addRecipes() {  
+  @EventHandler
+  public void onImc(IMCEvent evt) {
+    processImc(evt.getMessages());
+  }
+
+  private void processImc(ImmutableList<IMCMessage> messages) {
+    for (IMCMessage msg : messages) {
+      String key = msg.key;
+      try {
+        if(msg.isStringMessage()) {
+        
+        } else if(msg.isNBTMessage()) {
+          
+        }
+      }catch(Exception e) {        
+      }
+    }
+  }
+
+  private void addRecipes() {
   }
 
 }

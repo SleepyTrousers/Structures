@@ -189,18 +189,16 @@ public class StructureGenerator implements IStructureGenerator {
     }
   }
 
-//  @Override
   @Override
   public String getUid() {
     return uid;
   }
 
-//  @Override
+
   public int getMaxAttemptsPerChunk() {
     return attemptsPerChunk;
   }
 
-//  @Override
   public ILocationSampler getLocationSampler() {
     return locSampler;
   }
@@ -209,7 +207,6 @@ public class StructureGenerator implements IStructureGenerator {
     this.locSampler = locSampler;
   }
 
-  //@Override
   public int getAttemptsPerChunk() {
     return attemptsPerChunk;
   }
@@ -218,7 +215,6 @@ public class StructureGenerator implements IStructureGenerator {
     this.attemptsPerChunk = attemptsPerChunk;
   }
 
-//  @Override
   public int getMaxInChunk() {
     return maxInChunk;
   }
@@ -227,7 +223,6 @@ public class StructureGenerator implements IStructureGenerator {
     this.maxInChunk = maxInChunk;
   }
 
-//  @Override
   public List<IStructureTemplate> getTemplates() {
     return structureTemplates;
   }

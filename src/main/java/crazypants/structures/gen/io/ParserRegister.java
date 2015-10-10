@@ -7,11 +7,18 @@ import java.util.Map;
 
 import com.google.gson.JsonObject;
 
+import crazypants.structures.Log;
 import crazypants.structures.api.gen.IChunkValidator;
 import crazypants.structures.api.gen.IDecorator;
 import crazypants.structures.api.gen.ILocationSampler;
 import crazypants.structures.api.gen.ISitePreperation;
 import crazypants.structures.api.gen.ISiteValidator;
+import crazypants.structures.api.io.IChunkValidatorParser;
+import crazypants.structures.api.io.IDecoratorParser;
+import crazypants.structures.api.io.ILocationSamplerParser;
+import crazypants.structures.api.io.IParser;
+import crazypants.structures.api.io.ISitePreperationParser;
+import crazypants.structures.api.io.ISiteValidatorParser;
 
 public class ParserRegister {
 
@@ -37,7 +44,17 @@ public class ParserRegister {
 
   private ParserRegister() {
   }
-
+  
+  public boolean register(Class<? extends IParser> parser) {
+    try {
+      register(parser.newInstance());
+      return true;
+    } catch (Exception e) {
+      Log.warn("Could not create instance for parser with class " + parser == null ? null : parser.getName());
+    }
+    return false;
+  }
+  
   public void register(IParser fact) {
     factories.add(fact);
   }
