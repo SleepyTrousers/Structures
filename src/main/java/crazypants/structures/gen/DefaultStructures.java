@@ -2,50 +2,75 @@ package crazypants.structures.gen;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import crazypants.IoUtil;
 import crazypants.structures.Log;
+import crazypants.structures.api.gen.IStructureGenerator;
 import crazypants.structures.config.Config;
 import crazypants.structures.gen.io.StructureResourceManager;
+import crazypants.structures.gen.io.StructureResourceManager.ResourcePath;
 
 public class DefaultStructures {
 
   public static final File ROOT_DIR = new File(Config.configDirectory + "/structures/");
-  public static final String RESOURCE_PATH = "/assets/enderstructures/config/structures/";
+  public static final String RESOURCE_PATH = "/assets/enderstructures/structures/";
 
-  public static void registerStructures() {
+  public static final File TEST_DIR = new File(Config.configDirectory + "/test/");
+  public static final String TEST_RESOURCE_PATH = "/assets/enderstructures/test/";
+
+  public static void init() {
+
     StructureRegister reg = StructureRegister.instance;
-    reg.getResourceManager().addResourcePath(ROOT_DIR);
-    reg.getResourceManager().addResourcePath(RESOURCE_PATH);
-
-    String fileName = "README.txt";
-    copyText(fileName, fileName);
-
-    register("test");
-  }
-
-  private static void copyText(String resourceName, String fileName) {
-    try {
-      IoUtil.copyTextTo(new File(ROOT_DIR, fileName), DefaultStructures.class.getResourceAsStream(RESOURCE_PATH + resourceName));
-    } catch (IOException e) {
-      Log.warn("EnderZooStructures: Could not copy " + RESOURCE_PATH + resourceName + " from jar to " + ROOT_DIR.getAbsolutePath() + fileName + " Ex:" + e);
-    }
-  }
-
-  private static void register(String uid) {
+    List<ResourcePath> toScan = new ArrayList<StructureResourceManager.ResourcePath>();
     
-      String name = uid + StructureResourceManager.GENERATOR_EXT;
-      copyText(name, name + ".defaultValues");
+    if(Config.testStructuresEnabled) {
+      String name = "test" + StructureResourceManager.GENERATOR_EXT;
+      copyTestFile(name, name + ".defaultValues");
 
-      StructureRegister reg = StructureRegister.instance;
-      try {
-        reg.registerGenerator(reg.getResourceManager().loadGenerator(uid));
-      } catch (Exception e) {
-        Log.error("EnderZooStructures: Could not load structure template " + uid + StructureResourceManager.GENERATOR_EXT);
-        e.printStackTrace();
+      name = "test" + StructureResourceManager.TEMPLATE_EXT;
+      copyTestFile(name, name + ".defaultValues");
+
+      name = "test2" + StructureResourceManager.TEMPLATE_EXT;
+      copyTestFile(name, name + ".defaultValues");
+      
+      toScan.add(reg.getResourceManager().addResourcePath(TEST_DIR));
+      toScan.add(reg.getResourceManager().addResourcePath(TEST_RESOURCE_PATH));
+    }    
+
+    toScan.add(reg.getResourceManager().addResourcePath(ROOT_DIR));
+    toScan.add(reg.getResourceManager().addResourcePath(RESOURCE_PATH));
+
+    loadAndRegisterGenerators(toScan);
+
+  }
+
+  public static void loadAndRegisterGenerators(List<ResourcePath> resourcePaths) {
+
+    for (ResourcePath path : resourcePaths) {
+      List<String> gens = path.getGenerators();
+      for (String uid : gens) {
+        try {
+          IStructureGenerator gen = StructureRegister.instance.getResourceManager().loadGenerator(uid);
+          if(gen != null) {
+            StructureRegister.instance.registerGenerator(gen);
+          }
+        } catch (Exception e) {
+          Log.warn("StructureResourceManager.loadGenerators: Could not load generator: " + uid + " error: " + e);
+        }
       }
-    
+    }
 
+  }
+
+  private static void copyTestFile(String resourceName, String fileName) {
+    try {
+      IoUtil.copyTextTo(new File(TEST_DIR, fileName), DefaultStructures.class.getResourceAsStream(TEST_RESOURCE_PATH + resourceName));
+    } catch (IOException e) {
+      Log.warn(
+          "EnderZooStructures: Could not copy " + TEST_RESOURCE_PATH + resourceName + " from jar to " + TEST_DIR.getAbsolutePath() + fileName + " Ex:" + e);
+    }
   }
 
 }

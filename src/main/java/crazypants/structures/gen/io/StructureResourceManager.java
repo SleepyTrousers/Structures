@@ -5,7 +5,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -22,27 +24,31 @@ public class StructureResourceManager {
   public static final String GENERATOR_EXT = ".gen";
   public static final String COMPONENT_EXT = ".nbt";
   public static final String TEMPLATE_EXT = ".stp";
-  
+
   private final List<ResourcePath> resourcePaths = new ArrayList<ResourcePath>();
   private final GeneratorParser parser = new GeneratorParser();
   private final StructureRegister register;
-  
-  public StructureResourceManager(StructureRegister register) {  
-    this.register = register;       
+
+  public StructureResourceManager(StructureRegister register) {
+    this.register = register;
   }
 
-  public void addResourcePath(File dir) {
-    resourcePaths.add(new ResourcePath(dir.getAbsolutePath(), true));
+  public ResourcePath addResourcePath(File dir) {
+    ResourcePath res = new ResourcePath(dir.getAbsolutePath(), true);
+    resourcePaths.add(res);
+    return res;
   }
 
-  public void addResourcePath(String resourcePath) {
-    resourcePaths.add(new ResourcePath(resourcePath, false));
+  public ResourcePath addResourcePath(String resourcePath) {
+    ResourcePath res = new ResourcePath(resourcePath, false);
+    resourcePaths.add(res);
+    return res;
   }
 
   public IStructureGenerator loadGenerator(String uid) throws Exception {
     return parseJsonGenerator(loadGeneratorText(uid));
   }
-  
+
   public IStructureGenerator loadGenerator(File fromFile) throws Exception {
     return parseJsonGenerator(loadText(fromFile));
   }
@@ -50,11 +56,11 @@ public class StructureResourceManager {
   public IStructureGenerator parseJsonGenerator(String json) throws Exception {
     return parser.parseGeneratorConfig(register, json);
   }
-  
+
   public String loadText(File fromFile) throws IOException {
     return IoUtil.readStream(new FileInputStream(fromFile));
   }
-  
+
   public String loadGeneratorText(String uid) throws IOException {
     InputStream str = getStreamForGenerator(uid);
     if(str == null) {
@@ -68,14 +74,14 @@ public class StructureResourceManager {
     try {
       stream = getStreamForComponent(uid);
       if(stream == null) {
-        throw new IOException("StructureResourceManager: Could find resources for template: " + uid);        
+        throw new IOException("StructureResourceManager: Could find resources for template: " + uid);
       }
       return new StructureComponentNBT(stream);
     } finally {
       IOUtils.closeQuietly(stream);
     }
   }
-  
+
   private String loadTemplateText(String uid) throws IOException {
     InputStream str = getStreamForTemplate(uid);
     if(str == null) {
@@ -83,7 +89,7 @@ public class StructureResourceManager {
     }
     return IoUtil.readStream(str);
   }
-  
+
   public StructureTemplate loadTemplate(String uid) throws Exception {
     return parseJsonTemplate(loadTemplateText(uid));
   }
@@ -97,6 +103,9 @@ public class StructureResourceManager {
   }
 
   private InputStream getStreamForGenerator(String uid) {
+    if(uid.endsWith(GENERATOR_EXT)) {
+      return getStream(uid);
+    }
     return getStream(uid + GENERATOR_EXT);
   }
 
@@ -106,7 +115,7 @@ public class StructureResourceManager {
     }
     return getStream(uid + COMPONENT_EXT);
   }
-  
+
   private InputStream getStreamForTemplate(String uid) {
     return getStream(uid + TEMPLATE_EXT);
   }
@@ -121,7 +130,7 @@ public class StructureResourceManager {
     return null;
   }
 
-  private static class ResourcePath {
+  public static class ResourcePath {
 
     private final String root;
     private final File dir;
@@ -140,6 +149,37 @@ public class StructureResourceManager {
       dir = tmp;
     }
 
+    public List<String> getGenerators() {
+      String[] kids = null;
+      if(isFile) {
+        if(dir != null) {
+          kids = dir.list();
+        }
+      } else {
+        try {
+          URL u = StructureRegister.class.getResource(root);
+          if(u != null) {
+            File f = new File(u.toURI());
+            kids = f.list();
+          }
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
+
+      if(kids == null || kids.length == 0) {
+        return Collections.emptyList();
+      }
+      List<String> res = new ArrayList<String>();
+      for (String kid : kids) {
+        if(kid != null && kid.endsWith(".gen")) {
+          String uid = kid.substring(0, kid.length() - 4);
+          res.add(uid);
+        }
+      }
+      return res;
+    }
+
     public InputStream getStream(String name) {
       if(isFile) {
         if(dir == null) {
@@ -151,7 +191,10 @@ public class StructureResourceManager {
           return null;
         }
       } else {
-        return StructureRegister.class.getResourceAsStream(root + name);
+        if(root.endsWith("/")) {
+          return StructureRegister.class.getResourceAsStream(root + name);
+        }
+        return StructureRegister.class.getResourceAsStream(root + "/" + name);
       }
     }
 

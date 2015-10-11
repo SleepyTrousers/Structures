@@ -46,40 +46,40 @@ public class StructureRegister {
     return resourceManager;
   }
 
-  public void registerJsonGenerator(String json) throws Exception {
-    IStructureGenerator tp = resourceManager.parseJsonGenerator(json);
-    registerGenerator(tp);
-  }
-
   public void registerGenerator(IStructureGenerator gen) {
     generators.put(gen.getUid(), gen);
     genUids.add(gen.getUid());
   }
-
-  public IStructureGenerator getGenerator(String uid) {
-    return getGenerator(uid, false);
-  }
   
-  public IStructureGenerator getGenerator(String uid, boolean doLoadIfNull) {
-    if(uid == null) {
-      return null;
-    }
-    IStructureGenerator res = generators.get(uid);    
-    if(res != null || !doLoadIfNull) {
-      return res;
-    }    
-    try {
-      res = resourceManager.loadGenerator(uid);      
-    } catch (Exception e) {
-      Log.error("StructureRegister: Could not load gnerator for " + uid + " Ex: " + e);
-      e.printStackTrace();
-    }
-    if(res != null) {
-      registerGenerator(res);
-    }
-    genUids.add(uid);
-    return res;
-  }
+//  public void registerJsonGenerator(String json) throws Exception {
+//    IStructureGenerator tp = resourceManager.parseJsonGenerator(json);
+//    registerGenerator(tp);
+//  }
+
+//  public IStructureGenerator getGenerator(String uid) {
+//    return getGenerator(uid, false);
+//  }
+  
+//  public IStructureGenerator getGenerator(String uid, boolean doLoadIfNull) {
+//    if(uid == null) {
+//      return null;
+//    }
+//    IStructureGenerator res = generators.get(uid);    
+//    if(res != null || !doLoadIfNull) {
+//      return res;
+//    }    
+//    try {
+//      res = resourceManager.loadGenerator(uid);      
+//    } catch (Exception e) {
+//      Log.error("StructureRegister: Could not load gnerator for " + uid + " Ex: " + e);
+//      e.printStackTrace();
+//    }
+//    if(res != null) {
+//      registerGenerator(res);
+//    }
+//    genUids.add(uid);
+//    return res;
+//  }
 
   public Collection<IStructureGenerator> getGenerators() {
     return generators.values();
@@ -130,10 +130,15 @@ public class StructureRegister {
     }
     return sd;
   }
-
-  public void reload() {
+  
+  public void clear() {
     components.clear();
     generators.clear();
+  }
+  
+
+  public void reload() {
+    clear();
     for (String uid : genUids) { 
       IStructureGenerator tmp;
       try {
@@ -152,5 +157,7 @@ public class StructureRegister {
   public Collection<IStructureTemplate> getStructureTemplates() {
     return templates.values();
   }
+
+  
 
 }

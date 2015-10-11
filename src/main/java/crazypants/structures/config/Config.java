@@ -4,13 +4,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraftforge.common.config.Configuration;
 import cpw.mods.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import crazypants.structures.EnderStructures;
 import crazypants.structures.Log;
+import net.minecraftforge.common.config.Configuration;
 
 public final class Config {
 
@@ -42,7 +42,11 @@ public final class Config {
   public static Configuration config;
 
   public static File configDirectory;
+  
   public static final String CONFIG_RESOURCE_PATH = "/assets/enderstructures/config/";
+  
+  public static final Section sectionTest = new Section("Test Settings", "test");
+  public static boolean testStructuresEnabled = false;
 
   public static void load(FMLPreInitializationEvent event) {
 
@@ -79,6 +83,7 @@ public final class Config {
   }
 
   public static void processConfig(Configuration config) {   
+    testStructuresEnabled = config.getBoolean("testStructuresEnabled", sectionTest.name, testStructuresEnabled, "When enabled structures used for testing will be generated.");
   }
 
   private Config() {

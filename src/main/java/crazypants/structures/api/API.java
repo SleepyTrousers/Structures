@@ -1,8 +1,6 @@
 package crazypants.structures.api;
 
-
-
-  /**
+/**
    * The Ender Structures mod adds world gen buildings defined using json config files and block data in nbt format.
    *
    * 
@@ -173,18 +171,58 @@ package crazypants.structures.api;
    * Adding New Structures
    * *********************************
    * 
-   * Ender Structures will automatically load all generator (.gen), template (.stp) and building component (.nbt) files in finds in its search path.
-   * The default search path is the 'config/enderdtructures/structures' directory and the structures .jar file using the resource path 
-   * '/assets/enderstructures/config/structures/'  
+   * Config Directory
+   * ------------------
+   * Ender Structures will automatically load all generator (.gen), template (.stp) and building component (.nbt) files in the 'config/enderdtructures/structures' 
+   * directory and the those in the structures .jar file using the resource path '/assets/enderstructures/structures/'. The simplest way to add new structures is 
+   * to copy the required generator (.gen), template (.stp) and/or building component (.nbt) files into this directory. 
    * 
+   * API
+   * -------------------  
+   * To enabled Ender Structures to locate content distributed with other mods the mod must let EnderStructures know where to look. Ender Structures can search 
+   * either the class path (inside a mods jar file) or a directory, typically the mods config directory.
    * 
-   * The simplest way to add new structures is to copy the required generator (.gen), template (.stp) and/or building component (.nbt) files
-   * into the 'config/enderdtructures/structures' directory. 
-   *   
-   * To enabled Structures to locate content distributed with other mods appropriate entries must be added to the seach path.
-   * For example, the 'SmellyCheese' mod adds a 'Smelly Cheese Factory' with two building variants. This requires cheesefact.gen, 
-   * checkfact.stp, chesefact1.nbt and chesefact2.nbt.      
+   * To register a search path, one of two IMC messages must be sent.     
+   * 
+   * For example, the 'SmellyCheese' mod adds a 'Cheese Factory' structure. This requires cheesefact.gen, checkfact.stp and chesefact.nbt.
+   * These files are included in the mods jar file with the path: /assets/smellycheese/structures. In this case, the following code should be
+   * added to the mods load method:
+   
+     FMLInterModComms.sendMessage("EnderStructures", "addResourcePath", "/assets/smellycheese/structures");
+    
+   * The preferred method would be for 'Smelly Cheese Factory' to copy the required files into its config dir. This allows users to easily
+   * modify the configs. In this case, the following code would be needed:
+    
+    File configDirectory = new File(event.getModConfigurationDirectory(), "smellycheese");
+    FMLInterModComms.sendMessage("EnderStructures", "addResourceDir", configDirectory.getAbsolutePath());
+    
+    
+   * Once the resource paths have been added each structure (.gen file) must be registered. This is done via another IMC message:
+   
+    FMLInterModComms.sendMessage("EnderStructures", "registerGenerator", "cheesefact"); 
+           
    * 
    */
 public class API {
+  
+  /*
+   * The IMC messages supported by EnderStructures are included bellow for refernce. It is preferable not to
+   * refer to these constants directly to avoid a depend on the API at runtime.
+   */
+  
+  /**
+   * Key for a string message to add a resource path to the search list used to load structures.
+   */
+  public static final String ADD_RESOURCE_PATH = "addResourcePath";
+  
+  /**
+   * Key for a string message to add a resource directory to the search list used to load structures.
+   */
+  public static final String ADD_RESOURCE_DIR = "addResourceDir";
+  
+  /**
+   * Key for a string message to register a generator.
+   */
+  public static final String REGISTER_GENERATOR = "registerGenerator";
+  
 }
