@@ -28,6 +28,7 @@ import crazypants.structures.gen.DefaultStructures;
 import crazypants.structures.gen.ReloadConfigCommand;
 import crazypants.structures.gen.StructureRegister;
 import crazypants.structures.gen.WorldGenerator;
+import crazypants.structures.village.Test;
 
 @Mod(modid = MODID, name = MOD_NAME, version = VERSION, dependencies = "required-after:Forge@10.13.0.1150,)", guiFactory = "crazypants.structures.config.ConfigFactoryEnderStructures")
 public class EnderStructures {
@@ -51,23 +52,14 @@ public class EnderStructures {
     Config.load(event);
     structureRuntime = StructureRuntime.create();
     structureGenerator = WorldGenerator.create();
-  }
-
-  @EventHandler
-  public void serverStopped(FMLServerStoppedEvent event) {
-    structureGenerator.serverStopped(event);
-    structureRuntime.serverStopped(event);
-  }
-
-  @EventHandler
-  public void serverLoad(FMLServerStartingEvent event) {
-    event.registerServerCommand(new ReloadConfigCommand());
+    
+    new Test().registerVillagers();
   }
 
   @EventHandler
   public void load(FMLInitializationEvent event) {
     instance = this;
-    proxy.load();
+    proxy.load();    
   }
 
   @EventHandler
@@ -81,6 +73,17 @@ public class EnderStructures {
     processImc(FMLInterModComms.fetchRuntimeMessages(this)); //Some mods send IMCs during PostInit, so we catch them here.
   }
 
+  @EventHandler
+  public void serverStopped(FMLServerStoppedEvent event) {
+    structureGenerator.serverStopped(event);
+    structureRuntime.serverStopped(event);
+  }
+
+  @EventHandler
+  public void serverLoad(FMLServerStartingEvent event) {
+    event.registerServerCommand(new ReloadConfigCommand());
+  }
+  
   @EventHandler
   public void onImc(IMCEvent evt) {
     processImc(evt.getMessages());

@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
+import crazypants.structures.Log;
 import crazypants.structures.api.gen.IDecorator;
 import crazypants.structures.api.gen.ISitePreperation;
 import crazypants.structures.api.gen.ISiteValidator;
@@ -51,6 +52,15 @@ public class StructureTemplate implements IStructureTemplate {
   @Override
   public IStructure createInstance() {
     return new Structure(new Point3i(), getRndRotation(), this);
+  }
+
+  @Override
+  public IStructure createInstance(Rotation rotation) {  
+    if(!rots.contains(rotation)) {
+      Log.warn("StructureTemplate.createInstance: Rotation " + rotation + " not supported by template " + uid);
+      return null;
+    }
+    return new Structure(new Point3i(), rotation, this);
   }
 
   @Override

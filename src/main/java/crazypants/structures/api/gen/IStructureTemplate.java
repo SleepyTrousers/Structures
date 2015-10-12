@@ -39,6 +39,8 @@ public interface IStructureTemplate {
 
   IStructure createInstance();
   
+  IStructure createInstance(Rotation rotation);
+  
   void build(IStructure structure, World world, Random random, ChunkBounds bounds);
 
   
