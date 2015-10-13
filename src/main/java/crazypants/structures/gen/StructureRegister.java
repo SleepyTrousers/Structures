@@ -11,7 +11,7 @@ import crazypants.structures.Log;
 import crazypants.structures.api.gen.IStructureComponent;
 import crazypants.structures.api.gen.IStructureGenerator;
 import crazypants.structures.api.gen.IStructureTemplate;
-import crazypants.structures.gen.io.StructureResourceManager;
+import crazypants.structures.gen.io.resource.StructureResourceManager;
 import crazypants.structures.gen.structure.StructureComponentNBT;
 import net.minecraft.nbt.NBTTagCompound;
 

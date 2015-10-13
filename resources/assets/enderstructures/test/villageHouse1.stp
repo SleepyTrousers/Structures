@@ -1,0 +1,20 @@
+{
+    "StructureTemplate" : {
+            
+        "uid" : "villageHouse1",    
+                
+        "components" : [
+          {"uid" : "villageHouse1"}
+        ],               
+        
+        "sitePreperations" : [
+                  
+            { "type": "ClearPreperation", 
+                      "clearPlants" : "true"},
+           
+            { "type" : "FillPreperation",
+                      "clearPlants" : "true"}           
+       ]
+       
+    }
+}

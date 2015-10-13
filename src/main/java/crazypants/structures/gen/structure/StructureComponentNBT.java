@@ -289,10 +289,6 @@ public class StructureComponentNBT implements IStructureComponent {
       Log.error("Could not find block " + sb.getModId() + ":" + sb.getBlockName() + " when generating structure: " + uid);
     } else {
 
-      //      if (block == EnderStructures.blockClearMarker) {
-      //        block = Blocks.air;
-      //      }
-
       for (Point3i coord : coords) {
         Point3i bc = VecUtil.transformStructureCoodToWorld(x, y, z, rot, size, coord);
         if(genBounds == null || genBounds.isBlockInBounds(bc.x, bc.z)) {

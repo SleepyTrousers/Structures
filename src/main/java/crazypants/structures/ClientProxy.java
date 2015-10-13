@@ -20,7 +20,6 @@ public class ClientProxy extends CommonProxy {
 
   @Override
   public void load() {
-    System.out.println("******************************************* ClientProxy.load: ");
     FMLClientHandler.instance().addModAsResource(ResourceModContainer.create());
   }
 

@@ -3,14 +3,15 @@ package crazypants.structures.gen;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import crazypants.IoUtil;
 import crazypants.structures.Log;
 import crazypants.structures.api.gen.IStructureGenerator;
 import crazypants.structures.config.Config;
-import crazypants.structures.gen.io.StructureResourceManager;
-import crazypants.structures.gen.io.StructureResourceManager.ResourcePath;
+import crazypants.structures.gen.io.resource.IResourcePath;
+import crazypants.structures.gen.io.resource.StructureResourceManager;
 
 public class DefaultStructures {
 
@@ -23,7 +24,7 @@ public class DefaultStructures {
   public static void init() {
 
     StructureRegister reg = StructureRegister.instance;
-    List<ResourcePath> toScan = new ArrayList<StructureResourceManager.ResourcePath>();
+    List<IResourcePath> toScan = new ArrayList<IResourcePath>();
     
     if(Config.testStructuresEnabled) {
       String name = "test" + StructureResourceManager.GENERATOR_EXT;
@@ -36,20 +37,20 @@ public class DefaultStructures {
       copyTestFile(name, name + ".defaultValues");
       
       toScan.add(reg.getResourceManager().addResourcePath(TEST_DIR));
-      toScan.add(reg.getResourceManager().addResourcePath(TEST_RESOURCE_PATH));
+      toScan.add(reg.getResourceManager().addClassLoaderResourcePath(TEST_RESOURCE_PATH));
     }    
 
     toScan.add(reg.getResourceManager().addResourcePath(ROOT_DIR));
-    toScan.add(reg.getResourceManager().addResourcePath(RESOURCE_PATH));
+    toScan.add(reg.getResourceManager().addClassLoaderResourcePath(RESOURCE_PATH));
 
     loadAndRegisterGenerators(toScan);
 
   }
 
-  public static void loadAndRegisterGenerators(List<ResourcePath> resourcePaths) {
+  private static void loadAndRegisterGenerators(List<IResourcePath> resourcePaths) {
 
-    for (ResourcePath path : resourcePaths) {
-      List<String> gens = path.getGenerators();
+    for (IResourcePath path : resourcePaths) {
+      List<String> gens = getGenerators(path.getChildren());
       for (String uid : gens) {
         try {
           IStructureGenerator gen = StructureRegister.instance.getResourceManager().loadGenerator(uid);
@@ -62,6 +63,20 @@ public class DefaultStructures {
       }
     }
 
+  }
+  
+  private static List<String> getGenerators(List<String> kids) {
+    if(kids == null || kids.isEmpty()) {
+      return Collections.emptyList();
+    }
+    List<String> res = new ArrayList<String>();
+    for (String kid : kids) {
+      if(kid != null && kid.endsWith(".gen")) {
+        String uid = kid.substring(0, kid.length() - 4);
+        res.add(uid);
+      }
+    }
+    return res;
   }
 
   private static void copyTestFile(String resourceName, String fileName) {

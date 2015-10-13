@@ -1,13 +1,10 @@
-package crazypants.structures.gen.io;
+package crazypants.structures.gen.io.resource;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -16,6 +13,7 @@ import crazypants.IoUtil;
 import crazypants.structures.api.gen.IStructureGenerator;
 import crazypants.structures.api.gen.IStructureTemplate;
 import crazypants.structures.gen.StructureRegister;
+import crazypants.structures.gen.io.GeneratorParser;
 import crazypants.structures.gen.structure.StructureComponentNBT;
 import crazypants.structures.gen.structure.StructureTemplate;
 
@@ -25,7 +23,7 @@ public class StructureResourceManager {
   public static final String COMPONENT_EXT = ".nbt";
   public static final String TEMPLATE_EXT = ".stp";
 
-  private final List<ResourcePath> resourcePaths = new ArrayList<ResourcePath>();
+  private final List<IResourcePath> resourcePaths = new ArrayList<IResourcePath>();
   private final GeneratorParser parser = new GeneratorParser();
   private final StructureRegister register;
 
@@ -33,14 +31,17 @@ public class StructureResourceManager {
     this.register = register;
   }
 
-  public ResourcePath addResourcePath(File dir) {
-    ResourcePath res = new ResourcePath(dir.getAbsolutePath(), true);
+  public IResourcePath addResourcePath(File dir) {
+    if(dir == null) {
+      return null;
+    }
+    IResourcePath res = new DirectoryResourcePath(dir);
     resourcePaths.add(res);
     return res;
   }
 
-  public ResourcePath addResourcePath(String resourcePath) {
-    ResourcePath res = new ResourcePath(resourcePath, false);
+  public IResourcePath addClassLoaderResourcePath(String resourcePath) {
+    IResourcePath res = new ClassLoaderReourcePath(resourcePath);
     resourcePaths.add(res);
     return res;
   }
@@ -102,6 +103,25 @@ public class StructureResourceManager {
     return parser.parseTemplateConfig(register, json);
   }
 
+  public boolean resourceExists(String resource) {
+    for (IResourcePath rp : resourcePaths) {
+      if(rp.exists(resource)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public InputStream getStream(String resourceName) {
+    for (IResourcePath rp : resourcePaths) {
+      InputStream is = rp.getStream(resourceName);
+      if(is != null) {
+        return is;
+      }
+    }
+    return null;
+  }
+
   private InputStream getStreamForGenerator(String uid) {
     if(uid.endsWith(GENERATOR_EXT)) {
       return getStream(uid);
@@ -118,120 +138,6 @@ public class StructureResourceManager {
 
   private InputStream getStreamForTemplate(String uid) {
     return getStream(uid + TEMPLATE_EXT);
-  }
-
-  private InputStream getStream(String resourceName) {
-    for (ResourcePath rp : resourcePaths) {
-      InputStream is = rp.getStream(resourceName);
-      if(is != null) {
-        return is;
-      }
-    }
-    return null;
-  }
-
-  public static class ResourcePath {
-
-    private final String root;
-    private final File dir;
-    private final boolean isFile;
-
-    public ResourcePath(String root, boolean isFile) {
-      this.root = root;
-      this.isFile = isFile;
-      File tmp = null;
-      if(isFile) {
-        File f = new File(root);
-        if(f.exists()) {
-          tmp = f;
-        }
-      }
-      dir = tmp;
-    }
-
-    public List<String> getGenerators() {
-      String[] kids = null;
-      if(isFile) {
-        if(dir != null) {
-          kids = dir.list();
-        }
-      } else {
-        try {
-          URL u = StructureRegister.class.getResource(root);
-          if(u != null) {
-            File f = new File(u.toURI());
-            kids = f.list();
-          }
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
-      }
-
-      if(kids == null || kids.length == 0) {
-        return Collections.emptyList();
-      }
-      List<String> res = new ArrayList<String>();
-      for (String kid : kids) {
-        if(kid != null && kid.endsWith(".gen")) {
-          String uid = kid.substring(0, kid.length() - 4);
-          res.add(uid);
-        }
-      }
-      return res;
-    }
-
-    public InputStream getStream(String name) {
-      if(isFile) {
-        if(dir == null) {
-          return null;
-        }
-        try {
-          return new FileInputStream(new File(dir, name));
-        } catch (FileNotFoundException e) {
-          return null;
-        }
-      } else {
-        if(root.endsWith("/")) {
-          return StructureRegister.class.getResourceAsStream(root + name);
-        }
-        return StructureRegister.class.getResourceAsStream(root + "/" + name);
-      }
-    }
-
-    @Override
-    public int hashCode() {
-      final int prime = 31;
-      int result = 1;
-      result = prime * result + (isFile ? 1231 : 1237);
-      result = prime * result + ((root == null) ? 0 : root.hashCode());
-      return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-      if(this == obj) {
-        return true;
-      }
-      if(obj == null) {
-        return false;
-      }
-      if(getClass() != obj.getClass()) {
-        return false;
-      }
-      ResourcePath other = (ResourcePath) obj;
-      if(isFile != other.isFile) {
-        return false;
-      }
-      if(root == null) {
-        if(other.root != null) {
-          return false;
-        }
-      } else if(!root.equals(other.root)) {
-        return false;
-      }
-      return true;
-    }
-
   }
 
 }

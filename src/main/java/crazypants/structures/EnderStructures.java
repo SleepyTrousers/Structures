@@ -102,7 +102,7 @@ public class EnderStructures {
 
           } else if(API.ADD_RESOURCE_PATH.equalsIgnoreCase(key)) {
 
-            reg.getResourceManager().addResourcePath(msg.getStringValue());
+            reg.getResourceManager().addClassLoaderResourcePath(msg.getStringValue());
 
           } else if(API.REGISTER_GENERATOR.equalsIgnoreCase(key)) {
 

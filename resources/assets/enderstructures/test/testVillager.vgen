@@ -1,0 +1,33 @@
+{
+    "VillagerGenerator" : {
+      
+      "uid" : "test",   
+      "villagerId" : 45654,
+      "texture" : "esconfig:testVillager.png",
+      "weight" : 10,
+      "maxNum" : 4,
+
+      "templatesPlains" : [
+          {"uid" : "test"},
+          {"uid" : "test2"}    
+        ],
+
+       "templatesDesert" : [
+          {"uid" : "test"},
+          {"uid" : "test2"}    
+        ],
+
+	"trades" : [
+          { 
+	    "input1" : { "item" : "minecraft:apple", "number" : 10, "meta" : 0 },
+	    "input2" : { "item" : "minecraft:diamond", "number" : 1, "meta" : 0 },
+	    "output" : { "item" : "minecraft:stone", "number" : 12, "meta" : 0 } 
+	  },
+	  { 
+	    "input1" : { "item" : "minecraft:feather", "number" : 3, "meta" : 0 },	    
+	    "output" : { "item" : "minecraft:planks", "number" : 6, "meta" : 1 } 
+	  }
+	]
+
+    }
+}

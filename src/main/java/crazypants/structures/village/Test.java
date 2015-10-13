@@ -1,5 +1,7 @@
 package crazypants.structures.village;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -40,14 +42,19 @@ public class Test {
 
     VillagerRegistry.instance().registerVillagerId(id);
 
-    ResourceLocation texture = new ResourceLocation(ResourceModContainer.MODID + ":test/testVillager.png");
+    ResourceLocation texture = new ResourceLocation(ResourceModContainer.MODID + ":testVillager.png");
     VillagerRegistry.instance().registerVillagerSkin(id, texture);
     VillagerRegistry.instance().registerVillageTradeHandler(id, new TradeHandler());
-    VillagerRegistry.instance().registerVillageCreationHandler(new CreationHandler("test", id));
+
+    List<String> temps = new ArrayList<String>();
+    //    temps.add("villageHouse1");
+    temps.add("villageHouse2");
+    List<String> desertTemps = Collections.singletonList("villageHouseDesert");
+    VillagerRegistry.instance().registerVillageCreationHandler(new CreationHandler(id, temps, desertTemps));
     MapGenStructureIO.func_143031_a(VillageComponent.class, "EnderStructures:TestStructure");
   }
 
-  public class TradeHandler implements IVillageTradeHandler {
+  public static class TradeHandler implements IVillageTradeHandler {
 
     @Override
     public void manipulateTradesForVillager(EntityVillager villager, MerchantRecipeList recipeList, Random random) {
@@ -56,20 +63,23 @@ public class Test {
 
   }
 
-  public class CreationHandler implements IVillageCreationHandler {
+  public static class CreationHandler implements IVillageCreationHandler {
 
     private final int villagerId;
-    private final String templateUid;
+    //private final String templateUid;
+    private final List<String> templates = new ArrayList<String>();
+    private final List<String> desertTemplates = new ArrayList<String>();
 
-    public CreationHandler(String templateUid, int villagerId) {
-      this.templateUid = templateUid;
+    public CreationHandler(int villagerId, List<String> templates, List<String> desertTemplates) {
       this.villagerId = villagerId;
+      this.templates.addAll(templates);
+      this.desertTemplates.addAll(desertTemplates);
     }
 
     @Override
     public PieceWeight getVillagePieceWeight(Random random, int i) {
-      //      return new PieceWeight(VillageComponent.class, 9, 1);
-      return new PieceWeight(VillageComponent.class, 100, 20);
+//      return new PieceWeight(VillageComponent.class, 9, 1);
+            return new PieceWeight(VillageComponent.class, 100, 20);
     }
 
     @Override
@@ -80,6 +90,12 @@ public class Test {
     @SuppressWarnings("rawtypes")
     @Override
     public Object buildComponent(PieceWeight villagePiece, Start startPiece, List pieces, Random random, int x, int y, int z, int coordBaseMode, int p5) {
+      String templateUid;
+      if(startPiece.inDesert && !desertTemplates.isEmpty()) {
+        templateUid = desertTemplates.get(random.nextInt(desertTemplates.size()));
+      } else {
+        templateUid = templates.get(random.nextInt(templates.size()));
+      }
       VillageComponent comp = new VillageComponent(templateUid, villagerId, x, y, z, coordBaseMode);
 
       return canVillageGoDeeper(comp.getBoundingBox()) && StructureComponent.findIntersecting(pieces, comp.getBoundingBox()) == null
@@ -93,14 +109,21 @@ public class Test {
   }
 
   //public class VillageComponent extends Village {
-  public class VillageComponent extends StructureVillagePieces.House1 {
+  public static class VillageComponent extends StructureVillagePieces.House1 {
 
-    private int villagerId;    
+    private int villagerId;
 
     private int averageGroundLevel = -1;
 
     private IStructure structure;
     private IStructureTemplate template;
+    
+    //TODO:
+    int numCalls = 0;
+
+    public VillageComponent() {
+
+    }
 
     public VillageComponent(String templateUid, int villagerId, int x, int y, int z, int coordBaseMode) {
       this.villagerId = villagerId;
@@ -130,10 +153,10 @@ public class Test {
           return true;
         }
 
-        boundingBox.offset(0, averageGroundLevel - boundingBox.minY - 1, 0);
+        boundingBox.offset(0, averageGroundLevel - boundingBox.minY - 1 - structure.getSurfaceOffset(), 0);
       }
-      Point3i origin = new Point3i(boundingBox.minX, boundingBox.minY, boundingBox.minZ);
 
+      Point3i origin = new Point3i(boundingBox.minX, boundingBox.minY, boundingBox.minZ);
       if(coordBaseMode == 1) {
         origin.x++;
       } else if(coordBaseMode == 2) {
@@ -141,11 +164,15 @@ public class Test {
       }
       structure.setOrigin(origin);
 
-      ChunkBounds cb = new ChunkBounds(bb.minX >> 4, bb.minZ >> 4);
-      cb = null; //TODO:
+      ChunkBounds cb = new ChunkBounds(bb.getCenterX() >> 4, bb.getCenterZ() >> 4);
+      //cb = null; //TODO:
       template.build(structure, world, random, cb);
 
       spawnVillagers(world, bb, 3, 1, 3, 1);
+      
+      numCalls++;
+      
+      System.out.println("Test.VillageComponent.addComponentParts: numCalls: " + numCalls + " clipBounds=" + bb + " myBounds=" + boundingBox);
 
       return true;
     }
