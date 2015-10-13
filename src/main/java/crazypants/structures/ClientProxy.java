@@ -1,10 +1,10 @@
 package crazypants.structures;
 
+import cpw.mods.fml.client.FMLClientHandler;
+import crazypants.structures.gen.io.resource.ResourceModContainer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
-import cpw.mods.fml.client.FMLClientHandler;
-
 
 public class ClientProxy extends CommonProxy {
 
@@ -16,6 +16,12 @@ public class ClientProxy extends CommonProxy {
   @Override
   public EntityPlayer getClientPlayer() {
     return Minecraft.getMinecraft().thePlayer;
+  }
+
+  @Override
+  public void load() {
+    System.out.println("******************************************* ClientProxy.load: ");
+    FMLClientHandler.instance().addModAsResource(ResourceModContainer.create());
   }
 
 }

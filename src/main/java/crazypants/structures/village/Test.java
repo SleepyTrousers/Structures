@@ -12,6 +12,7 @@ import crazypants.structures.api.util.ChunkBounds;
 import crazypants.structures.api.util.Point3i;
 import crazypants.structures.api.util.Rotation;
 import crazypants.structures.gen.StructureRegister;
+import crazypants.structures.gen.io.resource.ResourceModContainer;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -39,7 +40,7 @@ public class Test {
 
     VillagerRegistry.instance().registerVillagerId(id);
 
-    ResourceLocation texture = new ResourceLocation("enderzoo:entity/dire_wolf.png");
+    ResourceLocation texture = new ResourceLocation(ResourceModContainer.MODID + ":test/testVillager.png");
     VillagerRegistry.instance().registerVillagerSkin(id, texture);
     VillagerRegistry.instance().registerVillageTradeHandler(id, new TradeHandler());
     VillagerRegistry.instance().registerVillageCreationHandler(new CreationHandler("test", id));
