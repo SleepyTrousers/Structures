@@ -15,7 +15,7 @@ public interface IStructureTemplate {
   String getUid();
 
   //TODO: These need offsets
-  List<IStructureComponent> getComponents();
+  List<PositionedComponent> getComponents();
 
   List<Rotation> getRotations();
 

@@ -46,6 +46,14 @@ public class SpacingValidator implements IChunkValidator, ISiteValidator {
       }
     }
   }
+  
+  public void setValidateChunk(boolean validateChunk) {
+    this.validateChunk = validateChunk;
+  }
+  
+  public void setValidateLocation(boolean validateLocation) {
+    this.validateLocation = validateLocation;
+  }
 
   @Override
   public boolean isValidChunk(IStructureGenerator template, IWorldStructures structures, World world, Random random, int chunkX, int chunkZ) {

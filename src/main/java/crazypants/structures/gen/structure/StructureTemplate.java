@@ -11,6 +11,7 @@ import crazypants.structures.api.gen.ISiteValidator;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.gen.IStructureComponent;
 import crazypants.structures.api.gen.IStructureTemplate;
+import crazypants.structures.api.gen.PositionedComponent;
 import crazypants.structures.api.util.Point3i;
 import crazypants.structures.api.util.Rotation;
 import crazypants.structures.gen.structure.decorator.CompositeDecorator;
@@ -26,8 +27,7 @@ public class StructureTemplate implements IStructureTemplate {
   
   private List<Rotation> rots = new ArrayList<Rotation>();
   
-  //TODO: Need offsets for components
-  private List<IStructureComponent> components = new ArrayList<IStructureComponent>();  
+  private List<PositionedComponent> components = new ArrayList<PositionedComponent>();  
   private final CompositePreperation sitePreps = new CompositePreperation();
   private final CompositeSiteValidator siteVals = new CompositeSiteValidator();
   private final CompositeDecorator decorators = new CompositeDecorator();
@@ -41,7 +41,7 @@ public class StructureTemplate implements IStructureTemplate {
     this.uid = uid;
   }
   
-  public StructureTemplate(String uid, Collection<IStructureComponent> components) {
+  public StructureTemplate(String uid, Collection<PositionedComponent> components) {
     this(uid);
     if(components != null) {
       this.components.addAll(components);
@@ -77,7 +77,7 @@ public class StructureTemplate implements IStructureTemplate {
   }
 
   @Override
-  public List<IStructureComponent> getComponents() {
+  public List<PositionedComponent> getComponents() {
     return components;
   }
 
@@ -94,14 +94,14 @@ public class StructureTemplate implements IStructureTemplate {
     this.rots = rots;
   }
   
-  public void addComponent(IStructureComponent st) {
+  public void addComponent(IStructureComponent st, Point3i offset) {
     if(components == null) {
-      components = new ArrayList<IStructureComponent>();
+      components = new ArrayList<PositionedComponent>();
     }
-    components.add(st);    
+    components.add(new PositionedComponent(st, offset));    
   }
 
-  public void setComponents(List<IStructureComponent> components) {
+  public void setComponents(List<PositionedComponent> components) {
     this.components = components;
   }
 
@@ -141,25 +141,43 @@ public class StructureTemplate implements IStructureTemplate {
   }
 
   @Override
-  public AxisAlignedBB getBounds() {
-    return components.get(0).getBounds();
+  public AxisAlignedBB getBounds() {    
+    AxisAlignedBB res = null;
+    for(PositionedComponent comp : components) {
+      AxisAlignedBB bb = comp.getComponent().getBounds();
+      Point3i offset = comp.getOffset();      
+      bb = bb.getOffsetBoundingBox(offset.x, offset.y, offset.z);
+      if(res == null) {
+        res = bb;
+      } else {
+        res = res.func_111270_a(bb);
+      }
+    }
+    return res;
   }
 
   @Override
   public Point3i getSize() {
-    return components.get(0).getSize();
+    AxisAlignedBB bb = getBounds();    
+    return new Point3i((int) Math.abs(bb.maxX - bb.minX), (int) Math.abs(bb.maxY - bb.minY), (int) Math.abs(bb.maxZ - bb.minZ));
   }
 
   @Override
   public int getSurfaceOffset() {
-    return components.get(0).getSurfaceOffset();
+    //TODO: How to handle this? Just using the first value is a bit dodgy
+    return components.get(0).getComponent().getSurfaceOffset();
   }
 
   @Override
   public void build(IStructure structure, World world, Random random, StructureBoundingBox bounds) {
     sitePreps.prepareLocation(structure, world, random, bounds);
     Point3i orig = structure.getOrigin();
-    components.get(0).build(world, orig.x, orig.y, orig.z, structure.getRotation(), bounds);   
+    
+    for(PositionedComponent pc : components) {
+      Point3i offset = pc.getOffset();
+      pc.getComponent().build(world, orig.x + offset.x, orig.y + offset.y, orig.z + offset.z, structure.getRotation(), bounds);
+    }
+    
     if(random == null) {
       random = RND;
     }
@@ -173,12 +191,15 @@ public class StructureTemplate implements IStructureTemplate {
 
   @Override
   public Collection<Point3i> getTaggedLocations(String target) {
-    //TODO: Need to handle offset for components
     List<Point3i> res = new ArrayList<Point3i>();
-    for(IStructureComponent comp : components) {
-      List<Point3i> r = comp.getTaggedLocations(target);
+    for(PositionedComponent pc : components) {
+      List<Point3i> r = pc.getComponent().getTaggedLocations(target);
       if(r != null) {
-        res.addAll(r);
+        for(Point3i p : r) {
+          Point3i newP = new Point3i(p);
+          newP.add(pc.getOffset());
+          res.add(newP);
+        }
       }
     }
     return res;

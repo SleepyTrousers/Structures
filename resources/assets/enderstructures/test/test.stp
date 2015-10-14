@@ -1,9 +1,15 @@
 {
     "StructureTemplate" : {
                        
-        "canSpanChunks" :  "false",    
+        "canSpanChunks" :  "true",    
         
         "rotations" : [0,90,180,270],
+        
+        "_components" : [
+          {"uid" : "test"},
+          {"uid" : "villageHouseDesert",
+           "offset" : [10, 10, 10] }
+        ],
         
         "components" : [
           {"uid" : "test"}

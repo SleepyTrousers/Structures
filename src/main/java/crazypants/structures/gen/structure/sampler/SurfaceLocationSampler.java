@@ -54,8 +54,8 @@ public class SurfaceLocationSampler implements ILocationSampler {
   }
 
   protected Point3i getRandomBlock(World world, int chunkX, int chunkZ, int maxOffsetX, int maxOffsetZ, int distanceFromSurface, int requiredVerticalSpace) {
-    int x = chunkX * 16 + rnd.nextInt(maxOffsetX);
-    int z = chunkZ * 16 + rnd.nextInt(maxOffsetZ);
+    int x = chunkX * 16 + (maxOffsetX > 0 ? rnd.nextInt(maxOffsetX) : 0);
+    int z = chunkZ * 16 + (maxOffsetZ > 0 ? rnd.nextInt(maxOffsetZ) : 0);
 
     //Find the surface y
     Block blk;

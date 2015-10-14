@@ -17,6 +17,7 @@ import crazypants.structures.api.gen.ISiteValidator;
 import crazypants.structures.api.gen.IStructureComponent;
 import crazypants.structures.api.gen.IStructureGenerator;
 import crazypants.structures.api.gen.IStructureTemplate;
+import crazypants.structures.api.util.Point3i;
 import crazypants.structures.api.util.Rotation;
 import crazypants.structures.gen.StructureRegister;
 import crazypants.structures.gen.structure.StructureGenerator;
@@ -126,10 +127,21 @@ public class GeneratorParser {
       for (JsonElement e : components) {
         if(e.isJsonObject()) {
           JsonObject valObj = e.getAsJsonObject();
-          if(!valObj.isJsonNull()) {
-            IStructureComponent st = reg.getStructureComponent(uid, true);
+          if(!valObj.isJsonNull()&& valObj.has("uid")) {
+            String compUid = valObj.get("uid").getAsString();            
+            IStructureComponent st = reg.getStructureComponent(compUid, true);            
             if(st != null) {
-              res.addComponent(st);
+              Point3i offset = null;
+              if(valObj.has("offset")) {
+                JsonElement offsetJE = valObj.get("offset");
+                if(offsetJE.isJsonArray()) {
+                  JsonArray arr = offsetJE.getAsJsonArray();
+                  if(!arr.isJsonNull() && arr.size() == 3) {
+                    offset = new Point3i(arr.get(0).getAsInt(), arr.get(1).getAsInt(), arr.get(2).getAsInt());                    
+                  }
+                }
+              }
+              res.addComponent(st, offset);
             }
           }
         }

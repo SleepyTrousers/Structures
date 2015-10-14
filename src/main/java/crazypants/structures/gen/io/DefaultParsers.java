@@ -104,7 +104,9 @@ public class DefaultParsers {
     public IChunkValidator createChunkValidator(String uid, JsonObject json) {
       SpacingValidator res = new SpacingValidator();
       res.setMinSpacing(JsonUtil.getIntElement(json, "minSpacing", res.getMinSpacing()));                 
-      res.setTemplateFilter(JsonUtil.getStringArrayElement(json, "templateFilter"));           
+      res.setTemplateFilter(JsonUtil.getStringArrayElement(json, "templateFilter"));    
+      res.setValidateChunk(true);
+      res.setValidateLocation(false);
       return res;
     }
 
@@ -113,7 +115,9 @@ public class DefaultParsers {
     public ISiteValidator createSiteValidator(String uid, JsonObject json) {
       SpacingValidator res = new SpacingValidator();
       res.setMinSpacing(JsonUtil.getIntElement(json, "minSpacing", res.getMinSpacing()));                 
-      res.setTemplateFilter(JsonUtil.getStringArrayElement(json, "templateFilter"));           
+      res.setTemplateFilter(JsonUtil.getStringArrayElement(json, "templateFilter"));
+      res.setValidateChunk(false);
+      res.setValidateLocation(true);
       return res;
     }
     
