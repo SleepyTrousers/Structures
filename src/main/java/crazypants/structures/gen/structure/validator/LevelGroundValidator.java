@@ -2,18 +2,19 @@ package crazypants.structures.gen.structure.validator;
 
 import java.util.Random;
 
-import net.minecraft.block.Block;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.FluidRegistry;
 import crazypants.structures.api.gen.ISiteValidator;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.gen.IWorldStructures;
-import crazypants.structures.api.util.ChunkBounds;
 import crazypants.structures.api.util.Point3i;
 import crazypants.structures.api.util.StructureUtil;
+import crazypants.structures.api.util.VecUtil;
 import crazypants.structures.gen.structure.Border;
+import net.minecraft.block.Block;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.World;
+import net.minecraft.world.gen.structure.StructureBoundingBox;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.FluidRegistry;
 
 public class LevelGroundValidator implements ISiteValidator {
 
@@ -32,7 +33,7 @@ public class LevelGroundValidator implements ISiteValidator {
   }
 
   @Override
-  public boolean isValidBuildSite(IStructure structure, IWorldStructures existingStructures, World world, Random random, ChunkBounds clip) {
+  public boolean isValidBuildSite(IStructure structure, IWorldStructures existingStructures, World world, Random random, StructureBoundingBox clip) {
 
     AxisAlignedBB bb = structure.getBounds();
     int minX = (int) bb.minX;
@@ -62,7 +63,7 @@ public class LevelGroundValidator implements ISiteValidator {
     for (int x = minX - border.get(ForgeDirection.WEST); x <= maxX + border.get(ForgeDirection.EAST); x += xSpacing) {
       for (int z = minZ - border.get(ForgeDirection.NORTH); z <= maxZ + border.get(ForgeDirection.SOUTH); z += zSpacing) {
 
-        if(clip == null || clip.isBlockInBounds(x, z)) {
+        if(clip == null || VecUtil.isInBounds(clip, x,z)) {
           sampleLoc.set(x, structure.getOrigin().y + structure.getSurfaceOffset(), z);
           if(!testLocation(sampleLoc, world, minMax, surfacePos)) {
             return false;

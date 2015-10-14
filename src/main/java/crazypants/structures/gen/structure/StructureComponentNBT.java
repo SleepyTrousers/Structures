@@ -18,12 +18,16 @@ import java.util.Map.Entry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import crazypants.structures.Log;
 import crazypants.structures.api.gen.IStructureComponent;
-import crazypants.structures.api.util.ChunkBounds;
 import crazypants.structures.api.util.Point3i;
 import crazypants.structures.api.util.Rotation;
 import crazypants.structures.api.util.StructureUtil;
 import crazypants.structures.api.util.VecUtil;
+import crazypants.structures.gen.RotationHelper;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockAnvil;
+import net.minecraft.block.BlockGravel;
+import net.minecraft.block.BlockSand;
+import net.minecraft.block.BlockTorch;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -31,7 +35,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.world.gen.structure.StructureBoundingBox;
 
 public class StructureComponentNBT implements IStructureComponent {
 
@@ -242,7 +246,7 @@ public class StructureComponentNBT implements IStructureComponent {
   }
 
   @Override
-  public void build(World world, int x, int y, int z, Rotation rot, ChunkBounds genBounds) {
+  public void build(World world, int x, int y, int z, Rotation rot, StructureBoundingBox genBounds) {
 
     if(rot == null) {
       rot = Rotation.DEG_0;
@@ -256,6 +260,8 @@ public class StructureComponentNBT implements IStructureComponent {
       surfBlk = biome.topBlock;
     }
 
+    List<Entry<StructureBlock, List<Point3i>>> defered = new ArrayList<Map.Entry<StructureBlock, List<Point3i>>>();
+
     Map<StructureBlock, List<Point3i>> blks = getBlocks();
     for (Entry<StructureBlock, List<Point3i>> entry : blks.entrySet()) {
 
@@ -266,15 +272,34 @@ public class StructureComponentNBT implements IStructureComponent {
       } else if(surfBlk != null && sb == topBlock) {
         fillBlocks(world, x, y, z, rot, genBounds, coords, surfBlk);
       } else {
-        placeBlocks(world, x, y, z, rot, genBounds, sb, coords);
+        if(isDefered(sb)) {
+          defered.add(entry);
+        } else {
+          placeBlocks(world, x, y, z, rot, genBounds, sb, coords);
+        }
       }
     }
+
+    for (Entry<StructureBlock, List<Point3i>> entry : defered) {
+      StructureBlock sb = entry.getKey();
+      List<Point3i> coords = entry.getValue();
+      placeBlocks(world, x, y, z, rot, genBounds, sb, coords);
+    }
+
   }
 
-  private void fillBlocks(World world, int x, int y, int z, Rotation rot, ChunkBounds genBounds, List<Point3i> coords, Block filler) {
+  private boolean isDefered(StructureBlock sb) {
+    Block block = GameRegistry.findBlock(sb.getModId(), sb.getBlockName());
+    if(block == null) {
+      return false;
+    }
+    return block instanceof BlockTorch || block instanceof BlockSand || block instanceof BlockGravel || block instanceof BlockAnvil;
+  }
+
+  private void fillBlocks(World world, int x, int y, int z, Rotation rot, StructureBoundingBox genBounds, List<Point3i> coords, Block filler) {
     for (Point3i coord : coords) {
       Point3i bc = VecUtil.transformStructureCoodToWorld(x, y, z, rot, size, coord);
-      if((genBounds == null || genBounds.isBlockInBounds(bc.x, bc.z))
+      if((genBounds == null || genBounds.isVecInside(bc.x, bc.y, bc.z))
           && StructureUtil.isIgnoredAsSurface(world, x, z, y, world.getBlock(x, y, z), true, false)) {
         world.setBlock(bc.x, bc.y, bc.z, filler, 0, 2);
       }
@@ -282,7 +307,7 @@ public class StructureComponentNBT implements IStructureComponent {
     return;
   }
 
-  private void placeBlocks(World world, int x, int y, int z, Rotation rot, ChunkBounds genBounds, StructureBlock sb, List<Point3i> coords) {
+  private void placeBlocks(World world, int x, int y, int z, Rotation rot, StructureBoundingBox genBounds, StructureBlock sb, List<Point3i> coords) {
 
     Block block = GameRegistry.findBlock(sb.getModId(), sb.getBlockName());
     if(block == null) {
@@ -291,9 +316,11 @@ public class StructureComponentNBT implements IStructureComponent {
 
       for (Point3i coord : coords) {
         Point3i bc = VecUtil.transformStructureCoodToWorld(x, y, z, rot, size, coord);
-        if(genBounds == null || genBounds.isBlockInBounds(bc.x, bc.z)) {
 
-          world.setBlock(bc.x, bc.y, bc.z, block, sb.getMetaData(), 2);
+        if(genBounds == null || genBounds.isVecInside(bc.x, bc.y, bc.z)) {
+
+          int meta = RotationHelper.rotateMetadata(block, sb.getMetaData(), rot);
+          world.setBlock(bc.x, bc.y, bc.z, block, meta, 2);
 
           if(sb.getTileEntity() != null) {
             TileEntity te = TileEntity.createAndLoadEntity(sb.getTileEntity());
@@ -305,12 +332,16 @@ public class StructureComponentNBT implements IStructureComponent {
             }
           }
           //Chest will change the meta on block placed, so need to set it back
-          if(world.getBlockMetadata(bc.x, bc.y, bc.z) != sb.getMetaData()) {
-            world.setBlockMetadataWithNotify(bc.x, bc.y, bc.z, sb.getMetaData(), 3);
+          if(world.getBlockMetadata(bc.x, bc.y, bc.z) != meta) {
+            world.setBlockMetadataWithNotify(bc.x, bc.y, bc.z, meta, 3);
           }
-          for (int i = 0; i < rot.ordinal(); i++) {
-            block.rotateBlock(world, bc.x, bc.y, bc.z, ForgeDirection.UP);
-          }
+          //          //Chest will change the meta on block placed, so need to set it back
+          //          if(world.getBlockMetadata(bc.x, bc.y, bc.z) != sb.getMetaData()) {
+          //            world.setBlockMetadataWithNotify(bc.x, bc.y, bc.z, sb.getMetaData(), 3);
+          //          }
+          //          for (int i = 0; i < rot.ordinal(); i++) {
+          //            block.rotateBlock(world, bc.x, bc.y, bc.z, ForgeDirection.UP);
+          //          }
         }
       }
     }
@@ -363,4 +394,5 @@ public class StructureComponentNBT implements IStructureComponent {
     return "StructureTemplate [uid=" + uid + "]";
   }
 
+  
 }

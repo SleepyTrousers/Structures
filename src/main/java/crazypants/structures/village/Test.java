@@ -10,7 +10,6 @@ import cpw.mods.fml.common.registry.VillagerRegistry.IVillageCreationHandler;
 import cpw.mods.fml.common.registry.VillagerRegistry.IVillageTradeHandler;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.gen.IStructureTemplate;
-import crazypants.structures.api.util.ChunkBounds;
 import crazypants.structures.api.util.Point3i;
 import crazypants.structures.api.util.Rotation;
 import crazypants.structures.gen.StructureRegister;
@@ -164,35 +163,30 @@ public class Test {
       }
       structure.setOrigin(origin);
 
-      ChunkBounds cb = new ChunkBounds(bb.getCenterX() >> 4, bb.getCenterZ() >> 4);
-      //cb = null; //TODO:
-      template.build(structure, world, random, cb);
+      
+      template.build(structure, world, random, bb);
 
       spawnVillagers(world, bb, 3, 1, 3, 1);
       
       numCalls++;
-      
-      System.out.println("Test.VillageComponent.addComponentParts: numCalls: " + numCalls + " clipBounds=" + bb + " myBounds=" + boundingBox);
 
       return true;
     }
 
-    private Rotation getRotation() {
-
-      //TODO: I think my test model is the wrong way around
-      switch (coordBaseMode) {
-      case 0:
-        return Rotation.DEG_180;
-      case 1:
-        return Rotation.DEG_270;
-      case 2:
-        return Rotation.DEG_0;
-      case 3:
-        return Rotation.DEG_90;
-      default:
-        return Rotation.DEG_0;
-      }
-
+    private Rotation getRotation() {      
+//      switch (coordBaseMode) {
+//      case 0:
+//        return Rotation.DEG_0;
+//      case 1:
+//        return Rotation.DEG_90;
+//      case 2:
+//        return Rotation.DEG_180;
+//      case 3:
+//        return Rotation.DEG_270;
+//      default:
+//        return Rotation.DEG_0;
+//      }
+      return Rotation.values()[coordBaseMode];
     }
 
     @Override

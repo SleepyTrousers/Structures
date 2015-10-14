@@ -2,16 +2,17 @@ package crazypants.structures.gen.structure.preperation;
 
 import java.util.Random;
 
+import crazypants.structures.api.gen.ISitePreperation;
+import crazypants.structures.api.gen.IStructure;
+import crazypants.structures.api.util.StructureUtil;
+import crazypants.structures.api.util.VecUtil;
+import crazypants.structures.gen.structure.Border;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraftforge.common.util.ForgeDirection;
-import crazypants.structures.api.gen.ISitePreperation;
-import crazypants.structures.api.gen.IStructure;
-import crazypants.structures.api.util.ChunkBounds;
-import crazypants.structures.api.util.StructureUtil;
-import crazypants.structures.gen.structure.Border;
 
 public class FillPreperation implements ISitePreperation {
 
@@ -31,7 +32,7 @@ public class FillPreperation implements ISitePreperation {
   }
 
   @Override
-  public boolean prepareLocation(IStructure structure, World world, Random random, ChunkBounds clip) {
+  public boolean prepareLocation(IStructure structure, World world, Random random, StructureBoundingBox clip) {
     Block fill = fillBlock;
     Block surf = surfaceBlock;
     if(useBiomeFillerBlock) {
@@ -71,7 +72,7 @@ public class FillPreperation implements ISitePreperation {
 //          startY = maxY + structure.getTemplate().getSurfaceOffset();
         }
         for (int y = startY; y > minY; y--) {
-          if(clip == null || clip.isBlockInBounds(x, z)) {
+          if(clip == null || VecUtil.isInBounds(clip, x, z)) {
             if(StructureUtil.isIgnoredAsSurface(world, x, z, y, world.getBlock(x, y, z), true, true)) {
               if(y >= maxY && world.isAirBlock(x, y + 1, z)) {
                 curBlk = surf;

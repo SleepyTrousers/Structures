@@ -11,11 +11,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.structure.StructureBoundingBox;
 
 public interface IStructure {
   
-  //TODO:
-  boolean isValidSite(IWorldStructures existingStructures, World world, Random random, ChunkBounds bounds);
+  //TODO: Dont think this should be here
+  boolean isValidSite(IWorldStructures existingStructures, World world, Random random, StructureBoundingBox bounds);
 
   String getUid();
   
@@ -56,7 +57,7 @@ public interface IStructure {
 
   boolean isValid();
 
-  void build(World world, Random random, ChunkBounds bounds);
+  void build(World world, Random random, StructureBoundingBox bounds);
 
   void writeToNBT(NBTTagCompound root);
 

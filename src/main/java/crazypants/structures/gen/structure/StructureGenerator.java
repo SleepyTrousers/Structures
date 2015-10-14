@@ -17,13 +17,14 @@ import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.gen.IStructureGenerator;
 import crazypants.structures.api.gen.IStructureTemplate;
 import crazypants.structures.api.gen.IWorldStructures;
-import crazypants.structures.api.util.ChunkBounds;
 import crazypants.structures.api.util.Point3i;
+import crazypants.structures.api.util.VecUtil;
 import crazypants.structures.gen.structure.sampler.SurfaceLocationSampler;
 import crazypants.structures.gen.structure.validator.CompositeValidator;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.gen.structure.StructureBoundingBox;
 
 public class StructureGenerator implements IStructureGenerator {
 
@@ -144,7 +145,8 @@ public class StructureGenerator implements IStructureGenerator {
   public boolean buildStructureInChunk(IStructure s, IWorldStructures structures, Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator,
       IChunkProvider chunkProvider) {
 
-    ChunkBounds bounds = new ChunkBounds(chunkX, chunkZ);
+    //ChunkBounds bounds = new ChunkBounds(chunkX, chunkZ);
+    StructureBoundingBox bounds = VecUtil.createForChunk(chunkX, chunkZ);
     if(!s.isValidSite(structures, world, random, bounds)) {
       return false;
     }
@@ -157,7 +159,7 @@ public class StructureGenerator implements IStructureGenerator {
       Collection<ChunkCoordIntPair> chunks = s.getChunkBounds().getChunks();
       for (ChunkCoordIntPair c : chunks) {
         if (!(c.chunkXPos == chunkX && c.chunkZPos == chunkZ) && chunkGenerator.chunkExists(c.chunkXPos, c.chunkZPos)) {
-          s.build(world, random, new ChunkBounds(c.chunkXPos, c.chunkZPos));
+          s.build(world, random, VecUtil.createForChunk(c.chunkXPos, c.chunkZPos));
         }
       }
     }
@@ -172,7 +174,7 @@ public class StructureGenerator implements IStructureGenerator {
 
     for (IStructure s : existing) {
       if (s.canSpanChunks() && !s.getGenerationRequiresLoadedChunks()) {
-        s.build(world, random, new ChunkBounds(chunkX, chunkZ));
+        s.build(world, random, VecUtil.createForChunk(chunkX, chunkZ));
       }
     }
     return !existing.isEmpty();

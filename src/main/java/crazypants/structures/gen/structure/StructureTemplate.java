@@ -11,7 +11,6 @@ import crazypants.structures.api.gen.ISiteValidator;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.gen.IStructureComponent;
 import crazypants.structures.api.gen.IStructureTemplate;
-import crazypants.structures.api.util.ChunkBounds;
 import crazypants.structures.api.util.Point3i;
 import crazypants.structures.api.util.Rotation;
 import crazypants.structures.gen.structure.decorator.CompositeDecorator;
@@ -19,6 +18,7 @@ import crazypants.structures.gen.structure.preperation.CompositePreperation;
 import crazypants.structures.gen.structure.validator.CompositeSiteValidator;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.structure.StructureBoundingBox;
 
 public class StructureTemplate implements IStructureTemplate {
   
@@ -156,7 +156,7 @@ public class StructureTemplate implements IStructureTemplate {
   }
 
   @Override
-  public void build(IStructure structure, World world, Random random, ChunkBounds bounds) {
+  public void build(IStructure structure, World world, Random random, StructureBoundingBox bounds) {
     sitePreps.prepareLocation(structure, world, random, bounds);
     Point3i orig = structure.getOrigin();
     components.get(0).build(world, orig.x, orig.y, orig.z, structure.getRotation(), bounds);   

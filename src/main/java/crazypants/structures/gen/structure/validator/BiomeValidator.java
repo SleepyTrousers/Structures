@@ -2,12 +2,12 @@ package crazypants.structures.gen.structure.validator;
 
 import java.util.Random;
 
-import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
 import crazypants.structures.api.gen.IChunkValidator;
 import crazypants.structures.api.gen.IStructureGenerator;
 import crazypants.structures.api.gen.IWorldStructures;
 import crazypants.structures.gen.structure.validator.biome.IBiomeFilter;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
 
 public class BiomeValidator implements IChunkValidator {
 

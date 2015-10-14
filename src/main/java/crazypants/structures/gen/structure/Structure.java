@@ -17,9 +17,10 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.structure.StructureBoundingBox;
 
 public class Structure implements IStructure {
-
+  
   private final Point3i origin;
   private final Rotation rotation;
   private final IStructureTemplate template;
@@ -117,7 +118,7 @@ public class Structure implements IStructure {
   }
 
   @Override
-  public void build(World world, Random random, ChunkBounds bounds) {
+  public void build(World world, Random random, StructureBoundingBox bounds) {
     template.build(this, world, random, bounds);
   }
   
@@ -162,7 +163,7 @@ public class Structure implements IStructure {
   }
 
   @Override
-  public boolean isValidSite(IWorldStructures existingStructures, World world, Random random, ChunkBounds bounds) {
+  public boolean isValidSite(IWorldStructures existingStructures, World world, Random random, StructureBoundingBox bounds) {
     return template.getSiteValiditor().isValidBuildSite(this, existingStructures, world, random, bounds);
   }
 

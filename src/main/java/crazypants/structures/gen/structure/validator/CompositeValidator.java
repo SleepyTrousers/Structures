@@ -5,10 +5,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
-import net.minecraft.world.World;
 import crazypants.structures.api.gen.IChunkValidator;
 import crazypants.structures.api.gen.IStructureGenerator;
 import crazypants.structures.api.gen.IWorldStructures;
+import net.minecraft.world.World;
 
 public class CompositeValidator implements IChunkValidator {
 

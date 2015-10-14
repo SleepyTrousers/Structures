@@ -8,6 +8,7 @@ import crazypants.structures.api.gen.IStructureComponent;
 import crazypants.structures.api.gen.IStructureTemplate;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
+import net.minecraft.world.gen.structure.StructureBoundingBox;
 
 public class VecUtil {
 
@@ -36,6 +37,10 @@ public class VecUtil {
     pos.yCoord = posY;
     pos.zCoord = posZ;    
   }
+  
+  public static boolean isInBounds(AxisAlignedBB bb, Point3i bc) {
+    return bb.isVecInside(Vec3.createVectorHelper(bc.x, bc.y, bc.z));
+  }
 
   public static Point3i transformStructureCoodToWorld(int worldOriginX, int worldOriginY, int worldOriginZ, Rotation componentRotation, Point3i componentSize, Point3i localCoord) {
     Point3i bc = new Point3i(localCoord);
@@ -59,6 +64,16 @@ public class VecUtil {
   
   public static Point3i size(AxisAlignedBB bb) {
     return new Point3i((int) Math.abs(bb.maxX - bb.minX), (int) Math.abs(bb.maxY - bb.minY), (int) Math.abs(bb.maxZ - bb.minZ));
+  }
+
+  public static StructureBoundingBox createForChunk(int chunkX, int chunkZ) {
+    int minX = chunkX << 4;
+    int minZ = chunkZ << 4;    
+    return new StructureBoundingBox(minX, minZ, minX + 16, minZ + 16);
+  }
+  
+  public static boolean isInBounds(StructureBoundingBox bb, int x, int z) {
+    return x >= bb.minX & x <= bb.maxX && z >= bb.minZ && z <= bb.maxZ;
   }
   
 }

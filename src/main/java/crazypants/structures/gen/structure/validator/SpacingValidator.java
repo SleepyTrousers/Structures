@@ -12,10 +12,10 @@ import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.gen.IStructureGenerator;
 import crazypants.structures.api.gen.IWorldStructures;
 import crazypants.structures.api.util.BoundingCircle;
-import crazypants.structures.api.util.ChunkBounds;
 import crazypants.structures.api.util.Vector2d;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.structure.StructureBoundingBox;
 
 public class SpacingValidator implements IChunkValidator, ISiteValidator {
 
@@ -59,7 +59,7 @@ public class SpacingValidator implements IChunkValidator, ISiteValidator {
   }
 
   @Override
-  public boolean isValidBuildSite(IStructure structure, IWorldStructures existingStructures, World world, Random random, ChunkBounds bounds) {
+  public boolean isValidBuildSite(IStructure structure, IWorldStructures existingStructures, World world, Random random, StructureBoundingBox bounds) {
     if(!validateLocation) {
       return true;
     }

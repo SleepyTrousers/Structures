@@ -2,14 +2,15 @@ package crazypants.structures.gen.structure.preperation;
 
 import java.util.Random;
 
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 import crazypants.structures.api.gen.ISitePreperation;
 import crazypants.structures.api.gen.IStructure;
-import crazypants.structures.api.util.ChunkBounds;
 import crazypants.structures.api.util.StructureUtil;
+import crazypants.structures.api.util.VecUtil;
 import crazypants.structures.gen.structure.Border;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.World;
+import net.minecraft.world.gen.structure.StructureBoundingBox;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class ClearPreperation implements ISitePreperation {
 
@@ -24,7 +25,7 @@ public class ClearPreperation implements ISitePreperation {
   }
 
   @Override
-  public boolean prepareLocation(IStructure structure, World world, Random random, ChunkBounds clip) {
+  public boolean prepareLocation(IStructure structure, World world, Random random, StructureBoundingBox clip) {
 
     AxisAlignedBB bb = structure.getBounds();
     int minX = (int) bb.minX - border.get(ForgeDirection.WEST);
@@ -41,7 +42,7 @@ public class ClearPreperation implements ISitePreperation {
     for (int x = minX; x < maxX; x++) {
       for (int y = minY; y < maxY; y++) {
         for (int z = minZ; z < maxZ; z++) {
-          if( (clip == null || clip.isBlockInBounds(x, z)) && (clearPlants || !StructureUtil.isPlant(world.getBlock(x, y, z), world, x, y, z))) {
+          if( (clip == null || VecUtil.isInBounds(clip, x, z)) && (clearPlants || !StructureUtil.isPlant(world.getBlock(x, y, z), world, x, y, z))) {
             if(!world.isAirBlock(x, y, z)) {
               world.setBlockToAir(x, y, z);
             }

@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import net.minecraft.world.World;
 import crazypants.structures.api.gen.ISitePreperation;
 import crazypants.structures.api.gen.IStructure;
-import crazypants.structures.api.util.ChunkBounds;
+import net.minecraft.world.World;
+import net.minecraft.world.gen.structure.StructureBoundingBox;
 
 public class CompositePreperation implements ISitePreperation {
 
@@ -21,7 +21,7 @@ public class CompositePreperation implements ISitePreperation {
   }
 
   @Override
-  public boolean prepareLocation(IStructure structure, World world, Random random, ChunkBounds bounds) {
+  public boolean prepareLocation(IStructure structure, World world, Random random, StructureBoundingBox bounds) {
     for (ISitePreperation rule : preps) {
       if (!rule.prepareLocation(structure, world, random, bounds)) {
         return false;
