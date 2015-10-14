@@ -76,7 +76,8 @@ public class RotationHelper {
     MUSHROOM_CAP_SIDE(0x0), //guessed mask
     VINE(0xF),
     SKULL(0x7),
-    ANVIL(0x1);
+    ANVIL(0x1),
+    TRIP_WIRE_HOOK(0x3);
 
 //    final int mask;
 
@@ -159,18 +160,9 @@ public class RotationHelper {
     biMap.put(0x0, SOUTH);
     biMap.put(0x1, EAST);
     MAPPINGS.put(BlockType.ANVIL, biMap);
-  }
+  }   
   
-  public static int rotateMetadata(Block block, int meta, Rotation rot) {
-    return rotateMetadataFromRotationHelper(block, meta, rot);
-  }
-  
-  
-  
-
-  
-  
-  public static int rotateMetadataFromRotationHelper(Block block, int meta, Rotation rot) {    
+  public static int rotateMetadata(Block block, int meta, Rotation rot) {    
     int result = meta;
     for(int i=0;i<rot.ordinal();i++) {
       result = rotateMetadata(block, result);
@@ -212,7 +204,8 @@ public class RotationHelper {
       case 0x0:
         return 0x7;
       }
-    }
+    }    
+    
     if(blockType == BlockType.MUSHROOM_CAP) {
       if(meta % 0x2 == 0) {
         blockType = BlockType.MUSHROOM_CAP_SIDE;
@@ -226,13 +219,13 @@ public class RotationHelper {
 
     ForgeDirection orientation = metadataToDirection(blockType, meta);
     ForgeDirection rotated = orientation.getRotation(axis);
-    return directionToMetadata(blockType, rotated);
+    return directionToMetadata(blockType, rotated, meta);
   }
 
   private static BlockType getBlockType(Block block) {
 
     if(block instanceof BlockBed || block instanceof BlockPumpkin || block instanceof BlockFenceGate || block instanceof BlockEndPortalFrame
-        || block instanceof BlockTripWireHook || block instanceof BlockCocoa) {
+        || block instanceof BlockCocoa) {
       return BlockType.BED;
     }
     if(block instanceof BlockRail) {
@@ -287,6 +280,10 @@ public class RotationHelper {
     if(block instanceof BlockLever) {
       return BlockType.LEVER;
     }
+    if(block instanceof BlockTripWireHook) {
+      return BlockType.TRIP_WIRE_HOOK;
+    }
+    
     return null;
   }
 
@@ -319,13 +316,37 @@ public class RotationHelper {
       return ForgeDirection.getOrientation(6 - meta);
     }
     if(blockType == BlockType.TRAPDOOR) {
-      return ForgeDirection.getOrientation(meta + 2).getOpposite();
+      //return ForgeDirection.getOrientation(meta + 2).getOpposite();
+      int val = meta & 3;
+      switch(val) {
+      case 0:
+        return ForgeDirection.SOUTH;
+      case 1:
+        return ForgeDirection.NORTH;
+      case 2:
+        return ForgeDirection.EAST;
+      case 3:
+        return ForgeDirection.WEST;      
+      }
+    }
+    if(blockType == BlockType.TRIP_WIRE_HOOK) {
+      int val = meta & 3;
+      switch(val) {
+      case 0:
+        return ForgeDirection.NORTH;
+      case 1:
+        return ForgeDirection.EAST;
+      case 2:
+        return ForgeDirection.SOUTH;
+      case 3:
+        return ForgeDirection.WEST;      
+      }
     }
 
     return ForgeDirection.UNKNOWN;
   }
 
-  private static int directionToMetadata(BlockType blockType, ForgeDirection direction) {
+  private static int directionToMetadata(BlockType blockType, ForgeDirection direction, int origMeta) {
     if((blockType == BlockType.LOG || blockType == BlockType.ANVIL) && (direction.offsetX + direction.offsetY + direction.offsetZ) < 0) {
       direction = direction.getOpposite();
     }
@@ -354,7 +375,36 @@ public class RotationHelper {
       }
     }
     if(blockType == BlockType.TRAPDOOR) {
-      return direction.getOpposite().ordinal() - 2;
+      int lastTwoBits = origMeta & 12;
+      switch(direction) {
+      case NORTH:
+        return lastTwoBits + 1;
+      case EAST:
+        return lastTwoBits + 2;
+      case SOUTH:
+        return lastTwoBits;
+      case WEST:
+        return lastTwoBits + 3;
+      default:
+        break;
+      }
+      //return direction.getOpposite().ordinal() - 2;
+    }
+    if(blockType == BlockType.TRIP_WIRE_HOOK) {
+      int lastTwoBits = origMeta & 12;
+      switch(direction) {
+      case NORTH:
+        return lastTwoBits;
+      case EAST:
+        return lastTwoBits + 1;
+      case SOUTH:
+        return lastTwoBits + 2;
+      case WEST:
+        return lastTwoBits + 3;
+      default:
+        break;
+      }
+      //return direction.getOpposite().ordinal() - 2;
     }
 
     return -1;
