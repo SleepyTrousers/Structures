@@ -27,7 +27,7 @@ public class LootTableDecorator implements IDecorator {
     for (String target : targets) {
       Collection<Point3i> locs = structure.getTaggedLocations(target);
       for (Point3i loc : locs) {
-        if(bounds.isVecInside(loc.x, loc.y, loc.z)) {
+        if(bounds == null || bounds.isVecInside(loc.x, loc.y, loc.z)) {
           IInventory inv = getInventory(world, loc);
           if(inv != null) {
             WeightedRandomChestContent.generateChestContents(random, ChestGenHooks.getItems(category, random), inv, ChestGenHooks.getCount(category, random));

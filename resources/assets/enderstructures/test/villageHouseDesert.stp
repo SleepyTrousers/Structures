@@ -1,8 +1,6 @@
 {
     "StructureTemplate" : {
-            
-        "uid" : "villageHouseDesert",    
-                
+                    
         "components" : [
           {"uid" : "villageHouseDesert"}
         ],               

@@ -115,10 +115,7 @@ public class Test {
     private int averageGroundLevel = -1;
 
     private IStructure structure;
-    private IStructureTemplate template;
-    
-    //TODO:
-    int numCalls = 0;
+    private IStructureTemplate template;   
 
     public VillageComponent() {
 
@@ -167,25 +164,11 @@ public class Test {
       template.build(structure, world, random, bb);
 
       spawnVillagers(world, bb, 3, 1, 3, 1);
-      
-      numCalls++;
 
       return true;
     }
 
     private Rotation getRotation() {      
-//      switch (coordBaseMode) {
-//      case 0:
-//        return Rotation.DEG_0;
-//      case 1:
-//        return Rotation.DEG_90;
-//      case 2:
-//        return Rotation.DEG_180;
-//      case 3:
-//        return Rotation.DEG_270;
-//      default:
-//        return Rotation.DEG_0;
-//      }
       return Rotation.values()[coordBaseMode];
     }
 

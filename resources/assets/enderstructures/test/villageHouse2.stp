@@ -1,8 +1,6 @@
 {
     "StructureTemplate" : {
-            
-        "uid" : "villageHouse2",    
-                
+                   
         "components" : [
           {"uid" : "villageHouse2"}
         ],               
@@ -14,6 +12,20 @@
            
             { "type" : "FillPreperation",
                       "clearPlants" : "true"}           
+       ],
+       
+       "decorators" : [
+        
+         { "type" : "LootTableInventory",
+                    "category" : "villageBlacksmith",  
+                    "comment_category" : "mineshaftCorridor, pyramidDesertyChest, pyramidJungleChest, pyramidJungleDispenser, strongholdCorridor, strongholdLibrary, strongholdCrossing, villageBlacksmith, bonusChest, dungeonChest",
+                    "targets" : ["inv0"]},
+                    
+         { "type" : "LootTableInventory",
+                    "category" : "dungeonChest",  
+                    "comment_category" : "mineshaftCorridor, pyramidDesertyChest, pyramidJungleChest, pyramidJungleDispenser, strongholdCorridor, strongholdLibrary, strongholdCrossing, villageBlacksmith, bonusChest, dungeonChest",
+                    "targets" : ["inv1", "inv2"]}
+                     
        ]
        
     }

@@ -1,8 +1,6 @@
 {
     "StructureTemplate" : {
-            
-        "uid" : "test",    
-        
+                       
         "canSpanChunks" :  "false",    
         
         "rotations" : [0,90,180,270],
@@ -14,8 +12,7 @@
         "siteValidators" : [
         
          { "type" : "SpacingValidator", 
-                    "minSpacing" : 20,
-                    "templateFilter" : []},
+                    "minSpacing" : 20},
                                             
         { "type" : "LevelGroundValidator",
                     "canSpawnOnWater" : "false",

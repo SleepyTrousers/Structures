@@ -29,61 +29,61 @@ public class GeneratorParser {
   public GeneratorParser() {
   }
 
-  public IStructureGenerator parseGeneratorConfig(StructureRegister reg, String json) throws Exception {
-    String uid = null;
+  public IStructureGenerator parseGeneratorConfig(StructureRegister reg, String uid, String json) throws Exception {
+
     StructureGenerator res = null;
     try {
       JsonObject to = new JsonParser().parse(json).getAsJsonObject();
       to = to.getAsJsonObject("StructureGenerator");
 
-      uid = to.get("uid").getAsString();
-
-      res = new StructureGenerator(uid);      
-      if (to.has("maxAttemptsPerChunk")) {
+      res = new StructureGenerator(uid);
+      if(to.has("maxAttemptsPerChunk")) {
         res.setMaxInChunk(to.get("maxAttemptsPerChunk").getAsInt());
       }
-      if (to.has("maxGeneratedPerChunk")) {
+      if(to.has("maxGeneratedPerChunk")) {
         res.setMaxInChunk(to.get("maxGeneratedPerChunk").getAsInt());
       }
 
-      if (!to.has("templates")) {
+      if(!to.has("templates")) {
         throw new Exception("No templates field found in definition for " + uid);
       }
       JsonArray templates = to.get("templates").getAsJsonArray();
       for (JsonElement e : templates) {
-        JsonObject valObj = e.getAsJsonObject();
-        if (!valObj.isJsonNull() && valObj.has("uid")) {
-          String tpUid = valObj.get("uid").getAsString();
-          IStructureTemplate st = reg.getStructureTemplate(tpUid, true);
-          if (st != null) {
-            res.addStructureTemaplate(st);
+        if(e.isJsonObject()) {
+          JsonObject valObj = e.getAsJsonObject();
+          if(!valObj.isJsonNull() && valObj.has("uid")) {
+            String tpUid = valObj.get("uid").getAsString();
+            IStructureTemplate st = reg.getStructureTemplate(tpUid, true);
+            if(st != null) {
+              res.addStructureTemaplate(st);
+            }
           }
         }
       }
-      if (res.getTemplates().isEmpty()) {
+      if(res.getTemplates().isEmpty()) {
         throw new Exception("No valid template found in definition for " + uid);
       }
 
-      if (to.has("LocationSampler")) {
+      if(to.has("LocationSampler")) {
         JsonObject ls = to.getAsJsonObject("LocationSampler");
         String samType = ls.get("type").getAsString();
         ILocationSampler samp = parsers.createSampler(samType, ls);
-        if (samp != null) {
+        if(samp != null) {
           res.setLocationSampler(samp);
         } else {
           throw new Exception("Could not parse location sampler for " + uid);
         }
       }
 
-      if (to.has("chunkValidators")) {
+      if(to.has("chunkValidators")) {
         JsonArray arr = to.getAsJsonArray("chunkValidators");
         for (JsonElement e : arr) {
-          if (e.isJsonObject()) {
+          if(e.isJsonObject()) {
             JsonObject valObj = e.getAsJsonObject();
-            if (!valObj.isJsonNull() && valObj.has("type")) {
+            if(!valObj.isJsonNull() && valObj.has("type")) {
               String id = valObj.get("type").getAsString();
               IChunkValidator val = parsers.createChunkValidator(id, valObj);
-              if (val != null) {
+              if(val != null) {
                 res.addChunkValidator(val);
               } else {
                 throw new Exception("Could not parse validator: " + id + " for template: " + uid);
@@ -92,7 +92,7 @@ public class GeneratorParser {
           }
         }
       }
-      
+
       ChestGenParser.parseChestGen(to);
 
     } catch (Exception e) {
@@ -100,7 +100,7 @@ public class GeneratorParser {
       throw new Exception("TemplateParser: Could not parse generator " + uid, e);
     }
 
-    if (res == null || !res.isValid()) {
+    if(res == null || !res.isValid()) {
       throw new Exception("GeneratorParser: Could not create a valid generator for " + res);
     }
 
@@ -108,115 +108,120 @@ public class GeneratorParser {
 
   }
 
-  
+  public StructureTemplate parseTemplateConfig(StructureRegister reg, String uid, String json) throws Exception {
 
-  public StructureTemplate parseTemplateConfig(StructureRegister reg, String json) throws Exception {
-
-    String uid = null;
     StructureTemplate res = null;
     try {
 
       JsonObject to = new JsonParser().parse(json).getAsJsonObject();
       to = to.getAsJsonObject("StructureTemplate");
 
-      uid = to.get("uid").getAsString();
       res = new StructureTemplate(uid);
 
-      if (to.has("canSpanChunks")) {
+      if(to.has("canSpanChunks")) {
         res.setCanSpanChunks(to.get("canSpanChunks").getAsBoolean());
       }
 
       JsonArray components = to.get("components").getAsJsonArray();
       for (JsonElement e : components) {
-        JsonObject valObj = e.getAsJsonObject();
-        if (!valObj.isJsonNull() && valObj.has("uid")) {
-          String tpUid = valObj.get("uid").getAsString();
-          IStructureComponent st = reg.getStructureComponent(tpUid, true);
-          if (st != null) {
-            res.addComponent(st);
+        if(e.isJsonObject()) {
+          JsonObject valObj = e.getAsJsonObject();
+          if(!valObj.isJsonNull()) {
+            IStructureComponent st = reg.getStructureComponent(uid, true);
+            if(st != null) {
+              res.addComponent(st);
+            }
           }
         }
       }
-      if (res.getComponents().isEmpty()) {
+      if(res.getComponents().isEmpty()) {
         throw new Exception("No valid components found in definition for " + uid);
       }
 
-      if (to.has("rotations")) {
+      if(to.has("rotations")) {
         List<Rotation> rots = new ArrayList<Rotation>();
-        for (JsonElement rot : to.get("rotations").getAsJsonArray()) {
-          if (!rot.isJsonNull()) {
-            Rotation r = Rotation.get(rot.getAsInt());
-            if (r != null) {
-              rots.add(r);
+        JsonElement jrots = to.get("rotations");
+        if(jrots.isJsonArray()) {
+          for (JsonElement rot : jrots.getAsJsonArray()) {
+            if(!rot.isJsonNull()) {
+              Rotation r = Rotation.get(rot.getAsInt());
+              if(r != null) {
+                rots.add(r);
+              }
             }
           }
         }
         res.setRotations(rots);
       }
 
-      if (to.has("siteValidators")) {
+      if(to.has("siteValidators")) {
 
         JsonArray arr = to.getAsJsonArray("siteValidators");
         for (JsonElement e : arr) {
-          JsonObject valObj = e.getAsJsonObject();
-          if (!valObj.isJsonNull() && valObj.has("type")) {
-            String id = valObj.get("type").getAsString();
-            ISiteValidator val = parsers.createSiteValidator(id, valObj);
-            if (val != null) {
-              res.addSiteValidator(val);
-            } else {
-              throw new Exception("Could not parse validator: " + id + " for template: " + uid);
+          if(e.isJsonObject()) {
+            JsonObject valObj = e.getAsJsonObject();
+            if(!valObj.isJsonNull() && valObj.has("type")) {
+              String id = valObj.get("type").getAsString();
+              ISiteValidator val = parsers.createSiteValidator(id, valObj);
+              if(val != null) {
+                res.addSiteValidator(val);
+              } else {
+                throw new Exception("Could not parse validator: " + id + " for template: " + uid);
+              }
             }
           }
         }
 
       }
-      
-      
-      if (to.has("sitePreperations")) {
+
+      if(to.has("sitePreperations")) {
 
         JsonArray arr = to.getAsJsonArray("sitePreperations");
         for (JsonElement e : arr) {
-          JsonObject valObj = e.getAsJsonObject();
-          if (!valObj.isJsonNull() && valObj.has("type")) {
-            String id = valObj.get("type").getAsString();
-            ISitePreperation val = parsers.createPreperation(id, valObj);
-            if (val != null) {
-              res.addSitePreperation(val);
-            } else {
-              throw new Exception("Could not parse preperation: " + id + " for template: " + uid);
+          if(e.isJsonObject()) {
+            JsonObject valObj = e.getAsJsonObject();
+            if(!valObj.isJsonNull() && valObj.has("type")) {
+              String id = valObj.get("type").getAsString();
+              ISitePreperation val = parsers.createPreperation(id, valObj);
+              if(val != null) {
+                res.addSitePreperation(val);
+              } else {
+                throw new Exception("Could not parse preperation: " + id + " for template: " + uid);
+              }
             }
           }
         }
 
       }
-      
-      if (to.has("decorators")) {
+
+      if(to.has("decorators")) {
 
         JsonArray arr = to.getAsJsonArray("decorators");
         for (JsonElement e : arr) {
-          JsonObject valObj = e.getAsJsonObject();
-          if (!valObj.isJsonNull() && valObj.has("type")) {
-            String id = valObj.get("type").getAsString();
-            IDecorator dec = parsers.createDecorator(id, valObj);
-            if (dec != null) {
-              res.addDecorator(dec);
-            } else {
-              //throw new Exception("Could not parse decorator: " + id + " for template: " + uid);
-              Log.warn("Could not parse decorator with type: " + id + " in template " + uid);
+          if(e.isJsonObject()) {
+            JsonObject valObj = e.getAsJsonObject();
+            if(!valObj.isJsonNull() && valObj.has("type")) {
+              String id = valObj.get("type").getAsString();
+              IDecorator dec = parsers.createDecorator(id, valObj);
+              if(dec != null) {
+                res.addDecorator(dec);
+              } else {
+                //throw new Exception("Could not parse decorator: " + id + " for template: " + uid);
+                Log.warn("Could not parse decorator with type: " + id + " in template " + uid);
+              }
             }
           }
         }
 
       }
-      
+
       ChestGenParser.parseChestGen(to);
 
     } catch (Exception e) {
       throw new Exception("TemplateParser: Could not parse generator template " + uid + ". " + e.getMessage(), e);
     }
 
-    if (res == null || !res.isValid()) {
+    if(res == null || !res.isValid()) {
       throw new Exception("GeneratorParser: Could not create a valid template for " + res + " uid: " + uid);
     }
 

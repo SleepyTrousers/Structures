@@ -11,7 +11,6 @@ import org.apache.commons.io.IOUtils;
 
 import crazypants.IoUtil;
 import crazypants.structures.api.gen.IStructureGenerator;
-import crazypants.structures.api.gen.IStructureTemplate;
 import crazypants.structures.gen.StructureRegister;
 import crazypants.structures.gen.io.GeneratorParser;
 import crazypants.structures.gen.structure.StructureComponentNBT;
@@ -47,15 +46,11 @@ public class StructureResourceManager {
   }
 
   public IStructureGenerator loadGenerator(String uid) throws Exception {
-    return parseJsonGenerator(loadGeneratorText(uid));
+    return parseJsonGenerator(uid, loadGeneratorText(uid));
   }
 
-  public IStructureGenerator loadGenerator(File fromFile) throws Exception {
-    return parseJsonGenerator(loadText(fromFile));
-  }
-
-  public IStructureGenerator parseJsonGenerator(String json) throws Exception {
-    return parser.parseGeneratorConfig(register, json);
+  public IStructureGenerator parseJsonGenerator(String uid, String json) throws Exception {
+    return parser.parseGeneratorConfig(register, uid, json);
   }
 
   public String loadText(File fromFile) throws IOException {
@@ -92,15 +87,11 @@ public class StructureResourceManager {
   }
 
   public StructureTemplate loadTemplate(String uid) throws Exception {
-    return parseJsonTemplate(loadTemplateText(uid));
+    return parseJsonTemplate(uid, loadTemplateText(uid));
   }
 
-  public IStructureTemplate loadTemplate(File fromFile) throws Exception {
-    return parseJsonTemplate(loadText(fromFile));
-  }
-
-  public StructureTemplate parseJsonTemplate(String json) throws Exception {
-    return parser.parseTemplateConfig(register, json);
+  public StructureTemplate parseJsonTemplate(String uid, String json) throws Exception {
+    return parser.parseTemplateConfig(register, uid, json);
   }
 
   public boolean resourceExists(String resource) {

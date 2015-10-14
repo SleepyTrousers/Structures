@@ -1,7 +1,6 @@
 {
     "StructureGenerator" : {
-            
-        "uid" : "test",                
+                         
         "maxAttemptsPerChunk" : 2,
         "maxGeneratedPerChunk" : 1,
         
@@ -74,8 +73,6 @@
            ]
          }
        ]
-       
-       
        
    }
 }
