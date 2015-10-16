@@ -24,7 +24,7 @@
          { "type" : "LootTableInventory",
                     "category" : "dungeonChest",  
                     "comment_category" : "mineshaftCorridor, pyramidDesertyChest, pyramidJungleChest, pyramidJungleDispenser, strongholdCorridor, strongholdLibrary, strongholdCrossing, villageBlacksmith, bonusChest, dungeonChest",
-                    "targets" : ["inv1", "inv2"]}
+                    "targets" : ["inv2", "inv3"]}
                      
        ]
        

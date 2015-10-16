@@ -1,23 +1,38 @@
 package crazypants.structures.gen.io;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraftforge.common.ChestGenHooks;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+public final class LootTableParser {
 
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
-
-public final class ChestGenParser {
-
-  public static void parseChestGen(JsonObject to) {
-    if (to.has("chestGenHooksCategories")) {
-      JsonArray arr = to.getAsJsonArray("chestGenHooksCategories");
+  public LootTableParser() {
+  }
+  
+  public void parseLootTableCategories(String uid, String json) throws Exception {
+    try {            
+      JsonObject to = new JsonParser().parse(json).getAsJsonObject();
+      parseLootTableCategories(to);
+    }catch (Exception e) {
+      e.printStackTrace();
+      throw new Exception("LootTableParser: Could not parse " + uid, e);
+    }
+    // TODO Auto-generated method stub
+    
+  }
+  
+  public void parseLootTableCategories(JsonObject to) {
+    if (to.has("LootTableCategories")) {
+      JsonArray arr = to.getAsJsonArray("LootTableCategories");
       for (JsonElement e : arr) {
-        if (e.isJsonObject()) {
+        if (!e.isJsonNull() && e.isJsonObject()) {
           JsonObject valObj = e.getAsJsonObject();
           if (!valObj.isJsonNull() && valObj.has("category")) {
             String category = valObj.get("category").getAsString();
@@ -25,7 +40,7 @@ public final class ChestGenParser {
               ChestGenHooks info = ChestGenHooks.getInfo(category);
               info.setMin(JsonUtil.getIntElement(valObj, "minCount", info.getMin()));
               info.setMax(JsonUtil.getIntElement(valObj, "maxCount", info.getMax()));             
-              parseRandomChestContents(valObj, info);
+              addContentsToCategory(valObj, info);
             }
           }
         }
@@ -34,19 +49,19 @@ public final class ChestGenParser {
 
   }
 
-  public static void parseRandomChestContents(JsonObject to, ChestGenHooks info) {
+  private void addContentsToCategory(JsonObject to, ChestGenHooks category) {
     JsonArray contentsArr = to.getAsJsonArray("contents");
     if (contentsArr != null && !contentsArr.isJsonNull()) {
       for (JsonElement rndContent : contentsArr) {
-        WeightedRandomChestContent rndCont = parseRandomChestContent(rndContent);
+        WeightedRandomChestContent rndCont = parseContentItem(rndContent);
         if (rndCont != null) {
-          info.addItem(rndCont);
+          category.addItem(rndCont);
         }
       }
     }
   }
 
-  public static WeightedRandomChestContent parseRandomChestContent(JsonElement rndContent) {
+  private WeightedRandomChestContent parseContentItem(JsonElement rndContent) {
     if (rndContent == null || !rndContent.isJsonObject()) {
       return null;
     }
@@ -64,7 +79,7 @@ public final class ChestGenParser {
     return new WeightedRandomChestContent(stack, minSize, maxSize, weight);
   }
 
-  public static ItemStack parseItemStack(JsonElement stk) {
+  private ItemStack parseItemStack(JsonElement stk) {
     if (stk == null || !stk.isJsonObject()) {
       return null;
     }
@@ -83,7 +98,6 @@ public final class ChestGenParser {
     return res;
   }
 
-  private ChestGenParser() {
-  }
+  
 
 }

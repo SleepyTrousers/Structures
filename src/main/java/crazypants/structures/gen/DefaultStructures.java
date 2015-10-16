@@ -30,10 +30,10 @@ public class DefaultStructures {
       String name = "test" + StructureResourceManager.GENERATOR_EXT;
       copyTestFile(name, name + ".defaultValues");
 
-      name = "test" + StructureResourceManager.TEMPLATE_EXT;
+      name = "esRuinTest" + StructureResourceManager.TEMPLATE_EXT;
       copyTestFile(name, name + ".defaultValues");
 
-      name = "test2" + StructureResourceManager.TEMPLATE_EXT;
+      name = "esSmallHouseTest" + StructureResourceManager.TEMPLATE_EXT;
       copyTestFile(name, name + ".defaultValues");
       
       name = "testVillager" + StructureResourceManager.VILLAGER_EXT;
@@ -76,6 +76,17 @@ public class DefaultStructures {
           }
         } catch (Exception e) {
           Log.warn("StructureResourceManager.loadGenerators: Could not load generator: " + uid + " error: " + e);
+        }
+      }
+    }
+    
+    for (IResourcePath path : resourcePaths) {
+      List<String> uids = path.getChildren(StructureResourceManager.LOOT_EXT);
+      for (String uid : uids) {
+        try {
+          StructureRegister.instance.getResourceManager().loadLootTableDefination(uid);          
+        } catch (Exception e) {
+          Log.warn("StructureResourceManager.loadGenerators: Could not load loot table categories from: " + uid + " error: " + e);
         }
       }
     }

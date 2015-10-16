@@ -141,7 +141,7 @@ public class TemplateParser {
 
       }
 
-      ChestGenParser.parseChestGen(to);
+      reg.getResourceManager().getLootTableParser().parseLootTableCategories(to);      
 
     } catch (Exception e) {
       throw new Exception("TemplateParser: Could not parse generator template " + uid + ". " + e.getMessage(), e);

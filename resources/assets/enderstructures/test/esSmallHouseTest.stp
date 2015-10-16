@@ -12,7 +12,7 @@
         ],
         
         "components" : [
-          {"uid" : "test"}
+          {"uid" : "esSmallHouseTest"}
         ],
         
         "siteValidators" : [
@@ -44,6 +44,17 @@
                           "sizeXZ" : 1
                       }}           
        ],
+       
+       "decorators" : [
+       
+         { "type" : "LootTableInventory",
+                    "_category" : "esTestCat1",  
+                    "category" : "esRuinTestPrivateCat",
+                    "comment_category" : "mineshaftCorridor, pyramidDesertyChest, pyramidJungleChest, pyramidJungleDispenser, strongholdCorridor, strongholdLibrary, strongholdCrossing, villageBlacksmith, bonusChest, dungeonChest",
+                    "targets" : ["inv0", "inv1", "inv2"]
+                    }
+                        
+        ],
        
        "behaviours" : [
            

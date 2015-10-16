@@ -82,8 +82,8 @@ public class GeneratorParser {
           }
         }
       }
-
-      ChestGenParser.parseChestGen(to);
+      
+      reg.getResourceManager().getLootTableParser().parseLootTableCategories(to);
 
     } catch (Exception e) {
       e.printStackTrace();

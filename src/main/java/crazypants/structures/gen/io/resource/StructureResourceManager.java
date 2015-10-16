@@ -13,6 +13,7 @@ import crazypants.structures.api.gen.IStructureGenerator;
 import crazypants.structures.api.gen.IVillagerGenerator;
 import crazypants.structures.gen.StructureRegister;
 import crazypants.structures.gen.io.GeneratorParser;
+import crazypants.structures.gen.io.LootTableParser;
 import crazypants.structures.gen.io.TemplateParser;
 import crazypants.structures.gen.structure.StructureComponentNBT;
 import crazypants.structures.gen.structure.StructureTemplate;
@@ -24,11 +25,13 @@ public class StructureResourceManager {
   public static final String COMPONENT_EXT = ".nbt";
   public static final String TEMPLATE_EXT = ".stp";
   public static final String VILLAGER_EXT = ".vgen";
+  public static final String LOOT_EXT = ".loot";
 
   private final List<IResourcePath> resourcePaths = new ArrayList<IResourcePath>();
   private final GeneratorParser generatorParsor = new GeneratorParser();
   private final TemplateParser templateParser = new TemplateParser();
   private final VillagerParser villagerParser = new VillagerParser();
+  private final LootTableParser chestGenParser = new LootTableParser();
   private final StructureRegister register;
 
   public StructureResourceManager(StructureRegister register) {
@@ -48,6 +51,10 @@ public class StructureResourceManager {
     IResourcePath res = new ClassLoaderReourcePath(resourcePath);
     resourcePaths.add(res);
     return res;
+  }
+  
+  public LootTableParser getLootTableParser() {
+    return chestGenParser;    
   }
   
   public boolean resourceExists(String resource) {
@@ -79,6 +86,10 @@ public class StructureResourceManager {
 
   public StructureTemplate loadTemplate(String uid) throws Exception {
     return templateParser.parseTemplateConfig(register, uid, loadText(uid, TEMPLATE_EXT));
+  }
+  
+  public void loadLootTableDefination(String uid) throws Exception {
+    chestGenParser.parseLootTableCategories(uid, loadText(uid, LOOT_EXT));
   }
 
   public StructureComponentNBT loadStructureComponent(String uid) throws IOException {
@@ -114,6 +125,8 @@ public class StructureResourceManager {
     }
     return getStream(uid + extension);
   }
+
+  
 
 
 }
