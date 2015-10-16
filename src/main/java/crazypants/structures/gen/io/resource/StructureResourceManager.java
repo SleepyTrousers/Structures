@@ -1,7 +1,6 @@
 package crazypants.structures.gen.io.resource;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -11,26 +10,32 @@ import org.apache.commons.io.IOUtils;
 
 import crazypants.IoUtil;
 import crazypants.structures.api.gen.IStructureGenerator;
+import crazypants.structures.api.gen.IVillagerGenerator;
 import crazypants.structures.gen.StructureRegister;
 import crazypants.structures.gen.io.GeneratorParser;
+import crazypants.structures.gen.io.TemplateParser;
 import crazypants.structures.gen.structure.StructureComponentNBT;
 import crazypants.structures.gen.structure.StructureTemplate;
+import crazypants.structures.gen.villager.VillagerParser;
 
 public class StructureResourceManager {
 
   public static final String GENERATOR_EXT = ".gen";
   public static final String COMPONENT_EXT = ".nbt";
   public static final String TEMPLATE_EXT = ".stp";
+  public static final String VILLAGER_EXT = ".vgen";
 
   private final List<IResourcePath> resourcePaths = new ArrayList<IResourcePath>();
-  private final GeneratorParser parser = new GeneratorParser();
+  private final GeneratorParser generatorParsor = new GeneratorParser();
+  private final TemplateParser templateParser = new TemplateParser();
+  private final VillagerParser villagerParser = new VillagerParser();
   private final StructureRegister register;
 
   public StructureResourceManager(StructureRegister register) {
     this.register = register;
   }
 
-  public IResourcePath addResourcePath(File dir) {
+  public IResourcePath addResourceDirectory(File dir) {
     if(dir == null) {
       return null;
     }
@@ -44,56 +49,7 @@ public class StructureResourceManager {
     resourcePaths.add(res);
     return res;
   }
-
-  public IStructureGenerator loadGenerator(String uid) throws Exception {
-    return parseJsonGenerator(uid, loadGeneratorText(uid));
-  }
-
-  public IStructureGenerator parseJsonGenerator(String uid, String json) throws Exception {
-    return parser.parseGeneratorConfig(register, uid, json);
-  }
-
-  public String loadText(File fromFile) throws IOException {
-    return IoUtil.readStream(new FileInputStream(fromFile));
-  }
-
-  public String loadGeneratorText(String uid) throws IOException {
-    InputStream str = getStreamForGenerator(uid);
-    if(str == null) {
-      throw new IOException("Could not find the resource for generator: " + uid);
-    }
-    return IoUtil.readStream(str);
-  }
-
-  public StructureComponentNBT loadStructureComponent(String uid) throws IOException {
-    InputStream stream = null;
-    try {
-      stream = getStreamForComponent(uid);
-      if(stream == null) {
-        throw new IOException("StructureResourceManager: Could find resources for template: " + uid);
-      }
-      return new StructureComponentNBT(stream);
-    } finally {
-      IOUtils.closeQuietly(stream);
-    }
-  }
-
-  private String loadTemplateText(String uid) throws IOException {
-    InputStream str = getStreamForTemplate(uid);
-    if(str == null) {
-      throw new IOException("Could not find the resource for template: " + uid);
-    }
-    return IoUtil.readStream(str);
-  }
-
-  public StructureTemplate loadTemplate(String uid) throws Exception {
-    return parseJsonTemplate(uid, loadTemplateText(uid));
-  }
-
-  public StructureTemplate parseJsonTemplate(String uid, String json) throws Exception {
-    return parser.parseTemplateConfig(register, uid, json);
-  }
-
+  
   public boolean resourceExists(String resource) {
     for (IResourcePath rp : resourcePaths) {
       if(rp.exists(resource)) {
@@ -113,22 +69,51 @@ public class StructureResourceManager {
     return null;
   }
 
-  private InputStream getStreamForGenerator(String uid) {
-    if(uid.endsWith(GENERATOR_EXT)) {
+  public IStructureGenerator loadGenerator(String uid) throws Exception {
+    return generatorParsor.parseGeneratorConfig(register, uid, loadText(uid, GENERATOR_EXT));    
+  }
+  
+  public IVillagerGenerator loadVillager(String uid) throws Exception {       
+    return villagerParser.parseVillagerConfig(register, uid, loadText(uid, VILLAGER_EXT));
+  }
+
+  public StructureTemplate loadTemplate(String uid) throws Exception {
+    return templateParser.parseTemplateConfig(register, uid, loadText(uid, TEMPLATE_EXT));
+  }
+
+  public StructureComponentNBT loadStructureComponent(String uid) throws IOException {
+    InputStream stream = null;
+    try {
+      stream = getStream(uid, COMPONENT_EXT);
+      if(stream == null) {
+        throw new IOException("StructureResourceManager: Could find resources for template: " + uid);
+      }
+      return new StructureComponentNBT(stream);
+    } finally {
+      IOUtils.closeQuietly(stream);
+    }
+  }
+
+  private String loadText(String uid, String ext) throws IOException {
+    return loadText(uid, getStream(uid, ext));
+  }
+  
+  private String loadText(String uid, InputStream str) throws IOException {
+    if(str == null) {
+      throw new IOException("Could not find the resource for generator: " + uid);
+    }
+    return IoUtil.readStream(str);
+  }
+  
+  private InputStream getStream(String uid, String extension) {
+    if(uid == null || extension == null) {
+      return null;
+    }
+    if(uid.endsWith(extension)) {
       return getStream(uid);
     }
-    return getStream(uid + GENERATOR_EXT);
+    return getStream(uid + extension);
   }
 
-  private InputStream getStreamForComponent(String uid) {
-    if(uid.endsWith(COMPONENT_EXT)) {
-      return getStream(uid.substring(0, uid.length() - COMPONENT_EXT.length()));
-    }
-    return getStream(uid + COMPONENT_EXT);
-  }
-
-  private InputStream getStreamForTemplate(String uid) {
-    return getStream(uid + TEMPLATE_EXT);
-  }
 
 }

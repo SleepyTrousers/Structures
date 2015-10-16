@@ -1,20 +1,19 @@
 {
     "VillagerGenerator" : {
-      
-      "uid" : "test",   
+       
       "villagerId" : 45654,
-      "texture" : "esconfig:testVillager.png",
-      "weight" : 10,
-      "maxNum" : 4,
+      "texture" : "esresource:testVillager.png",
+      "weight" : 100,
+      "maxNum" : 10,
 
       "templatesPlains" : [
-          {"uid" : "test"},
-          {"uid" : "test2"}    
+          {"_uid" : "villageHouse1"},
+          {"_uid" : "villageHouse2"},
+          {"uid" : "villageHouseDesert"}    
         ],
 
        "templatesDesert" : [
-          {"uid" : "test"},
-          {"uid" : "test2"}    
+          {"uid" : "villageHouseDesert"}
         ],
 
 	"trades" : [

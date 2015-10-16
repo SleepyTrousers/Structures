@@ -3,12 +3,12 @@ package crazypants.structures.gen;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import crazypants.IoUtil;
 import crazypants.structures.Log;
 import crazypants.structures.api.gen.IStructureGenerator;
+import crazypants.structures.api.gen.IVillagerGenerator;
 import crazypants.structures.config.Config;
 import crazypants.structures.gen.io.resource.IResourcePath;
 import crazypants.structures.gen.io.resource.StructureResourceManager;
@@ -25,7 +25,7 @@ public class DefaultStructures {
 
     StructureRegister reg = StructureRegister.instance;
     List<IResourcePath> toScan = new ArrayList<IResourcePath>();
-    
+
     if(Config.testStructuresEnabled) {
       String name = "test" + StructureResourceManager.GENERATOR_EXT;
       copyTestFile(name, name + ".defaultValues");
@@ -36,21 +36,24 @@ public class DefaultStructures {
       name = "test2" + StructureResourceManager.TEMPLATE_EXT;
       copyTestFile(name, name + ".defaultValues");
       
-      toScan.add(reg.getResourceManager().addResourcePath(TEST_DIR));
-      toScan.add(reg.getResourceManager().addClassLoaderResourcePath(TEST_RESOURCE_PATH));
-    }    
+      name = "testVillager" + StructureResourceManager.VILLAGER_EXT;
+      copyTestFile(name, name + ".defaultValues");
 
-    toScan.add(reg.getResourceManager().addResourcePath(ROOT_DIR));
+      toScan.add(reg.getResourceManager().addResourceDirectory(TEST_DIR));
+      toScan.add(reg.getResourceManager().addClassLoaderResourcePath(TEST_RESOURCE_PATH));
+    }
+
+    toScan.add(reg.getResourceManager().addResourceDirectory(ROOT_DIR));
     toScan.add(reg.getResourceManager().addClassLoaderResourcePath(RESOURCE_PATH));
 
-    loadAndRegisterGenerators(toScan);
+    loadAndRegister(toScan);
 
   }
 
-  private static void loadAndRegisterGenerators(List<IResourcePath> resourcePaths) {
+  private static void loadAndRegister(List<IResourcePath> resourcePaths) {
 
     for (IResourcePath path : resourcePaths) {
-      List<String> gens = getGenerators(path.getChildren());
+      List<String> gens = path.getChildren(StructureResourceManager.GENERATOR_EXT);
       for (String uid : gens) {
         try {
           IStructureGenerator gen = StructureRegister.instance.getResourceManager().loadGenerator(uid);
@@ -63,22 +66,23 @@ public class DefaultStructures {
       }
     }
 
-  }
-  
-  private static List<String> getGenerators(List<String> kids) {
-    if(kids == null || kids.isEmpty()) {
-      return Collections.emptyList();
-    }
-    List<String> res = new ArrayList<String>();
-    for (String kid : kids) {
-      if(kid != null && kid.endsWith(".gen")) {
-        String uid = kid.substring(0, kid.length() - 4);
-        res.add(uid);
+    for (IResourcePath path : resourcePaths) {
+      List<String> uids = path.getChildren(StructureResourceManager.VILLAGER_EXT);
+      for (String uid : uids) {
+        try {
+          IVillagerGenerator gen = StructureRegister.instance.getResourceManager().loadVillager(uid);
+          if(gen != null) {
+            StructureRegister.instance.registerVillagerGenerator(gen);            
+          }
+        } catch (Exception e) {
+          Log.warn("StructureResourceManager.loadGenerators: Could not load generator: " + uid + " error: " + e);
+        }
       }
     }
-    return res;
+
   }
 
+  
   private static void copyTestFile(String resourceName, String fileName) {
     try {
       IoUtil.copyTextTo(new File(TEST_DIR, fileName), DefaultStructures.class.getResourceAsStream(TEST_RESOURCE_PATH + resourceName));

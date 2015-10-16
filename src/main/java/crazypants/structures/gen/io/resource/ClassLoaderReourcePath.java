@@ -11,7 +11,7 @@ import org.apache.commons.io.IOUtils;
 import crazypants.structures.gen.StructureRegister;
 import scala.actors.threadpool.Arrays;
 
-public class ClassLoaderReourcePath implements IResourcePath {
+public class ClassLoaderReourcePath extends AbstractResourcePath {
 
   private final String root;
 

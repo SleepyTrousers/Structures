@@ -28,7 +28,7 @@ import crazypants.structures.gen.DefaultStructures;
 import crazypants.structures.gen.ReloadConfigCommand;
 import crazypants.structures.gen.StructureRegister;
 import crazypants.structures.gen.WorldGenerator;
-import crazypants.structures.village.Test;
+import crazypants.structures.gen.villager.Test;
 
 @Mod(modid = MODID, name = MOD_NAME, version = VERSION, dependencies = "required-after:Forge@10.13.0.1150,)", guiFactory = "crazypants.structures.config.ConfigFactoryEnderStructures")
 public class EnderStructures {
@@ -98,7 +98,7 @@ public class EnderStructures {
 
           if(API.ADD_RESOURCE_DIR.equalsIgnoreCase(key)) {
 
-            reg.getResourceManager().addResourcePath(new File(msg.getStringValue()));
+            reg.getResourceManager().addResourceDirectory(new File(msg.getStringValue()));
 
           } else if(API.ADD_RESOURCE_PATH.equalsIgnoreCase(key)) {
 

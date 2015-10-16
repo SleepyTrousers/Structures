@@ -10,4 +10,6 @@ public interface IResourcePath {
   InputStream getStream(String name);
   
   List<String> getChildren();
+  
+  List<String> getChildren(String extension);
 }

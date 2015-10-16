@@ -9,7 +9,7 @@ import java.util.List;
 
 import scala.actors.threadpool.Arrays;
 
-public class DirectoryResourcePath implements IResourcePath {
+public class DirectoryResourcePath extends AbstractResourcePath {
 
   private final File dir;
 
