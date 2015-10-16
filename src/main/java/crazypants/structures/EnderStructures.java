@@ -28,7 +28,6 @@ import crazypants.structures.gen.DefaultStructures;
 import crazypants.structures.gen.ReloadConfigCommand;
 import crazypants.structures.gen.StructureRegister;
 import crazypants.structures.gen.WorldGenerator;
-import crazypants.structures.gen.villager.Test;
 
 @Mod(modid = MODID, name = MOD_NAME, version = VERSION, dependencies = "required-after:Forge@10.13.0.1150,)", guiFactory = "crazypants.structures.config.ConfigFactoryEnderStructures")
 public class EnderStructures {
@@ -51,9 +50,7 @@ public class EnderStructures {
   public void preInit(FMLPreInitializationEvent event) {
     Config.load(event);
     structureRuntime = StructureRuntime.create();
-    structureGenerator = WorldGenerator.create();
-    
-    new Test().registerVillagers();
+    structureGenerator = WorldGenerator.create();    
   }
 
   @EventHandler

@@ -7,9 +7,9 @@
       "maxNum" : 10,
 
       "templatesPlains" : [
-          {"_uid" : "villageHouse1"},
-          {"_uid" : "villageHouse2"},
-          {"uid" : "villageHouseDesert"}    
+          {"uid" : "villageHouse1"},
+          {"uid" : "villageHouse2"},
+          {"_uid" : "villageHouseDesert"}    
         ],
 
        "templatesDesert" : [

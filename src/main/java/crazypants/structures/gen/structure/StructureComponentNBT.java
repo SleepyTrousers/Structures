@@ -336,13 +336,6 @@ public class StructureComponentNBT implements IStructureComponent {
           if(world.getBlockMetadata(bc.x, bc.y, bc.z) != meta) {
             world.setBlockMetadataWithNotify(bc.x, bc.y, bc.z, meta, 3);
           }
-          //          //Chest will change the meta on block placed, so need to set it back
-          //          if(world.getBlockMetadata(bc.x, bc.y, bc.z) != sb.getMetaData()) {
-          //            world.setBlockMetadataWithNotify(bc.x, bc.y, bc.z, sb.getMetaData(), 3);
-          //          }
-          //          for (int i = 0; i < rot.ordinal(); i++) {
-          //            block.rotateBlock(world, bc.x, bc.y, bc.z, ForgeDirection.UP);
-          //          }
         }
       }
     }

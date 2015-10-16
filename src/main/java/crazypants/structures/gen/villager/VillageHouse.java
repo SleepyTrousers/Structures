@@ -73,10 +73,7 @@ public class VillageHouse extends StructureVillagePieces.House1 {
       origin.z++;
     }
     structure.setOrigin(origin);
-
-    //TODO: The bb check is breaking things in super flat 
     template.build(structure, world, random, bb);
-    //template.build(structure, world, random, null);
 
     spawnVillagers(world, bb, 3, 1, 3, 1);
 
