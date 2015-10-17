@@ -16,8 +16,8 @@ import crazypants.structures.gen.StructureRegister;
 import crazypants.structures.gen.io.GeneratorParser;
 import crazypants.structures.gen.io.LootTableParser;
 import crazypants.structures.gen.io.TemplateParser;
+import crazypants.structures.gen.io.VillagerParser;
 import crazypants.structures.gen.structure.StructureComponentNBT;
-import crazypants.structures.gen.villager.VillagerParser;
 
 public class StructureResourceManager {
 

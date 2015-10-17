@@ -16,17 +16,13 @@ public class VillagerGenerator implements IVillagerGenerator {
 
   private final CreationHandler creationHandler;
 
-  private ResourceLocation texture; 
+  private ResourceLocation texture;
 
   public VillagerGenerator(String uid) {
     this.uid = uid;
     tradeHandler = new TradeHandler();
     creationHandler = new CreationHandler(uid);
-
-    //setTexture(ResourceModContainer.MODID + ":" + "testVillager.png");
-
     setWeight(9, 1);
-
   }
 
   public String getUid(String uid) {
@@ -41,52 +37,61 @@ public class VillagerGenerator implements IVillagerGenerator {
   public int getVillagerId() {
     return creationHandler.getVillagerId();
   }
-  
-  public void setVillagerId(int id) {    
+
+  public void setVillagerId(int id) {
     creationHandler.setVilagerId(id);
   }
 
   public void setTexture(String texture) {
     this.texture = new ResourceLocation(texture);
   }
-    
+
   public void setWeight(int weight, int maxNum) {
     creationHandler.setVillagePieceWeight(new PieceWeight(VillageHouse.class, weight, maxNum));
   }
-  
+
   public void addPlainsTemplate(String templateUid) {
     creationHandler.addPlainsTemplate(templateUid);
   }
-  
+
   public void addDesertTemplate(String templateUid) {
     creationHandler.addDesertTemplate(templateUid);
   }
-  
+
   public void addRecipe(MerchantRecipe recipe) {
+    System.out.println("VillagerGenerator.addRecipe: " + recipe);
     tradeHandler.addRecipe(recipe);
   }
 
+  @Override
   public void onReload() {
-    VillagerRegistry.instance().registerVillagerSkin(getVillagerId(), texture);
-    VillagerRegistry.instance().registerVillageTradeHandler(getVillagerId(), tradeHandler);
+    if(creationHandler.hasVillager()) {
+      VillagerRegistry.instance().registerVillagerSkin(getVillagerId(), texture);
+      VillagerRegistry.instance().registerVillageTradeHandler(getVillagerId(), tradeHandler);
+    }
     VillagerRegistry.instance().registerVillageCreationHandler(creationHandler);
     MapGenStructureIO.func_143031_a(VillageHouse.class, uid);
   }
-  
+
   @Override
   public void register() {
-    VillagerRegistry.instance().registerVillagerId(getVillagerId());    
+    VillagerRegistry.instance().registerVillagerId(getVillagerId());
     onReload();
   }
 
-  public void validate() throws Exception {       
-    if(texture == null) {
-      Log.warn("VillagerGenerator.register: No texture specified for villager " + uid);      
+  public void validate() throws Exception {
+    if(creationHandler.hasVillager()) {
+      if(texture == null) {
+        Log.warn("VillagerGenerator.register: No texture specified for villager " + uid);
+      }
+
+      if(!tradeHandler.hasTrades()) {
+        Log.warn("VillagerGenerator.register: No trades added for villager" + uid);
+      }
     }
+
     creationHandler.validate();
-    if(!tradeHandler.hasTrades()) {
-      Log.warn("VillagerGenerator.register: No trades added for villager" + uid);
-    }
+
   }
 
 }

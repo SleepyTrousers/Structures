@@ -20,7 +20,7 @@ public class TradeHandler implements IVillageTradeHandler {
   @Override
   public void manipulateTradesForVillager(EntityVillager villager, MerchantRecipeList recipeList, Random random) {
     for(MerchantRecipe recipe : recipes) {
-      recipeList.addToListWithCheck(recipe);
+      recipeList.addToListWithCheck(new MerchantRecipe(recipe.getItemToBuy(), recipe.getSecondItemToBuy(), recipe.getItemToSell()));
     }
   }
 

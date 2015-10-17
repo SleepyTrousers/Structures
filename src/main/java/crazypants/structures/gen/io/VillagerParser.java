@@ -1,4 +1,4 @@
-package crazypants.structures.gen.villager;
+package crazypants.structures.gen.io;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +14,7 @@ import crazypants.structures.Log;
 import crazypants.structures.api.gen.IStructureTemplate;
 import crazypants.structures.api.gen.IVillagerGenerator;
 import crazypants.structures.gen.StructureRegister;
+import crazypants.structures.gen.villager.VillagerGenerator;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.village.MerchantRecipe;

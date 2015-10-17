@@ -25,6 +25,10 @@ public class CreationHandler implements IVillageCreationHandler {
     weight = new PieceWeight(VillageHouse.class, 9, 1);
   }
 
+  public boolean hasVillager() {
+    return villagerId > 0;
+  }
+  
   public int getVillagerId() {
     return villagerId;
   }
@@ -53,10 +57,7 @@ public class CreationHandler implements IVillageCreationHandler {
   public void validate() throws Exception {
     if(weight == null) {
       throw new Exception("Weight not set for villager " + uid);
-    }
-    if(villagerId < 0) {
-      throw new Exception("Invalid villager id: " + villagerId + " for villager " + uid);
-    }
+    }    
     if(templates.isEmpty()) {
       throw new Exception("No plains templates specified for villager " + uid);
     }

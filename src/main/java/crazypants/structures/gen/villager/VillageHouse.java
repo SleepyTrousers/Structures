@@ -42,12 +42,11 @@ public class VillageHouse extends StructureVillagePieces.House1 {
       boundingBox.offset(0, 0, (int) -(bb.maxZ - bb.minZ));
     }
 
-
   }
 
   @Override
   public boolean addComponentParts(World world, Random random, StructureBoundingBox bb) {
-       
+
     if(averageGroundLevel < 0) {
       averageGroundLevel = getAverageGroundLevel(world, bb);
 
@@ -55,18 +54,17 @@ public class VillageHouse extends StructureVillagePieces.House1 {
         return true;
       }
 
-      boundingBox.offset(0, averageGroundLevel - boundingBox.minY - 1 - structure.getSurfaceOffset(), 0);      
+      boundingBox.offset(0, averageGroundLevel - boundingBox.minY - 1 - structure.getSurfaceOffset(), 0);
     }
     Point3i origin = new Point3i(boundingBox.minX, boundingBox.minY, boundingBox.minZ);
-    
-    
+
     //WHats the deal with this? 
     //public abstract static class Village extends StructureComponent
     // /**
     // * Gets the next village component, with the bounding box shifted -1 in the X and Z direction.
     // */
     //protected StructureComponent getNextComponentNN(
-    
+
     if(coordBaseMode == 1) {
       origin.x++;
     } else if(coordBaseMode == 2) {
@@ -74,8 +72,9 @@ public class VillageHouse extends StructureVillagePieces.House1 {
     }
     structure.setOrigin(origin);
     template.build(structure, world, random, bb);
-
-    spawnVillagers(world, bb, 3, 1, 3, 1);
+    if(villagerId > 0) {
+      spawnVillagers(world, bb, 3, 1, 3, 1);
+    }
 
     return true;
   }

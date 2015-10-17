@@ -8,8 +8,7 @@
 
       "templatesPlains" : [
           {"uid" : "villageHouse1"},
-          {"uid" : "villageHouse2"},
-          {"_uid" : "villageHouseDesert"}    
+          {"uid" : "villageHouse2"}    
         ],
 
        "templatesDesert" : [
