@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,9 +13,9 @@ import crazypants.structures.api.gen.IStructureComponent;
 import crazypants.structures.api.gen.IStructureGenerator;
 import crazypants.structures.api.gen.IStructureTemplate;
 import crazypants.structures.api.gen.IVillagerGenerator;
+import crazypants.structures.gen.io.resource.IResourcePath;
 import crazypants.structures.gen.io.resource.StructureResourceManager;
 import crazypants.structures.gen.structure.StructureComponentNBT;
-import net.minecraft.nbt.NBTTagCompound;
 
 public class StructureRegister {
 
@@ -49,25 +50,37 @@ public class StructureRegister {
   }
 
   public void registerGenerator(IStructureGenerator gen) {
+    if(gen == null) {
+      return;
+    }
     generators.put(gen.getUid(), gen);
     genUids.add(gen.getUid());
   }
   
   public void registerVillagerGenerator(IVillagerGenerator gen) {
+    if(gen == null) {
+      return;
+    }
     villagerUids.add(gen.getUid());
     gen.register();
   }
 
-  public Collection<IStructureGenerator> getGenerators() {
-    return generators.values();
-  }
-
-  public void registerStructureComponent(String uid, NBTTagCompound nbt) throws IOException {
-    components.put(uid, new StructureComponentNBT(nbt));
+  public void registerTemplate(IStructureTemplate st) {
+    if(st == null) {
+      return;
+    }
+    templates.put(st.getUid(), st);
   }
 
   public void registerStructureComponent(IStructureComponent st) {
+    if(st == null) {
+      return;
+    }
     components.put(st.getUid(), st);
+  }
+
+  public Collection<IStructureGenerator> getGenerators() {
+    return generators.values();
   }
   
   public Collection<IStructureComponent> getStructureComponents() {
@@ -107,6 +120,65 @@ public class StructureRegister {
     }
     return sd;
   }
+
+  
+  public void loadAndRegisterAllResources(IResourcePath path, boolean onlyRootResources) {
+
+    List<String> uids = path.getChildUids(StructureResourceManager.GENERATOR_EXT);
+    for (String uid : uids) {
+      try {
+        registerGenerator(resourceManager.loadGenerator(uid));
+      } catch (Exception e) {
+        Log.warn("StructureResourceManager.loadAndRegisterAllResources: Error loading component " + uid + " Exception: " + e);
+      }
+    }
+
+    uids = path.getChildUids(StructureResourceManager.VILLAGER_EXT);
+    for (String uid : uids) {
+      try {
+        IVillagerGenerator gen = resourceManager.loadVillager(uid);
+        if(gen != null) {
+          registerVillagerGenerator(gen);
+        }
+      } catch (Exception e) {
+        Log.warn("StructureResourceManager.loadAndRegisterAllResources: Error loading component " + uid + " Exception: " + e);
+      }
+    }
+
+    uids = path.getChildUids(StructureResourceManager.LOOT_EXT);
+    for (String uid : uids) {
+      try {
+        resourceManager.loadLootTableDefination(uid);
+      } catch (Exception e) {
+        Log.warn("StructureResourceManager.loadAndRegisterAllResources: Could not load loot table categories from: " + uid + " error: " + e);
+      }
+    }
+
+    if(!onlyRootResources) {
+      uids = path.getChildUids(StructureResourceManager.TEMPLATE_EXT);
+      for (String uid : uids) {
+        try {
+          IStructureTemplate tmp = resourceManager.loadTemplate(uid);
+          registerTemplate(tmp);
+        } catch (Exception e) {
+          Log.warn("StructureResourceManager.loadAndRegisterAllResources: Error loading template " + uid + " Exception: " + e);
+        }
+      }
+
+      uids = path.getChildUids(StructureResourceManager.COMPONENT_EXT);
+      for (String uid : uids) {
+        try {
+          StructureComponentNBT sc = resourceManager.loadStructureComponent(uid);
+          registerStructureComponent(sc);
+        } catch (Exception e) {
+          Log.warn("StructureResourceManager.loadAndRegisterAllResources: Error loading component " + uid + " Exception: " + e);
+        }
+      }
+    }
+
+  }
+  
+  
   
   public void clear() {
     components.clear();

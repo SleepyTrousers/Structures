@@ -10,13 +10,13 @@ import org.apache.commons.io.IOUtils;
 
 import crazypants.IoUtil;
 import crazypants.structures.api.gen.IStructureGenerator;
+import crazypants.structures.api.gen.IStructureTemplate;
 import crazypants.structures.api.gen.IVillagerGenerator;
 import crazypants.structures.gen.StructureRegister;
 import crazypants.structures.gen.io.GeneratorParser;
 import crazypants.structures.gen.io.LootTableParser;
 import crazypants.structures.gen.io.TemplateParser;
 import crazypants.structures.gen.structure.StructureComponentNBT;
-import crazypants.structures.gen.structure.StructureTemplate;
 import crazypants.structures.gen.villager.VillagerParser;
 
 public class StructureResourceManager {
@@ -52,11 +52,11 @@ public class StructureResourceManager {
     resourcePaths.add(res);
     return res;
   }
-  
+
   public LootTableParser getLootTableParser() {
-    return chestGenParser;    
+    return chestGenParser;
   }
-  
+
   public boolean resourceExists(String resource) {
     for (IResourcePath rp : resourcePaths) {
       if(rp.exists(resource)) {
@@ -77,17 +77,17 @@ public class StructureResourceManager {
   }
 
   public IStructureGenerator loadGenerator(String uid) throws Exception {
-    return generatorParsor.parseGeneratorConfig(register, uid, loadText(uid, GENERATOR_EXT));    
+    return generatorParsor.parseGeneratorConfig(register, uid, loadText(uid, GENERATOR_EXT));
   }
-  
-  public IVillagerGenerator loadVillager(String uid) throws Exception {       
+
+  public IVillagerGenerator loadVillager(String uid) throws Exception {
     return villagerParser.parseVillagerConfig(register, uid, loadText(uid, VILLAGER_EXT));
   }
 
-  public StructureTemplate loadTemplate(String uid) throws Exception {
+  public IStructureTemplate loadTemplate(String uid) throws Exception {
     return templateParser.parseTemplateConfig(register, uid, loadText(uid, TEMPLATE_EXT));
   }
-  
+
   public void loadLootTableDefination(String uid) throws Exception {
     chestGenParser.parseLootTableCategories(uid, loadText(uid, LOOT_EXT));
   }
@@ -99,7 +99,7 @@ public class StructureResourceManager {
       if(stream == null) {
         throw new IOException("StructureResourceManager: Could find resources for template: " + uid);
       }
-      return new StructureComponentNBT(stream);
+      return new StructureComponentNBT(uid, stream);
     } finally {
       IOUtils.closeQuietly(stream);
     }
@@ -108,14 +108,14 @@ public class StructureResourceManager {
   private String loadText(String uid, String ext) throws IOException {
     return loadText(uid, getStream(uid, ext));
   }
-  
+
   private String loadText(String uid, InputStream str) throws IOException {
     if(str == null) {
       throw new IOException("Could not find the resource for generator: " + uid);
     }
     return IoUtil.readStream(str);
   }
-  
+
   private InputStream getStream(String uid, String extension) {
     if(uid == null || extension == null) {
       return null;
@@ -125,8 +125,5 @@ public class StructureResourceManager {
     }
     return getStream(uid + extension);
   }
-
-  
-
 
 }

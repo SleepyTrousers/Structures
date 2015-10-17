@@ -53,14 +53,6 @@ public class StructureComponentNBT implements IStructureComponent {
   private final StructureBlock fillerBlock;
   private final StructureBlock topBlock;
 
-  //  public StructureComponent(String uid, IBlockAccess world, AxisAlignedBB worldBnds, int surfaceOffset) {
-  //
-  //    this.uid = uid;
-  //
-  //    createComponent(world, worldBnds, surfaceOffset);
-  //
-  //  }
-
   public StructureComponentNBT(AxisAlignedBB bb, Point3i size, String uid, int surfaceOffset, StructureBlock fillerBlock, StructureBlock topBlock) {
     this.bb = bb;
     this.size = size;
@@ -70,12 +62,13 @@ public class StructureComponentNBT implements IStructureComponent {
     this.topBlock = topBlock;
   }
 
-  public StructureComponentNBT(InputStream is) throws IOException {
-    this(CompressedStreamTools.read(new DataInputStream(is)));
+  public StructureComponentNBT(String uid, InputStream is) throws IOException {
+    this(uid, CompressedStreamTools.read(new DataInputStream(is)));
   }
 
-  public StructureComponentNBT(NBTTagCompound root) throws IOException {
-    uid = root.getString("uid");
+  public StructureComponentNBT(String uid, NBTTagCompound root) throws IOException {
+
+    this.uid = uid;
 
     NBTTagList dataList = (NBTTagList) root.getTag("data");
     for (int i = 0; i < dataList.tagCount(); i++) {
@@ -136,8 +129,6 @@ public class StructureComponentNBT implements IStructureComponent {
   }
 
   public void writeToNBT(NBTTagCompound root) {
-
-    root.setString("uid", uid);
 
     root.setInteger("minX", (int) bb.minX);
     root.setInteger("minY", (int) bb.minY);

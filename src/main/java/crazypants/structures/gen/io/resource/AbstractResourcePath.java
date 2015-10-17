@@ -8,7 +8,7 @@ public abstract class AbstractResourcePath implements IResourcePath {
 
 
   @Override
-  public List<String> getChildren(String extension) {
+  public List<String> getChildUids(String extension) {
     List<String> kids = getChildren();
     if(kids == null || kids.isEmpty()|| extension == null) {
       return Collections.emptyList();

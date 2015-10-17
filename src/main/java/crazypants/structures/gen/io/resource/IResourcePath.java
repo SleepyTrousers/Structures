@@ -11,5 +11,5 @@ public interface IResourcePath {
   
   List<String> getChildren();
   
-  List<String> getChildren(String extension);
+  List<String> getChildUids(String extension);
 }
