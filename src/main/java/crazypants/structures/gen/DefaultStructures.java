@@ -54,7 +54,7 @@ public class DefaultStructures {
   }
 
   private static void loadTestResources(StructureRegister reg, List<IResourcePath> toScan) {
-    String name = "test" + StructureResourceManager.GENERATOR_EXT;
+    String name = "testGenerator" + StructureResourceManager.GENERATOR_EXT;
     copyTestFile(name, name + ".defaultValues");
 
     name = "esRuinTest" + StructureResourceManager.TEMPLATE_EXT;
@@ -63,7 +63,7 @@ public class DefaultStructures {
     name = "esSmallHouseTest" + StructureResourceManager.TEMPLATE_EXT;
     copyTestFile(name, name + ".defaultValues");
     
-    name = "testVillager" + StructureResourceManager.VILLAGER_EXT;
+    name = "esVillagerTest" + StructureResourceManager.VILLAGER_EXT;
     copyTestFile(name, name + ".defaultValues");
 
     registerZipFiles(TEST_DIR, toScan);

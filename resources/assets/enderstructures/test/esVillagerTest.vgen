@@ -4,15 +4,15 @@
       "villagerId" : 45654,
       "texture" : "esresource:esTestVillager.png",
       "weight" : 10,
-      "maxNum" : 1,
+      "maxNum" : 10,
 
       "templatesPlains" : [
-          {"uid" : "villageHouse1"},
-          {"uid" : "villageHouse2"}    
+          {"uid" : "esVillageHouse1Test"},
+          {"uid" : "esVillageHouse2Test"}    
         ],
 
        "templatesDesert" : [
-          {"uid" : "villageHouseDesert"}
+          {"uid" : "esVillageHouseDesertTest"}
         ],
 
 	"trades" : [

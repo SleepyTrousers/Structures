@@ -23,6 +23,9 @@ public class VillageHouse extends StructureVillagePieces.House1 {
   private IStructure structure;
   private IStructureTemplate template;
 
+  //Used to adjust the yoffset when adding villagers so they don't spawn in basements
+  private boolean addingVilagers = false;
+
   public VillageHouse() {
   }
 
@@ -51,7 +54,7 @@ public class VillageHouse extends StructureVillagePieces.House1 {
     if(structure == null || template == null) {
       return false;
     }
-    
+
     if(averageGroundLevel < 0) {
       averageGroundLevel = getAverageGroundLevel(world, bb);
 
@@ -78,10 +81,26 @@ public class VillageHouse extends StructureVillagePieces.House1 {
     structure.setOrigin(origin);
     template.build(structure, world, random, bb);
     if(villagerId > 0) {
-      spawnVillagers(world, bb, 3, 1, 3, 1);
+      addingVilagers = true;
+      try {
+        spawnVillagers(world, bb, 3, 1, 3, 1);
+      } finally {
+        addingVilagers = false;
+      }
     }
 
     return true;
+  }
+
+  @Override
+  protected int getYWithOffset(int offset) {
+    if(!addingVilagers || coordBaseMode == -1 || structure == null) {
+      return super.getYWithOffset(offset);
+    } else {
+      //Adjusting Y offset so villages spawn at ground level
+      return offset + this.boundingBox.minY + structure.getSurfaceOffset();
+    }
+
   }
 
   private Rotation getRotation() {
@@ -109,10 +128,10 @@ public class VillageHouse extends StructureVillagePieces.House1 {
 
   @Override
   protected void func_143011_b(NBTTagCompound nbt) {
-    super.func_143011_b(nbt);    
+    super.func_143011_b(nbt);
     villagerId = nbt.getInteger("villagerId");
     averageGroundLevel = nbt.getInteger("averageGroundLevel");
-    
+
     if(nbt.hasKey("structure")) {
       NBTTagCompound strRoot = nbt.getCompoundTag("structure");
       structure = new Structure(strRoot);

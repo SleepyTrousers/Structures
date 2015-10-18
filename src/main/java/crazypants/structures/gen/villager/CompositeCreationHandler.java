@@ -48,7 +48,7 @@ public class CompositeCreationHandler implements IVillageCreationHandler {
 
     int startId = System.identityHashCode(startPiece);
     if(startId != currentStartPieceId) {
-      System.out.println("CompositeCreationHandler.buildComponent: New village");
+//      System.out.println("CompositeCreationHandler.buildComponent: New village");
       currentStartPieceId = startId;
       pieceWeights = getWeightedSpawnList(random, 0);
     }
