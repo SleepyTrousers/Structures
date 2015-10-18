@@ -79,10 +79,7 @@ public class VillagerGenerator implements IVillagerGenerator {
     if(creationHandler.hasVillager()) {      
       VillagerRegistry.instance().registerVillagerSkin(getVillagerId(), texture);
       VillagerRegistry.instance().registerVillageTradeHandler(getVillagerId(), tradeHandler);
-    }
-    
-//    VillagerRegistry.instance().registerVillageCreationHandler(creationHandler);
-//    MapGenStructureIO.func_143031_a(VillageHouse.class, uid);
+    };
   }
   
   public void validate() throws Exception {
@@ -95,9 +92,7 @@ public class VillagerGenerator implements IVillagerGenerator {
         Log.warn("VillagerGenerator.register: No trades added for villager" + uid);
       }
     }
-
     creationHandler.validate();
-
   }
 
 }

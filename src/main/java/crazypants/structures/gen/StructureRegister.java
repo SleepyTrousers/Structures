@@ -38,6 +38,9 @@ public class StructureRegister {
   private final Set<String> genUids = new HashSet<String>();
   private final Set<String> villagerUids = new HashSet<String>();
 
+  //Need to use a composite handler as we can only have one handler per Village component class.
+  //All our village houses use the same class, so we can only use one creation handler, which then delegates
+  //to the 'per config' handlers
   private CompositeCreationHandler villagerGen;
 
   private StructureResourceManager resourceManager;

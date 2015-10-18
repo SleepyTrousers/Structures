@@ -16,6 +16,9 @@ public class CompositeCreationHandler implements IVillageCreationHandler {
   private List<CreationHandler> handlers = new ArrayList<CreationHandler>();
 
   private List<WeightedCreationHandler> pieceWeights;
+  
+  public CompositeCreationHandler() {    
+  }
 
   @Override
   public PieceWeight getVillagePieceWeight(Random random, int i) {

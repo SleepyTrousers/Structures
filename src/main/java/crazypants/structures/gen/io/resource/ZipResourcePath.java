@@ -3,6 +3,7 @@ package crazypants.structures.gen.io.resource;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -53,6 +54,9 @@ public class ZipResourcePath extends AbstractResourcePath {
 
   @Override
   public List<String> getChildren() {
+    if(zf == null) {
+      return Collections.emptyList();
+    }
     List<String> result = new ArrayList<String>();
     Enumeration<? extends ZipEntry> entries = zf.entries();    
     while(entries.hasMoreElements()) {
