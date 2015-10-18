@@ -5,7 +5,6 @@ import crazypants.structures.Log;
 import crazypants.structures.api.gen.IVillagerGenerator;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.village.MerchantRecipe;
-import net.minecraft.world.gen.structure.MapGenStructureIO;
 import net.minecraft.world.gen.structure.StructureVillagePieces.PieceWeight;
 
 public class VillagerGenerator implements IVillagerGenerator {
@@ -59,26 +58,32 @@ public class VillagerGenerator implements IVillagerGenerator {
   }
 
   public void addRecipe(MerchantRecipe recipe) {
-    System.out.println("VillagerGenerator.addRecipe: " + recipe);
     tradeHandler.addRecipe(recipe);
+  }
+
+  public CreationHandler getCreationHandler() {
+    return creationHandler;
+  }
+  
+  @Override
+  public void register() {
+    if(getVillagerId() > 0) {
+      VillagerRegistry.instance().registerVillagerId(getVillagerId());
+    }
+    onReload();
   }
 
   @Override
   public void onReload() {
-    if(creationHandler.hasVillager()) {
+    if(creationHandler.hasVillager()) {      
       VillagerRegistry.instance().registerVillagerSkin(getVillagerId(), texture);
       VillagerRegistry.instance().registerVillageTradeHandler(getVillagerId(), tradeHandler);
     }
-    VillagerRegistry.instance().registerVillageCreationHandler(creationHandler);
-    MapGenStructureIO.func_143031_a(VillageHouse.class, uid);
+    
+//    VillagerRegistry.instance().registerVillageCreationHandler(creationHandler);
+//    MapGenStructureIO.func_143031_a(VillageHouse.class, uid);
   }
-
-  @Override
-  public void register() {
-    VillagerRegistry.instance().registerVillagerId(getVillagerId());
-    onReload();
-  }
-
+  
   public void validate() throws Exception {
     if(creationHandler.hasVillager()) {
       if(texture == null) {

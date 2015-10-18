@@ -25,6 +25,10 @@ public class CreationHandler implements IVillageCreationHandler {
     weight = new PieceWeight(VillageHouse.class, 9, 1);
   }
 
+  public String getUid() {
+    return uid;
+  }
+  
   public boolean hasVillager() {
     return villagerId > 0;
   }

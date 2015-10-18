@@ -7,6 +7,8 @@ import crazypants.structures.api.gen.IStructureTemplate;
 import crazypants.structures.api.util.Point3i;
 import crazypants.structures.api.util.Rotation;
 import crazypants.structures.gen.StructureRegister;
+import crazypants.structures.gen.structure.Structure;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
@@ -22,7 +24,6 @@ public class VillageHouse extends StructureVillagePieces.House1 {
   private IStructureTemplate template;
 
   public VillageHouse() {
-
   }
 
   public VillageHouse(String templateUid, int villagerId, int x, int y, int z, int coordBaseMode) {
@@ -47,6 +48,10 @@ public class VillageHouse extends StructureVillagePieces.House1 {
   @Override
   public boolean addComponentParts(World world, Random random, StructureBoundingBox bb) {
 
+    if(structure == null || template == null) {
+      return false;
+    }
+    
     if(averageGroundLevel < 0) {
       averageGroundLevel = getAverageGroundLevel(world, bb);
 
@@ -87,4 +92,38 @@ public class VillageHouse extends StructureVillagePieces.House1 {
   protected int getVillagerType(int par1) {
     return villagerId;
   }
+
+  @Override
+  protected void func_143012_a(NBTTagCompound nbt) {
+    super.func_143012_a(nbt);
+    nbt.setInteger("villagerId", villagerId);
+    nbt.setInteger("averageGroundLevel", averageGroundLevel);
+
+    if(structure != null && structure.isValid()) {
+      NBTTagCompound strRoot = new NBTTagCompound();
+      structure.writeToNBT(strRoot);
+      nbt.setTag("structure", strRoot);
+    }
+
+  }
+
+  @Override
+  protected void func_143011_b(NBTTagCompound nbt) {
+    super.func_143011_b(nbt);    
+    villagerId = nbt.getInteger("villagerId");
+    averageGroundLevel = nbt.getInteger("averageGroundLevel");
+    
+    if(nbt.hasKey("structure")) {
+      NBTTagCompound strRoot = nbt.getCompoundTag("structure");
+      structure = new Structure(strRoot);
+      if(structure.isValid()) {
+        template = structure.getTemplate();
+        if(!template.isValid()) {
+          structure = null;
+          template = null;
+        }
+      }
+    }
+  }
+
 }

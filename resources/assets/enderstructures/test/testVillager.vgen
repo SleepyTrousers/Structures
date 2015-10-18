@@ -2,9 +2,9 @@
     "VillagerGenerator" : {
        
       "villagerId" : 45654,
-      "texture" : "esresource:testVillager.png",
-      "weight" : 100,
-      "maxNum" : 10,
+      "texture" : "esresource:esTestVillager.png",
+      "weight" : 10,
+      "maxNum" : 1,
 
       "templatesPlains" : [
           {"uid" : "villageHouse1"},

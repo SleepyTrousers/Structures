@@ -26,6 +26,10 @@ public class SpacingValidator implements IChunkValidator, ISiteValidator {
   private boolean validateChunk = false;
   private boolean validateLocation = true;
 
+  
+  //TODO: Look at MapGenStructure to include vanilla structures
+  
+  
   public SpacingValidator() {
     this(20, (String[]) null);
   }

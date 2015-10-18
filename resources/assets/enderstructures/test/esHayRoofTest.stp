@@ -1,0 +1,26 @@
+{
+    "StructureTemplate" : {
+                  
+        "components" : [
+          {"uid" : "esHayRoofTest"}
+        ],               
+        
+        "sitePreperations" : [
+                  
+            { "type": "ClearPreperation", 
+                      "clearPlants" : "true"},
+           
+            { "type" : "FillPreperation",
+                      "clearPlants" : "true"}           
+       ],
+       
+       "decorators" : [
+        
+         { "type" : "LootTableInventory",
+                    "category" : "dungeonChest",  
+                    "comment_category" : "mineshaftCorridor, pyramidDesertyChest, pyramidJungleChest, pyramidJungleDispenser, strongholdCorridor, strongholdLibrary, strongholdCrossing, villageBlacksmith, bonusChest, dungeonChest",
+                    "targets" : ["inv0"]} 
+       ]                           
+       
+    }
+}

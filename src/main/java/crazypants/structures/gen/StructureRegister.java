@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import cpw.mods.fml.common.registry.VillagerRegistry;
 import crazypants.structures.Log;
 import crazypants.structures.api.gen.IStructureComponent;
 import crazypants.structures.api.gen.IStructureGenerator;
@@ -16,6 +17,9 @@ import crazypants.structures.api.gen.IVillagerGenerator;
 import crazypants.structures.gen.io.resource.IResourcePath;
 import crazypants.structures.gen.io.resource.StructureResourceManager;
 import crazypants.structures.gen.structure.StructureComponentNBT;
+import crazypants.structures.gen.villager.CompositeCreationHandler;
+import crazypants.structures.gen.villager.VillageHouse;
+import net.minecraft.world.gen.structure.MapGenStructureIO;
 
 public class StructureRegister {
 
@@ -33,16 +37,19 @@ public class StructureRegister {
   //Keep these separately so they can be retried ever reload attempt
   private final Set<String> genUids = new HashSet<String>();
   private final Set<String> villagerUids = new HashSet<String>();
-  
+
+  private CompositeCreationHandler villagerGen;
 
   private StructureResourceManager resourceManager;
-  
 
-  private StructureRegister() {    
+  private StructureRegister() {
   }
 
   private void init() {
-    resourceManager = new StructureResourceManager(this);    
+    resourceManager = new StructureResourceManager(this);
+    villagerGen = new CompositeCreationHandler();
+    VillagerRegistry.instance().registerVillageCreationHandler(villagerGen);
+    MapGenStructureIO.func_143031_a(VillageHouse.class, "EnderStructuresHouse");
   }
 
   public StructureResourceManager getResourceManager() {
@@ -55,14 +62,17 @@ public class StructureRegister {
     }
     generators.put(gen.getUid(), gen);
     genUids.add(gen.getUid());
+    Log.info("StructureRegister: Registered generator " + gen.getUid());
   }
-  
+
   public void registerVillagerGenerator(IVillagerGenerator gen) {
     if(gen == null) {
       return;
     }
     villagerUids.add(gen.getUid());
+    villagerGen.addCreationHandler(gen.getCreationHandler());    
     gen.register();
+    Log.info("StructureRegister: Registered villager generator " + gen.getUid());
   }
 
   public void registerTemplate(IStructureTemplate st) {
@@ -70,27 +80,30 @@ public class StructureRegister {
       return;
     }
     templates.put(st.getUid(), st);
+
+    Log.info("StructureRegister: Registered template " + st.getUid());
   }
 
-  public void registerStructureComponent(IStructureComponent st) {
-    if(st == null) {
+  public void registerStructureComponent(IStructureComponent sc) {
+    if(sc == null) {
       return;
     }
-    components.put(st.getUid(), st);
+    components.put(sc.getUid(), sc);
+    Log.info("StructureRegister: Registered component " + sc.getUid());
   }
 
   public Collection<IStructureGenerator> getGenerators() {
     return generators.values();
   }
-  
+
   public Collection<IStructureComponent> getStructureComponents() {
-    return components.values();    
+    return components.values();
   }
 
   public IStructureComponent getStructureComponent(String uid) {
     return getStructureComponent(uid, false);
   }
-  
+
   public IStructureComponent getStructureComponent(String uid, boolean doLoadIfNull) {
     if(!doLoadIfNull || components.containsKey(uid)) {
       return components.get(uid);
@@ -105,7 +118,7 @@ public class StructureRegister {
     }
     return sd;
   }
-  
+
   public IStructureTemplate getStructureTemplate(String uid, boolean doLoadIfNull) {
     if(!doLoadIfNull || templates.containsKey(uid)) {
       return templates.get(uid);
@@ -121,7 +134,6 @@ public class StructureRegister {
     return sd;
   }
 
-  
   public void loadAndRegisterAllResources(IResourcePath path, boolean onlyRootResources) {
 
     List<String> uids = path.getChildUids(StructureResourceManager.GENERATOR_EXT);
@@ -177,19 +189,16 @@ public class StructureRegister {
     }
 
   }
-  
-  
-  
+
   public void clear() {
     components.clear();
     generators.clear();
     villagerUids.clear();
   }
-  
 
   public void reload() {
     clear();
-    for (String uid : genUids) { 
+    for (String uid : genUids) {
       IStructureGenerator tmp;
       try {
         tmp = resourceManager.loadGenerator(uid);
@@ -200,7 +209,7 @@ public class StructureRegister {
         Log.error("StructureRegister: Could not load structure data for " + uid + " Ex: " + e);
       }
     }
-    for (String uid : villagerUids) { 
+    for (String uid : villagerUids) {
       IVillagerGenerator tmp;
       try {
         tmp = resourceManager.loadVillager(uid);
@@ -218,7 +227,5 @@ public class StructureRegister {
   public Collection<IStructureTemplate> getStructureTemplates() {
     return templates.values();
   }
-
-  
 
 }

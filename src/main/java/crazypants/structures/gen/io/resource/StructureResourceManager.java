@@ -46,8 +46,20 @@ public class StructureResourceManager {
     resourcePaths.add(res);
     return res;
   }
+  
+  public IResourcePath addResourceZip(File zipDile) {
+    if(zipDile == null) {
+      return null;
+    }
+    IResourcePath res = new ZipResourcePath(zipDile);
+    resourcePaths.add(res);
+    return res;
+  }
 
   public IResourcePath addClassLoaderResourcePath(String resourcePath) {
+    if(resourcePath == null) {
+      return null;
+    }
     IResourcePath res = new ClassLoaderReourcePath(resourcePath);
     resourcePaths.add(res);
     return res;
