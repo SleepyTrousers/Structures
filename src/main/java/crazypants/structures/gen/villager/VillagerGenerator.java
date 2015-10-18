@@ -21,7 +21,7 @@ public class VillagerGenerator implements IVillagerGenerator {
     this.uid = uid;
     tradeHandler = new TradeHandler();
     creationHandler = new CreationHandler(uid);
-    setWeight(9, 1);
+    setWeight(9, 1, 1);
   }
 
   public String getUid(String uid) {
@@ -45,8 +45,8 @@ public class VillagerGenerator implements IVillagerGenerator {
     this.texture = new ResourceLocation(texture);
   }
 
-  public void setWeight(int weight, int maxNum) {
-    creationHandler.setVillagePieceWeight(new PieceWeight(VillageHouse.class, weight, maxNum));
+  public void setWeight(int weight, int minNum, int maxNum) {
+    creationHandler.setVillagePieceWeight(new PieceWeight(VillageHouse.class, weight, maxNum), minNum);
   }
 
   public void addPlainsTemplate(String templateUid) {
@@ -61,6 +61,7 @@ public class VillagerGenerator implements IVillagerGenerator {
     tradeHandler.addRecipe(recipe);
   }
 
+  @Override
   public CreationHandler getCreationHandler() {
     return creationHandler;
   }

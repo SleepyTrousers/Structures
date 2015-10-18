@@ -4,6 +4,7 @@
       "villagerId" : 45655,
       "texture" : "esresource:esHayHouseVillager.png",
       "weight" : 10,
+      "minNum" : 0,
       "maxNum" : 2,
 
       "templatesPlains" : [

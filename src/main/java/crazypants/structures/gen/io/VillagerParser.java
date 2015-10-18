@@ -48,11 +48,15 @@ public class VillagerParser {
 
       if(to.has("weight")) {
         int weight = to.get("weight").getAsInt();
-        int num = 1;
+        int maxNum = 1;
         if(to.has("maxNum")) {
-          num = to.get("maxNum").getAsInt();
+          maxNum = to.get("maxNum").getAsInt();
         }
-        res.setWeight(weight, num);
+        int minNum = 1;
+        if(to.has("minNum")) {
+          minNum = to.get("minNum").getAsInt();
+        }        
+        res.setWeight(weight, minNum, maxNum);
       }
 
       List<String> templateUids = new ArrayList<String>();

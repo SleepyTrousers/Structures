@@ -15,8 +15,6 @@ public class CompositeCreationHandler implements IVillageCreationHandler {
 
   private List<CreationHandler> handlers = new ArrayList<CreationHandler>();
 
-  //TODO: This is dodgy as it assumes structure creation is single threaded and non-interleaved
-  private int currentStartPieceId = -1;
   private List<WeightedCreationHandler> pieceWeights;
 
   @Override
@@ -24,10 +22,10 @@ public class CompositeCreationHandler implements IVillageCreationHandler {
 
     int maxToSpawn = 0;
     int totalWeight = 0;
-    for (CreationHandler handler : handlers) {
-      PieceWeight pw = handler.getVillagePieceWeight(random, i);
-      maxToSpawn += pw.villagePiecesLimit;
-      totalWeight += pw.villagePieceWeight;
+    pieceWeights = getWeightedSpawnList(random, 0);
+    for (WeightedCreationHandler wch : pieceWeights) {
+      maxToSpawn += wch.weight.villagePiecesLimit;
+      totalWeight += wch.weight.villagePieceWeight;
     }
     return new PieceWeight(VillageHouse.class, totalWeight, maxToSpawn);
   }
@@ -41,26 +39,17 @@ public class CompositeCreationHandler implements IVillageCreationHandler {
     return VillageHouse.class;
   }
 
-
   @SuppressWarnings("rawtypes")
   @Override
   public Object buildComponent(PieceWeight villagePiece, Start startPiece, List pieces, Random random, int x, int y, int z, int coordBaseMode, int p5) {
-
-    int startId = System.identityHashCode(startPiece);
-    if(startId != currentStartPieceId) {
-//      System.out.println("CompositeCreationHandler.buildComponent: New village");
-      currentStartPieceId = startId;
-      pieceWeights = getWeightedSpawnList(random, 0);
-    }
-
+    
     int totalWeight = getTotalWieght(pieceWeights);
-
     if(totalWeight <= 0) {
       return null;
     }
 
-    for(int i=0; i < 5; ++i) {
-          
+    for (int i = 0; i < 5; ++i) {
+
       int randomWeight = random.nextInt(totalWeight);
       Iterator<WeightedCreationHandler> iterator = pieceWeights.iterator();
 
@@ -110,7 +99,7 @@ public class CompositeCreationHandler implements IVillageCreationHandler {
   private List<WeightedCreationHandler> getWeightedSpawnList(Random random, int i) {
     List<WeightedCreationHandler> res = new ArrayList<WeightedCreationHandler>();
     for (CreationHandler ch : handlers) {
-      res.add(new WeightedCreationHandler(ch.getVillagePieceWeight(random, i), ch));
+      res.add(new WeightedCreationHandler(ch.getVillagePieceWeight(random, i), ch));            
     }
     return res;
   }

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import cpw.mods.fml.common.registry.VillagerRegistry.IVillageCreationHandler;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraft.world.gen.structure.StructureComponent;
 import net.minecraft.world.gen.structure.StructureVillagePieces.PieceWeight;
@@ -19,6 +20,7 @@ public class CreationHandler implements IVillageCreationHandler {
   private final List<String> desertTemplates = new ArrayList<String>();
   
   private PieceWeight weight;
+  private int minNum;
 
   public CreationHandler(String uid) {
     this.uid = uid;
@@ -49,13 +51,16 @@ public class CreationHandler implements IVillageCreationHandler {
     desertTemplates.add(tmp);
   }
 
+  /** terraionType = World terrain type, 0 for normal, 1 for flat map */
   @Override
-  public PieceWeight getVillagePieceWeight(Random random, int i) {
-    return new PieceWeight(weight.villagePieceClass, weight.villagePieceWeight,weight.villagePiecesLimit);
+  public PieceWeight getVillagePieceWeight(Random random, int terrainType) {
+    int maxNum = MathHelper.getRandomIntegerInRange(random, minNum, weight.villagePiecesLimit); 
+    return new PieceWeight(weight.villagePieceClass, weight.villagePieceWeight,maxNum);
   }
   
-  public void setVillagePieceWeight(PieceWeight weight) {
+  public void setVillagePieceWeight(PieceWeight weight, int minNum) {
     this.weight = weight;
+    this.minNum = minNum;
   }
 
   public void validate() throws Exception {
