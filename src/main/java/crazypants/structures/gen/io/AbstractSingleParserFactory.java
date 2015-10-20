@@ -7,13 +7,15 @@ import crazypants.structures.api.gen.IDecorator;
 import crazypants.structures.api.gen.ILocationSampler;
 import crazypants.structures.api.gen.ISitePreperation;
 import crazypants.structures.api.gen.ISiteValidator;
+import crazypants.structures.api.io.IBehaviourParser;
 import crazypants.structures.api.io.IChunkValidatorParser;
 import crazypants.structures.api.io.IDecoratorParser;
 import crazypants.structures.api.io.ILocationSamplerParser;
 import crazypants.structures.api.io.ISitePreperationParser;
 import crazypants.structures.api.io.ISiteValidatorParser;
+import crazypants.structures.api.runtime.IBehaviour;
 
-public abstract class AbstractSingleParserFactory implements ISiteValidatorParser, IChunkValidatorParser, ILocationSamplerParser, ISitePreperationParser, IDecoratorParser  {
+public abstract class AbstractSingleParserFactory implements ISiteValidatorParser, IChunkValidatorParser, ILocationSamplerParser, ISitePreperationParser, IDecoratorParser, IBehaviourParser  {
 
   private final String uid;
 
@@ -54,7 +56,10 @@ public abstract class AbstractSingleParserFactory implements ISiteValidatorParse
   public IDecorator createDecorator(String uid, JsonObject json) {
     return null;
   }
-  
-  
+
+  @Override
+  public IBehaviour createBehaviour(String uid, JsonObject json) {  
+    return null;
+  }
   
 }

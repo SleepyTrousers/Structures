@@ -10,6 +10,7 @@ import crazypants.structures.api.gen.IDecorator;
 import crazypants.structures.api.gen.ILocationSampler;
 import crazypants.structures.api.gen.ISitePreperation;
 import crazypants.structures.api.gen.ISiteValidator;
+import crazypants.structures.api.runtime.IBehaviour;
 import crazypants.structures.gen.structure.decorator.LootTableDecorator;
 import crazypants.structures.gen.structure.preperation.ClearPreperation;
 import crazypants.structures.gen.structure.preperation.FillPreperation;
@@ -23,6 +24,7 @@ import crazypants.structures.gen.structure.validator.biome.BiomeDescriptor;
 import crazypants.structures.gen.structure.validator.biome.BiomeFilterAll;
 import crazypants.structures.gen.structure.validator.biome.BiomeFilterAny;
 import crazypants.structures.gen.structure.validator.biome.IBiomeFilter;
+import crazypants.structures.runtime.vspawner.VirtualSpawnerBehaviour;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.BiomeDictionary.Type;
 
@@ -38,6 +40,7 @@ public class DefaultParsers {
     add(new FillPrepFact());
     add(new ClearPrepFact());   
     add(new LootTableDecFact());
+    add(new VirtualSpawnerFact());
   }
 
   private static void add(AbstractSingleParserFactory fact) {
@@ -237,5 +240,36 @@ public class DefaultParsers {
       return res;
     }    
   }  
+  
+//-----------------------------------------------------------------
+  static class VirtualSpawnerFact extends AbstractSingleParserFactory {
 
+    VirtualSpawnerFact() {
+      super("VirtualSpawner");
+    }
+
+    
+    @Override
+    public IBehaviour createBehaviour(String uid, JsonObject json) {
+      VirtualSpawnerBehaviour res = new VirtualSpawnerBehaviour();    
+      String entStr = JsonUtil.getStringElement(json, "entity", null);
+      if(entStr == null) {
+        Log.warn("DefaultParsers.VirtualSpawnerFact.createBehaviour: No entity specified for Virtual Spawner.");
+        return null;
+      }
+      res.setEntityTypeName(entStr);      
+      res.setNumberSpawned(JsonUtil.getIntElement(json, "numSpawned", res.getNumberSpawned()));
+      res.setMinSpawnDelay(JsonUtil.getIntElement(json, "minSpawnDelay", res.getMinSpawnDelay()));
+      res.setMaxSpawnDelay(JsonUtil.getIntElement(json, "maxSpawnDelay", res.getMaxSpawnDelay()));
+      res.setMinPlayerDistance(JsonUtil.getIntElement(json, "minPlayerDistance", res.getMinPlayerDistance()));
+      res.setSpawnRange(JsonUtil.getIntElement(json, "spawnRange", res.getSpawnRange()));
+      res.setMaxNearbyEntities(JsonUtil.getIntElement(json, "maxNearbyEntities", res.getMaxNearbyEntities()));
+      res.setPersistEntities(JsonUtil.getBooleanElement(json, "persistEntities", res.isPersistEntities()));
+      res.setUseVanillaSpawnChecks(JsonUtil.getBooleanElement(json, "useVanillaSpawnChecks", res.isUseVanillaSpawnChecks()));
+      res.setRenderParticles(JsonUtil.getBooleanElement(json, "renderParticles", res.isRenderParticles()));
+      res.setStructureLocalPosition(JsonUtil.getPoint3i(json, "position", res.getStructureLocalPosition()));      
+           
+      return res;
+    }    
+  }  
 }

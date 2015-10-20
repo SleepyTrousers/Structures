@@ -13,12 +13,14 @@ import crazypants.structures.api.gen.IDecorator;
 import crazypants.structures.api.gen.ILocationSampler;
 import crazypants.structures.api.gen.ISitePreperation;
 import crazypants.structures.api.gen.ISiteValidator;
+import crazypants.structures.api.io.IBehaviourParser;
 import crazypants.structures.api.io.IChunkValidatorParser;
 import crazypants.structures.api.io.IDecoratorParser;
 import crazypants.structures.api.io.ILocationSamplerParser;
 import crazypants.structures.api.io.IParser;
 import crazypants.structures.api.io.ISitePreperationParser;
 import crazypants.structures.api.io.ISiteValidatorParser;
+import crazypants.structures.api.runtime.IBehaviour;
 
 public class ParserRegister {
 
@@ -33,6 +35,8 @@ public class ParserRegister {
   private final Map<String, ISiteValidatorParser> siteValParsers = new HashMap<String, ISiteValidatorParser>();
 
   private final Map<String, IDecoratorParser> decParsers = new HashMap<String, IDecoratorParser>();
+    
+  private final Map<String, IBehaviourParser> behavParsers = new HashMap<String, IBehaviourParser>();
 
   public static final ParserRegister instance = new ParserRegister();
 
@@ -103,6 +107,15 @@ public class ParserRegister {
     }
     return f.createDecorator(uid, json);
   }
+  
+  public IBehaviour ceateBehaviour(String uid, JsonObject json) {
+    IBehaviourParser f = behavParsers.get(uid);
+    if(f == null) {
+      f = findFactory(uid, IBehaviourParser.class);
+      behavParsers.put(uid, f);
+    }
+    return f.createBehaviour(uid, json);
+  }
 
   @SuppressWarnings("unchecked")
   private <T extends IParser> T findFactory(String uid, Class<T> type) {
@@ -123,5 +136,7 @@ public class ParserRegister {
       super(null);
     }
   }
+
+  
 
 }

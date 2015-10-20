@@ -58,12 +58,19 @@
        
        "behaviours" : [
            
-           { "type": "GuardianSpawner",
-             "minTimeBetweenSpawns":1000,
-             "maxTimeBetweenSpawns":1200,
-             "mobs" : [
-               {"name":"Creeper", "count":3}
-             ]}
+           { "type": "VirtualSpawner",
+                     "entity" : "SnowMan",
+                     "numSpawned" : 4,
+                     "minSpawnDelay" : 300,
+                     "maxSpawnDelay" : 400,
+                     "minPlayerDistance" : 32,
+                     "spawnRange" : 4,
+                     "maxNearbyEntities" : 10,
+                     "persistEntities" : "false",
+                     "useVanillaSpawnChecks" : "true",
+                     "renderParticles" : true,
+                     "position" : [4, 2, 4] 
+             }
              
        
        ]

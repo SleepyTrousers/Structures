@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import net.minecraftforge.common.util.ForgeDirection;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import crazypants.structures.api.util.Point3i;
 import crazypants.structures.gen.structure.Border;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class JsonUtil {
 
@@ -93,6 +93,19 @@ public class JsonUtil {
       border.set(dir, JsonUtil.getIntElement(obj, dir.name().toLowerCase(), border.get(dir)));
     }
     return border;
+  }
+  
+  public static Point3i getPoint3i(JsonObject valObj, String varName, Point3i def) {
+    if(valObj.has(varName)) {
+      JsonElement offsetJE = valObj.get(varName);
+      if(offsetJE.isJsonArray()) {
+        JsonArray arr = offsetJE.getAsJsonArray();
+        if(!arr.isJsonNull() && arr.size() == 3) {
+          return new Point3i(arr.get(0).getAsInt(), arr.get(1).getAsInt(), arr.get(2).getAsInt());                    
+        }
+      }
+    }
+    return def;
   }
 
 }

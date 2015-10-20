@@ -20,22 +20,25 @@ public class VirtualSpawnerBehaviour implements IBehaviour {
   private int maxSpawnDelay = 800;
   private int minPlayerDistance = 16;
 
-  private int spawnCount = 4;
+  private int numSpawned = 4;
   private int maxSpawnRetries = 3;
   private int spawnRange = 4;
   private int maxNearbyEntities = 6;
   
-  private int despawnTimeSeconds = 120;
+  //private int despawnTimeSeconds = 120;
   
   private boolean useVanillaSpawnChecks = true;
   
   private boolean renderParticles = true;
+  
+  private boolean persistEntities = false;
+  
+  //TODO: Need to add a block check so it can be broken if required
+  //TODO: Allow for a list of entities
 
   private Map<InstanceKey, VirtualSpawnerInstance> instances = new HashMap<InstanceKey, VirtualSpawnerInstance>();
 
   public VirtualSpawnerBehaviour() {
-    //Required to insure this is registered
-    DespawnController.getInstance();
   }
   
   @Override
@@ -101,12 +104,12 @@ public class VirtualSpawnerBehaviour implements IBehaviour {
     this.minPlayerDistance = minPlayerDistance;
   }
 
-  public int getSpawnCount() {
-    return spawnCount;
+  public int getNumberSpawned() {
+    return numSpawned;
   }
 
-  public void setSpawnCount(int spawnCount) {
-    this.spawnCount = spawnCount;
+  public void setNumberSpawned(int spawnCount) {
+    this.numSpawned = spawnCount;
   }
 
   public int getMaxSpawnRetries() {
@@ -141,13 +144,13 @@ public class VirtualSpawnerBehaviour implements IBehaviour {
     this.useVanillaSpawnChecks = useVanillaSpawnChecks;
   }
 
-  public int getDespawnTimeSeconds() {
-    return despawnTimeSeconds;
-  }
-
-  public void setDespawnTimeSeconds(int despawnTimeSeconds) {
-    this.despawnTimeSeconds = despawnTimeSeconds;
-  }
+//  public int getDespawnTimeSeconds() {
+//    return despawnTimeSeconds;
+//  }
+//
+//  public void setDespawnTimeSeconds(int despawnTimeSeconds) {
+//    this.despawnTimeSeconds = despawnTimeSeconds;
+//  }
 
   public boolean isRenderParticles() {
     return renderParticles;
@@ -155,6 +158,14 @@ public class VirtualSpawnerBehaviour implements IBehaviour {
 
   public void setRenderParticles(boolean renderParticles) {
     this.renderParticles = renderParticles;
+  }
+
+  public boolean isPersistEntities() {
+    return persistEntities;
+  }
+
+  public void setPersistEntities(boolean persistEntities) {
+    this.persistEntities = persistEntities;
   }
 
   private static class InstanceKey {

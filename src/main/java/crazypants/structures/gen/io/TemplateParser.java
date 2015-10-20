@@ -13,6 +13,7 @@ import crazypants.structures.api.gen.IDecorator;
 import crazypants.structures.api.gen.ISitePreperation;
 import crazypants.structures.api.gen.ISiteValidator;
 import crazypants.structures.api.gen.IStructureComponent;
+import crazypants.structures.api.runtime.IBehaviour;
 import crazypants.structures.api.util.Point3i;
 import crazypants.structures.api.util.Rotation;
 import crazypants.structures.gen.StructureGenRegister;
@@ -44,17 +45,8 @@ public class TemplateParser {
           if(!valObj.isJsonNull()&& valObj.has("uid")) {
             String compUid = valObj.get("uid").getAsString();            
             IStructureComponent st = reg.getStructureComponent(compUid, true);            
-            if(st != null) {
-              Point3i offset = null;
-              if(valObj.has("offset")) {
-                JsonElement offsetJE = valObj.get("offset");
-                if(offsetJE.isJsonArray()) {
-                  JsonArray arr = offsetJE.getAsJsonArray();
-                  if(!arr.isJsonNull() && arr.size() == 3) {
-                    offset = new Point3i(arr.get(0).getAsInt(), arr.get(1).getAsInt(), arr.get(2).getAsInt());                    
-                  }
-                }
-              }
+            if(st != null) {              
+              Point3i offset = JsonUtil.getPoint3i(valObj, "offset", null);
               res.addComponent(st, offset);
             }
           }
@@ -79,66 +71,47 @@ public class TemplateParser {
         }
         res.setRotations(rots);
       }
+      
+      List<TypedObject> arrayContents;
 
-      if(to.has("siteValidators")) {
-
-        JsonArray arr = to.getAsJsonArray("siteValidators");
-        for (JsonElement e : arr) {
-          if(e.isJsonObject()) {
-            JsonObject valObj = e.getAsJsonObject();
-            if(!valObj.isJsonNull() && valObj.has("type")) {
-              String id = valObj.get("type").getAsString();
-              ISiteValidator val = parsers.createSiteValidator(id, valObj);
-              if(val != null) {
-                res.addSiteValidator(val);
-              } else {
-                throw new Exception("Could not parse validator: " + id + " for template: " + uid);
-              }
-            }
-          }
+      arrayContents = getTypedObjects("siteValidators", to);
+      for(TypedObject o : arrayContents) {
+        ISiteValidator sv = parsers.createSiteValidator(o.type, o.obj);
+        if(sv != null) {
+          res.addSiteValidator(sv);
+        } else {
+          Log.warn("Could not parse site validator with type: " + o.type + " in template " + uid);
         }
-
       }
-
-      if(to.has("sitePreperations")) {
-
-        JsonArray arr = to.getAsJsonArray("sitePreperations");
-        for (JsonElement e : arr) {
-          if(e.isJsonObject()) {
-            JsonObject valObj = e.getAsJsonObject();
-            if(!valObj.isJsonNull() && valObj.has("type")) {
-              String id = valObj.get("type").getAsString();
-              ISitePreperation val = parsers.createPreperation(id, valObj);
-              if(val != null) {
-                res.addSitePreperation(val);
-              } else {
-                throw new Exception("Could not parse preperation: " + id + " for template: " + uid);
-              }
-            }
-          }
+      
+      arrayContents = getTypedObjects("sitePreperations", to);
+      for(TypedObject o : arrayContents) {
+        ISitePreperation sv = parsers.createPreperation(o.type, o.obj);
+        if(sv != null) {
+          res.addSitePreperation(sv);
+        } else {
+          Log.warn("Could not parse site preperation with type: " + o.type + " in template " + uid);
         }
-
       }
-
-      if(to.has("decorators")) {
-
-        JsonArray arr = to.getAsJsonArray("decorators");
-        for (JsonElement e : arr) {
-          if(e.isJsonObject()) {
-            JsonObject valObj = e.getAsJsonObject();
-            if(!valObj.isJsonNull() && valObj.has("type")) {
-              String id = valObj.get("type").getAsString();
-              IDecorator dec = parsers.createDecorator(id, valObj);
-              if(dec != null) {
-                res.addDecorator(dec);
-              } else {
-                //throw new Exception("Could not parse decorator: " + id + " for template: " + uid);
-                Log.warn("Could not parse decorator with type: " + id + " in template " + uid);
-              }
-            }
-          }
+      
+      arrayContents = getTypedObjects("decorators", to);
+      for(TypedObject o : arrayContents) {
+        IDecorator dec = parsers.createDecorator(o.type, o.obj);
+        if(dec != null) {
+          res.addDecorator(dec);
+        } else {
+          Log.warn("Could not parse decorator with type: " + o.type + " in template " + uid);
         }
-
+      }
+      
+      arrayContents = getTypedObjects("behaviours", to);
+      for(TypedObject o : arrayContents) {
+        IBehaviour behav = parsers.ceateBehaviour(o.type, o.obj);
+        if(behav != null) {
+          res.addBehaviour(behav);
+        } else {
+          Log.warn("Could not parse behaviours with type: " + o.type + " in template " + uid);
+        }
       }
 
       reg.getResourceManager().getLootTableParser().parseLootTableCategories(to);      
@@ -152,6 +125,39 @@ public class TemplateParser {
     }
 
     return res;
+  }
+
+  private List<TypedObject> getTypedObjects(String arrayName, JsonObject parent) {
+    List<TypedObject> res = new ArrayList<TemplateParser.TypedObject>();
+    
+    if(parent.has(arrayName)) {
+      JsonElement el = parent.get(arrayName);
+      if(!el.isJsonArray()) {
+        return res;
+      }
+      JsonArray arr = parent.getAsJsonArray(arrayName);
+      for (JsonElement e : arr) {
+        if(e.isJsonObject()) {
+          JsonObject valObj = e.getAsJsonObject();
+          if(!valObj.isJsonNull() && valObj.has("type")) {
+            String type = valObj.get("type").getAsString();
+            res.add(new TypedObject(type, valObj));            
+          }
+        }
+      }
+    }    
+    return res;
+  }
+  
+  private static class TypedObject {
+    final String type;
+    JsonObject obj;
+    
+    TypedObject(String type, JsonObject obj) {    
+      this.type = type;
+      this.obj = obj;
+    }
+    
   }
   
 }

@@ -49,7 +49,6 @@ public class StructureTemplate implements IStructureTemplate {
     if(components != null) {
       this.components.addAll(components);
     }        
-//    behaviour.add(new VirtualSpawnerBehaviour());
   }
   
   @Override

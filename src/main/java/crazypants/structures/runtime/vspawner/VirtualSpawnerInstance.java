@@ -4,7 +4,6 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.WorldTickEvent;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
-import cpw.mods.fml.relauncher.Side;
 import crazypants.structures.PacketHandler;
 import crazypants.structures.api.util.Point3i;
 import net.minecraft.entity.Entity;
@@ -16,9 +15,9 @@ import net.minecraft.world.World;
 
 public class VirtualSpawnerInstance {
 
-  static {
-    PacketHandler.INSTANCE.registerMessage(PacketSpawnParticles.class, PacketSpawnParticles.class, PacketHandler.nextID(), Side.CLIENT);
-  }
+//  static {
+//    PacketHandler.INSTANCE.registerMessage(PacketSpawnParticles.class, PacketSpawnParticles.class, PacketHandler.nextID(), Side.CLIENT);
+//  }
 
   private VirtualSpawnerBehaviour behaviour;
   private Point3i worldPos;
@@ -27,7 +26,7 @@ public class VirtualSpawnerInstance {
   private int ticksTillNextSpawn = 20;
   private int remainingSpawnTries;
 
-  private boolean registered = false;;
+  private boolean registered = false;
 
   public VirtualSpawnerInstance(VirtualSpawnerBehaviour behaviour, World world, Point3i worldPos) {
     this.behaviour = behaviour;
@@ -62,8 +61,8 @@ public class VirtualSpawnerInstance {
       return;
     }
 
-    remainingSpawnTries = behaviour.getSpawnCount() + behaviour.getMaxSpawnRetries();
-    for (int i = 0; i < behaviour.getSpawnCount() && remainingSpawnTries > 0; ++i) {
+    remainingSpawnTries = behaviour.getNumberSpawned() + behaviour.getMaxSpawnRetries();
+    for (int i = 0; i < behaviour.getNumberSpawned() && remainingSpawnTries > 0; ++i) {
       if(!trySpawnEntity()) {
         break;
       }
@@ -94,8 +93,8 @@ public class VirtualSpawnerInstance {
     return true;
   }
 
-  protected boolean trySpawnEntity() {
-    Entity entity = createEntity(true);
+  protected boolean trySpawnEntity() {    
+    Entity entity = createEntity(behaviour.isPersistEntities());
     if(!(entity instanceof EntityLiving)) {
       return false;
     }
@@ -145,10 +144,11 @@ public class VirtualSpawnerInstance {
     return spaceClear;
   }
 
-  Entity createEntity(boolean forceAlive) {
+  Entity createEntity(boolean persistEntity) {
     Entity ent = EntityList.createEntityByName(behaviour.getEntityTypeName(), world);
-    if(forceAlive && behaviour.getMinPlayerDistance() <= 0 && behaviour.getDespawnTimeSeconds() > 0 && ent instanceof EntityLiving) {
-      ent.getEntityData().setLong(VirtualSpawnerBehaviour.KEY_DESPAWN_TIME, world.getTotalWorldTime() + behaviour.getDespawnTimeSeconds() * 20);
+//    if(persistEntity && behaviour.getMinPlayerDistance() <= 0 && behaviour.getDespawnTimeSeconds() > 0 && ent instanceof EntityLiving) {
+//      ent.getEntityData().setLong(VirtualSpawnerBehaviour.KEY_DESPAWN_TIME, world.getTotalWorldTime() + behaviour.getDespawnTimeSeconds() * 20);
+    if(persistEntity && ent instanceof EntityLiving) {
       ((EntityLiving) ent).func_110163_bv();
     }
     return ent;
