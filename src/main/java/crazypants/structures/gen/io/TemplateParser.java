@@ -15,7 +15,7 @@ import crazypants.structures.api.gen.ISiteValidator;
 import crazypants.structures.api.gen.IStructureComponent;
 import crazypants.structures.api.util.Point3i;
 import crazypants.structures.api.util.Rotation;
-import crazypants.structures.gen.StructureRegister;
+import crazypants.structures.gen.StructureGenRegister;
 import crazypants.structures.gen.structure.StructureTemplate;
 
 public class TemplateParser {
@@ -23,7 +23,7 @@ public class TemplateParser {
   
   private final ParserRegister parsers = ParserRegister.instance;
    
-  public StructureTemplate parseTemplateConfig(StructureRegister reg, String uid, String json) throws Exception {
+  public StructureTemplate parseTemplateConfig(StructureGenRegister reg, String uid, String json) throws Exception {
 
     StructureTemplate res = null;
     try {

@@ -13,7 +13,7 @@ import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
 import crazypants.structures.Log;
 import crazypants.structures.api.gen.IStructureTemplate;
 import crazypants.structures.api.gen.IVillagerGenerator;
-import crazypants.structures.gen.StructureRegister;
+import crazypants.structures.gen.StructureGenRegister;
 import crazypants.structures.gen.villager.VillagerGenerator;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -21,7 +21,7 @@ import net.minecraft.village.MerchantRecipe;
 
 public class VillagerParser {
 
-  public IVillagerGenerator parseVillagerConfig(StructureRegister reg, String uid, String json) throws Exception {
+  public IVillagerGenerator parseVillagerConfig(StructureGenRegister reg, String uid, String json) throws Exception {
     
     if(uid == null) {
       throw new Exception("Null uid specified");
@@ -138,7 +138,7 @@ public class VillagerParser {
     return new ItemStack(item, num, meta);
   }
 
-  private void getTemapletsUids(StructureRegister reg, JsonElement el, List<String> templateUids) {
+  private void getTemapletsUids(StructureGenRegister reg, JsonElement el, List<String> templateUids) {
     if(el != null && el.isJsonArray()) {
       JsonArray templates = el.getAsJsonArray();
       for (JsonElement e : templates) {

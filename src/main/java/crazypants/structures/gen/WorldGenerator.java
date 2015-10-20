@@ -69,12 +69,17 @@ public class WorldGenerator implements IWorldGenerator {
       long zSeed = fmlRandom.nextLong() >> 2 + 1L;
       long chunkSeed = (xSeed * chunkX + zSeed * chunkZ) ^ worldSeed;
 
-      IWorldStructures structures = EnderStructures.structureRuntime.getStructuresForWorld(world);
-      for (IStructureGenerator template : StructureRegister.instance.getGenerators()) {
-        Random r = new Random(chunkSeed ^ template.getUid().hashCode());
-        Collection<IStructure> s = template.generate(structures, r, chunkX, chunkZ, world, chunkGenerator, chunkProvider);
-        if(s != null) {
-          structures.addAll(s);
+      IWorldStructures worldStructs = EnderStructures.structureRegister.getStructuresForWorld(world);
+      for (IStructureGenerator generator : StructureGenRegister.instance.getGenerators()) {
+        Random r = new Random(chunkSeed ^ generator.getUid().hashCode());
+        Collection<IStructure> generatedStructs = generator.generate(worldStructs, r, chunkX, chunkZ, world, chunkGenerator, chunkProvider);
+        if(generatedStructs != null) {
+          worldStructs.addAll(generatedStructs);          
+        }  
+        for(IStructure s : generatedStructs) {
+          if(s != null && s.getTemplate() != null) {
+            s.getTemplate().getBehaviour().onStructureGenerated(world, s);
+          }
         }
       }
     } finally {

@@ -12,7 +12,7 @@ import crazypants.IoUtil;
 import crazypants.structures.api.gen.IStructureGenerator;
 import crazypants.structures.api.gen.IStructureTemplate;
 import crazypants.structures.api.gen.IVillagerGenerator;
-import crazypants.structures.gen.StructureRegister;
+import crazypants.structures.gen.StructureGenRegister;
 import crazypants.structures.gen.io.GeneratorParser;
 import crazypants.structures.gen.io.LootTableParser;
 import crazypants.structures.gen.io.TemplateParser;
@@ -32,9 +32,9 @@ public class StructureResourceManager {
   private final TemplateParser templateParser = new TemplateParser();
   private final VillagerParser villagerParser = new VillagerParser();
   private final LootTableParser chestGenParser = new LootTableParser();
-  private final StructureRegister register;
+  private final StructureGenRegister register;
 
-  public StructureResourceManager(StructureRegister register) {
+  public StructureResourceManager(StructureGenRegister register) {
     this.register = register;
   }
 

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
+import crazypants.structures.api.runtime.IBehaviour;
 import crazypants.structures.api.util.Point3i;
 import crazypants.structures.api.util.Rotation;
 import net.minecraft.util.AxisAlignedBB;
@@ -33,6 +34,8 @@ public interface IStructureTemplate {
   int getSurfaceOffset();
   
   ISiteValidator getSiteValiditor();
+  
+  IBehaviour getBehaviour();
 
   Collection<Point3i> getTaggedLocations(String target);
   

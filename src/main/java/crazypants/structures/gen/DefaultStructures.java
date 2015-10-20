@@ -23,7 +23,7 @@ public class DefaultStructures {
 
   public static void init() {
 
-    StructureRegister reg = StructureRegister.instance;
+    StructureGenRegister reg = StructureGenRegister.instance;
     List<IResourcePath> toScan = new ArrayList<IResourcePath>();
 
     if(Config.testStructuresEnabled) {
@@ -36,7 +36,7 @@ public class DefaultStructures {
     registerZipFiles(ROOT_DIR, toScan);
 
     for (IResourcePath path : toScan) {
-      StructureRegister.instance.loadAndRegisterAllResources(path, true);
+      StructureGenRegister.instance.loadAndRegisterAllResources(path, true);
     }
 
   }
@@ -51,12 +51,12 @@ public class DefaultStructures {
     }
     for (File kid : kids) {
       if(kid.isFile() && kid.getName().endsWith(".zip")) {
-        toScan.add(StructureRegister.instance.getResourceManager().addResourceZip(kid));
+        toScan.add(StructureGenRegister.instance.getResourceManager().addResourceZip(kid));
       }
     }
   }
 
-  private static void loadTestResources(StructureRegister reg, List<IResourcePath> toScan) {
+  private static void loadTestResources(StructureGenRegister reg, List<IResourcePath> toScan) {
     String name = "esTestGenerator" + StructureResourceManager.GENERATOR_EXT;
     copyTestFile(name, name + ".defaultValues");
 

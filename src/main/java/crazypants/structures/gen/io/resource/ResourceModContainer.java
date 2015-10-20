@@ -12,7 +12,7 @@ import cpw.mods.fml.common.ModMetadata;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import crazypants.structures.config.Config;
-import crazypants.structures.gen.StructureRegister;
+import crazypants.structures.gen.StructureGenRegister;
 import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.client.resources.data.IMetadataSection;
 import net.minecraft.client.resources.data.IMetadataSerializer;
@@ -53,7 +53,7 @@ public class ResourceModContainer extends cpw.mods.fml.common.DummyModContainer 
     
     @Override
     public InputStream getInputStream(ResourceLocation rl) throws IOException {
-      return StructureRegister.instance.getResourceManager().getStream(rl.getResourcePath());
+      return StructureGenRegister.instance.getResourceManager().getStream(rl.getResourcePath());
     }
 
     @Override
@@ -61,7 +61,7 @@ public class ResourceModContainer extends cpw.mods.fml.common.DummyModContainer 
       if(!ResourceModContainer.MODID.equals(rl.getResourceDomain())) {
         return false;
       }    
-      return StructureRegister.instance.getResourceManager().resourceExists(rl.getResourcePath());   
+      return StructureGenRegister.instance.getResourceManager().resourceExists(rl.getResourcePath());   
     }
     
     @Override

@@ -12,11 +12,13 @@ import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.gen.IStructureComponent;
 import crazypants.structures.api.gen.IStructureTemplate;
 import crazypants.structures.api.gen.PositionedComponent;
+import crazypants.structures.api.runtime.IBehaviour;
 import crazypants.structures.api.util.Point3i;
 import crazypants.structures.api.util.Rotation;
 import crazypants.structures.gen.structure.decorator.CompositeDecorator;
 import crazypants.structures.gen.structure.preperation.CompositePreperation;
 import crazypants.structures.gen.structure.validator.CompositeSiteValidator;
+import crazypants.structures.runtime.CompositeBehaviour;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
@@ -31,6 +33,7 @@ public class StructureTemplate implements IStructureTemplate {
   private final CompositePreperation sitePreps = new CompositePreperation();
   private final CompositeSiteValidator siteVals = new CompositeSiteValidator();
   private final CompositeDecorator decorators = new CompositeDecorator();
+  private final CompositeBehaviour behaviour = new CompositeBehaviour();
   
   private boolean canSpanChunks = true;
   private boolean generationRequiresLoadedChunks = canSpanChunks;
@@ -38,14 +41,15 @@ public class StructureTemplate implements IStructureTemplate {
   private final String uid;
 
   public StructureTemplate(String uid) {
-    this.uid = uid;
+    this(uid, null);
   }
   
   public StructureTemplate(String uid, Collection<PositionedComponent> components) {
-    this(uid);
+    this.uid = uid;
     if(components != null) {
       this.components.addAll(components);
     }        
+//    behaviour.add(new VirtualSpawnerBehaviour());
   }
   
   @Override
@@ -127,6 +131,10 @@ public class StructureTemplate implements IStructureTemplate {
       decorators.add(val);
     }    
   }
+  
+  public void addBehaviour(IBehaviour be) {    
+    behaviour.add(be);    
+  }
 
   private Rotation getRndRotation() {        
     if(rots == null || rots.isEmpty()) {
@@ -187,6 +195,11 @@ public class StructureTemplate implements IStructureTemplate {
   @Override
   public ISiteValidator getSiteValiditor() {
     return siteVals;
+  }
+
+  @Override
+  public IBehaviour getBehaviour() {  
+    return behaviour;
   }
 
   @Override

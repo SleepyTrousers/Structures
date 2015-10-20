@@ -26,8 +26,9 @@ import crazypants.structures.api.gen.IStructureGenerator;
 import crazypants.structures.config.Config;
 import crazypants.structures.gen.DefaultStructures;
 import crazypants.structures.gen.ReloadConfigCommand;
-import crazypants.structures.gen.StructureRegister;
+import crazypants.structures.gen.StructureGenRegister;
 import crazypants.structures.gen.WorldGenerator;
+import crazypants.structures.runtime.StructureRegister;
 
 @Mod(modid = MODID, name = MOD_NAME, version = VERSION, dependencies = "required-after:Forge@10.13.0.1150,)", guiFactory = "crazypants.structures.config.ConfigFactoryEnderStructures")
 public class EnderStructures {
@@ -44,12 +45,12 @@ public class EnderStructures {
 
   public static WorldGenerator structureGenerator;
 
-  public static StructureRuntime structureRuntime;
+  public static StructureRegister structureRegister;
 
   @EventHandler
   public void preInit(FMLPreInitializationEvent event) {
     Config.load(event);
-    structureRuntime = StructureRuntime.create();
+    structureRegister = StructureRegister.create();
     structureGenerator = WorldGenerator.create();    
   }
 
@@ -73,7 +74,7 @@ public class EnderStructures {
   @EventHandler
   public void serverStopped(FMLServerStoppedEvent event) {
     structureGenerator.serverStopped(event);
-    structureRuntime.serverStopped(event);
+    structureRegister.serverStopped(event);
   }
 
   @EventHandler
@@ -87,7 +88,7 @@ public class EnderStructures {
   }
 
   private void processImc(ImmutableList<IMCMessage> messages) {
-    StructureRegister reg = StructureRegister.instance;
+    StructureGenRegister reg = StructureGenRegister.instance;
     for (IMCMessage msg : messages) {
       String key = msg.key;
       try {
@@ -103,7 +104,7 @@ public class EnderStructures {
 
           } else if(API.REGISTER_GENERATOR.equalsIgnoreCase(key)) {
 
-            IStructureGenerator gen = StructureRegister.instance.getResourceManager().loadGenerator(msg.getStringValue());
+            IStructureGenerator gen = StructureGenRegister.instance.getResourceManager().loadGenerator(msg.getStringValue());
             if(gen != null) {
               reg.registerGenerator(gen);
             }

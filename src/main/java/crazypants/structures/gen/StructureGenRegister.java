@@ -21,12 +21,12 @@ import crazypants.structures.gen.villager.CompositeCreationHandler;
 import crazypants.structures.gen.villager.VillageHouse;
 import net.minecraft.world.gen.structure.MapGenStructureIO;
 
-public class StructureRegister {
+public class StructureGenRegister {
 
-  public static final StructureRegister instance = createInstance();
+  public static final StructureGenRegister instance = createInstance();
 
-  private static StructureRegister createInstance() {
-    StructureRegister reg = new StructureRegister();
+  private static StructureGenRegister createInstance() {
+    StructureGenRegister reg = new StructureGenRegister();
     reg.init();
     return reg;
   }
@@ -45,7 +45,7 @@ public class StructureRegister {
 
   private StructureResourceManager resourceManager;
 
-  private StructureRegister() {
+  private StructureGenRegister() {
   }
 
   private void init() {

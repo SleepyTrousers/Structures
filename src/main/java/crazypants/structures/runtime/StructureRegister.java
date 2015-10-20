@@ -1,4 +1,4 @@
-package crazypants.structures;
+package crazypants.structures.runtime;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -16,80 +16,75 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.WorldEvent;
 
-public class StructureRuntime {
+public class StructureRegister {
 
-  public static StructureRuntime create() {
-    StructureRuntime sm = new StructureRuntime();
+  public static StructureRegister create() {
+    StructureRegister sm = new StructureRegister();
     sm.init();
     return sm;
   }
-  
+
   private final Map<Integer, WorldStructures> worldManagers = new HashMap<Integer, WorldStructures>();
- 
+
   private final Set<IStructure> loadedStructures = new HashSet<IStructure>();
-  
-  
-  public StructureRuntime() {    
+
+  public StructureRegister() {
   }
-  
+
   private void init() {
-    MinecraftForge.EVENT_BUS.register(new EventListener());   
-  }  
+    MinecraftForge.EVENT_BUS.register(new EventListener());
+  }
 
   public IWorldStructures getStructuresForWorld(World world) {
     return getStructuresForWorldImpl(world);
   }
-  
+
   private WorldStructures getStructuresForWorldImpl(World world) {
     if(world == null) {
       return null;
     }
-    WorldStructures res =  worldManagers.get(world.provider.dimensionId);
+    WorldStructures res = worldManagers.get(world.provider.dimensionId);
     if(res == null) {
       WorldStructures s = new WorldStructures(world);
       s.load();
       worldManagers.put(world.provider.dimensionId, s);
-      res = s;      
+      res = s;
     }
     return res;
   }
-  
+
   public void serverStopped(FMLServerStoppedEvent event) {
-    worldManagers.clear();  
+    worldManagers.clear();
     loadedStructures.clear();
   }
-  
+
   public class EventListener {
-    
-    private EventListener() {      
+
+    private EventListener() {
     }
-    
+
     @SubscribeEvent
     public void onChunkLoad(ChunkEvent.Load evt) {
-      Collection<IStructure> structs = getStructuresForWorld(evt.world).getStructuresWithOriginInChunk(evt.getChunk().getChunkCoordIntPair());            
+      Collection<IStructure> structs = getStructuresForWorld(evt.world).getStructuresWithOriginInChunk(evt.getChunk().getChunkCoordIntPair());
       if(!structs.isEmpty()) {
         loadedStructures.addAll(structs);
-        
-//        for(Structure struct : structs) {
-//          struct.
-//        }
-        
-//        getStructuresForWorld(evt.world);
-//        int total = worldManagers.get(evt.world.provider.dimensionId).getStructureCount();        
-//        System.out.println("StructureRuntime.EventListener.onChunkLoad: " + StringUtils.join(structs, " ; ") + " total structures: " + total + " loaded: " + loadedStructures.size());
-      }      
-    }
-    
-    @SubscribeEvent
-    public void onChunkUnload(ChunkEvent.Unload evt) {
-      Collection<IStructure> structs = getStructuresForWorld(evt.world).getStructuresWithOriginInChunk(evt.getChunk().getChunkCoordIntPair());      
-      
-      if(!structs.isEmpty()) {
-        loadedStructures.removeAll(structs);
-//        System.out.println("StructureRuntime.EventListener.onChunkUnload: " + StringUtils.join(structs, " ; "));
+        for(IStructure s : structs) {
+          s.getTemplate().getBehaviour().onStructureLoaded(evt.world, s);
+        }
       }
     }
-    
+
+    @SubscribeEvent
+    public void onChunkUnload(ChunkEvent.Unload evt) {
+      Collection<IStructure> structs = getStructuresForWorld(evt.world).getStructuresWithOriginInChunk(evt.getChunk().getChunkCoordIntPair());
+      if(!structs.isEmpty()) {
+        loadedStructures.removeAll(structs);
+        for(IStructure s : structs) {
+          s.getTemplate().getBehaviour().onStructureUnloaded(evt.world, s);
+        }
+      }
+    }
+
     @SubscribeEvent
     public void eventWorldSave(WorldEvent.Save evt) {
       WorldStructures wm = getStructuresForWorldImpl(evt.world);
@@ -97,7 +92,7 @@ public class StructureRuntime {
         wm.save();
       }
     }
-    
+
   }
-  
+
 }

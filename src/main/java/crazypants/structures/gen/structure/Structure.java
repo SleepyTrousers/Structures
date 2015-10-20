@@ -11,7 +11,7 @@ import crazypants.structures.api.util.ChunkBounds;
 import crazypants.structures.api.util.Point3i;
 import crazypants.structures.api.util.Rotation;
 import crazypants.structures.api.util.VecUtil;
-import crazypants.structures.gen.StructureRegister;
+import crazypants.structures.gen.StructureGenRegister;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
@@ -46,7 +46,7 @@ public class Structure implements IStructure {
   }
 
   public Structure(NBTTagCompound root) {        
-    template = StructureRegister.instance.getStructureTemplate(root.getString("template"), true);      
+    template = StructureGenRegister.instance.getStructureTemplate(root.getString("template"), true);      
     origin = new Point3i(root.getInteger("x"), root.getInteger("y"), root.getInteger("z"));
     rotation = Rotation.values()[MathHelper.clamp_int(root.getShort("rotation"), 0, Rotation.values().length - 1)];    
     updateBounds();
@@ -170,6 +170,11 @@ public class Structure implements IStructure {
   @Override
   public Collection<Point3i> getTaggedLocations(String target) {
     return VecUtil.getTaggedLocationsInWorldCoords(template, target, origin.x, origin.y, origin.z, rotation);
+  }
+
+  @Override
+  public Point3i transformLocalToWorld(Point3i local) {  
+    return VecUtil.transformStructureCoodToWorld(this, local);
   }
 
 }

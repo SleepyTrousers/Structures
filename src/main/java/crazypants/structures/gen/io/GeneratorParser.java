@@ -9,7 +9,7 @@ import crazypants.structures.api.gen.IChunkValidator;
 import crazypants.structures.api.gen.ILocationSampler;
 import crazypants.structures.api.gen.IStructureGenerator;
 import crazypants.structures.api.gen.IStructureTemplate;
-import crazypants.structures.gen.StructureRegister;
+import crazypants.structures.gen.StructureGenRegister;
 import crazypants.structures.gen.structure.StructureGenerator;
 
 public class GeneratorParser {
@@ -19,7 +19,7 @@ public class GeneratorParser {
   public GeneratorParser() {
   }
 
-  public IStructureGenerator parseGeneratorConfig(StructureRegister reg, String uid, String json) throws Exception {
+  public IStructureGenerator parseGeneratorConfig(StructureGenRegister reg, String uid, String json) throws Exception {
 
     StructureGenerator res = null;
     try {

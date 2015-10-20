@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.gen.IStructureTemplate;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
@@ -41,6 +42,11 @@ public class VecUtil {
     return bb.isVecInside(Vec3.createVectorHelper(bc.x, bc.y, bc.z));
   }
 
+  public static Point3i transformStructureCoodToWorld(IStructure structure, Point3i structureCoord) {
+    Point3i origin = structure.getOrigin();
+    return transformStructureCoodToWorld(origin.x, origin.y, origin.z, structure.getRotation(), structure.getSize(), structureCoord);
+  }
+  
   public static Point3i transformStructureCoodToWorld(int worldOriginX, int worldOriginY, int worldOriginZ, Rotation componentRotation, Point3i componentSize,
       Point3i localCoord) {
     Point3i bc = new Point3i(localCoord);

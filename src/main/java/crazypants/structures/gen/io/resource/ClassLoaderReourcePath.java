@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 
-import crazypants.structures.gen.StructureRegister;
+import crazypants.structures.gen.StructureGenRegister;
 import scala.actors.threadpool.Arrays;
 
 public class ClassLoaderReourcePath extends AbstractResourcePath {
@@ -24,7 +24,7 @@ public class ClassLoaderReourcePath extends AbstractResourcePath {
   public List<String> getChildren() {
     String[] kids = null;
     try {
-      URL u = StructureRegister.class.getResource(root);
+      URL u = StructureGenRegister.class.getResource(root);
       if(u != null) {
         File f = new File(u.toURI());
         kids = f.list();
@@ -47,7 +47,7 @@ public class ClassLoaderReourcePath extends AbstractResourcePath {
       path = root + "/" + name;
     }
 
-    InputStream is = StructureRegister.class.getResourceAsStream(path);
+    InputStream is = StructureGenRegister.class.getResourceAsStream(path);
     if(is == null) {
       return false;
     }
@@ -58,8 +58,8 @@ public class ClassLoaderReourcePath extends AbstractResourcePath {
   @Override
   public InputStream getStream(String name) {
     if(root.endsWith("/")) {
-      return StructureRegister.class.getResourceAsStream(root + name);
+      return StructureGenRegister.class.getResourceAsStream(root + name);
     }
-    return StructureRegister.class.getResourceAsStream(root + "/" + name);
+    return StructureGenRegister.class.getResourceAsStream(root + "/" + name);
   }
 }

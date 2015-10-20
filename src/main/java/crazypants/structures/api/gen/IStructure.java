@@ -60,5 +60,7 @@ public interface IStructure {
   void build(World world, Random random, StructureBoundingBox bounds);
 
   void writeToNBT(NBTTagCompound root);
+  
+  Point3i transformLocalToWorld(Point3i local);
 
 }

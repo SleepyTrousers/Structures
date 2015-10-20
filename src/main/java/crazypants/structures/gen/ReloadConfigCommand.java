@@ -41,7 +41,7 @@ public class ReloadConfigCommand implements ICommand {
 
   @Override
   public void processCommand(ICommandSender sender, String[] args) {    
-    StructureRegister.instance.reload();    
+    StructureGenRegister.instance.reload();    
 //    ExportManager.instance.loadExportFolder();
     sender.addChatMessage(new ChatComponentText("Reloaded Structure Generation Configs"));
   }
