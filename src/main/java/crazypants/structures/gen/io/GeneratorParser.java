@@ -1,5 +1,9 @@
 package crazypants.structures.gen.io;
 
+import static crazypants.structures.gen.io.JsonUtil.getTypedObjectArray;
+
+import java.util.List;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -10,6 +14,7 @@ import crazypants.structures.api.gen.ILocationSampler;
 import crazypants.structures.api.gen.IStructureGenerator;
 import crazypants.structures.api.gen.IStructureTemplate;
 import crazypants.structures.gen.StructureGenRegister;
+import crazypants.structures.gen.io.JsonUtil.TypedObject;
 import crazypants.structures.gen.structure.StructureGenerator;
 
 public class GeneratorParser {
@@ -34,18 +39,17 @@ public class GeneratorParser {
         res.setMaxInChunk(to.get("maxGeneratedPerChunk").getAsInt());
       }
 
-      if(!to.has("templates")) {
-        throw new Exception("No templates field found in definition for " + uid);
-      }
-      JsonArray templates = to.get("templates").getAsJsonArray();
-      for (JsonElement e : templates) {
-        if(e.isJsonObject()) {
-          JsonObject valObj = e.getAsJsonObject();
-          if(!valObj.isJsonNull() && valObj.has("uid")) {
-            String tpUid = valObj.get("uid").getAsString();
-            IStructureTemplate st = reg.getStructureTemplate(tpUid, true);
-            if(st != null) {
-              res.addStructureTemaplate(st);
+      JsonArray templates = JsonUtil.getArrayField(to, "templates");
+      if(templates != null) {
+        for (JsonElement e : templates) {
+          if(e.isJsonObject()) {
+            JsonObject valObj = e.getAsJsonObject();
+            if(!valObj.isJsonNull() && valObj.has("uid")) {
+              String tpUid = valObj.get("uid").getAsString();
+              IStructureTemplate st = reg.getStructureTemplate(tpUid, true);
+              if(st != null) {
+                res.addStructureTemaplate(st);
+              }
             }
           }
         }
@@ -65,24 +69,16 @@ public class GeneratorParser {
         }
       }
 
-      if(to.has("chunkValidators")) {
-        JsonArray arr = to.getAsJsonArray("chunkValidators");
-        for (JsonElement e : arr) {
-          if(e.isJsonObject()) {
-            JsonObject valObj = e.getAsJsonObject();
-            if(!valObj.isJsonNull() && valObj.has("type")) {
-              String id = valObj.get("type").getAsString();
-              IChunkValidator val = parsers.createChunkValidator(id, valObj);
-              if(val != null) {
-                res.addChunkValidator(val);
-              } else {
-                throw new Exception("Could not parse validator: " + id + " for template: " + uid);
-              }
-            }
-          }
+      List<TypedObject> arrayContents = getTypedObjectArray(to, "chunkValidators");
+      for (TypedObject o : arrayContents) {
+        IChunkValidator val = parsers.createChunkValidator(o.type, o.obj);
+        if(val != null) {
+          res.addChunkValidator(val);
+        } else {
+          throw new Exception("Could not parse validator: " + o.type + " for template: " + uid);
         }
       }
-      
+
       reg.getResourceManager().getLootTableParser().parseLootTableCategories(to);
 
     } catch (Exception e) {

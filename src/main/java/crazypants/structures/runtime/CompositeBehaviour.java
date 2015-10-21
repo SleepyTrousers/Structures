@@ -10,36 +10,36 @@ import net.minecraft.world.World;
 public class CompositeBehaviour implements IBehaviour {
 
   private final List<IBehaviour> behaviours = new ArrayList<IBehaviour>();
-  
+
   public void add(IBehaviour be) {
     if(be != null) {
       behaviours.add(be);
     }
   }
-  
+
   public void remove(IBehaviour be) {
     if(be != null) {
       behaviours.remove(be);
     }
   }
-  
+
   @Override
   public void onStructureGenerated(World world, IStructure structure) {
-    for(IBehaviour b : behaviours) {
+    for (IBehaviour b : behaviours) {
       b.onStructureGenerated(world, structure);
     }
   }
 
   @Override
   public void onStructureLoaded(World world, IStructure structure) {
-    for(IBehaviour b : behaviours) {
+    for (IBehaviour b : behaviours) {
       b.onStructureLoaded(world, structure);
     }
   }
 
   @Override
   public void onStructureUnloaded(World world, IStructure structure) {
-    for(IBehaviour b : behaviours) {
+    for (IBehaviour b : behaviours) {
       b.onStructureUnloaded(world, structure);
     }
   }

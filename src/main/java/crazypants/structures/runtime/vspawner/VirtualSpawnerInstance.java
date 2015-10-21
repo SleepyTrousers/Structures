@@ -4,7 +4,10 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.WorldTickEvent;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
+import cpw.mods.fml.relauncher.Side;
 import crazypants.structures.PacketHandler;
+import crazypants.structures.api.gen.IStructure;
+import crazypants.structures.api.runtime.ICondition;
 import crazypants.structures.api.util.Point3i;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
@@ -15,10 +18,11 @@ import net.minecraft.world.World;
 
 public class VirtualSpawnerInstance {
 
-//  static {
-//    PacketHandler.INSTANCE.registerMessage(PacketSpawnParticles.class, PacketSpawnParticles.class, PacketHandler.nextID(), Side.CLIENT);
-//  }
-
+  static {
+    PacketHandler.INSTANCE.registerMessage(PacketSpawnParticles.class, PacketSpawnParticles.class, PacketHandler.nextID(), Side.CLIENT);
+  }
+  
+  private IStructure structure;
   private VirtualSpawnerBehaviour behaviour;
   private Point3i worldPos;
   private World world;
@@ -27,11 +31,22 @@ public class VirtualSpawnerInstance {
   private int remainingSpawnTries;
 
   private boolean registered = false;
+  
+  private ICondition activeCondition;
+  private ICondition spawnCondition;
 
-  public VirtualSpawnerInstance(VirtualSpawnerBehaviour behaviour, World world, Point3i worldPos) {
+  public VirtualSpawnerInstance(IStructure structure, VirtualSpawnerBehaviour behaviour, World world, Point3i worldPos) {
+    this.structure = structure;
     this.behaviour = behaviour;
     this.world = world;
     this.worldPos = worldPos;
+    
+    if(behaviour.getActiveCondition() != null) {
+      activeCondition = behaviour.getActiveCondition().createPerStructureInstance(world, structure);      
+    }
+    if(behaviour.getSpawnCondition() != null) {
+      spawnCondition = behaviour.getSpawnCondition().createPerStructureInstance(world, structure);
+    }
   }
 
   public void onLoad() {
@@ -87,20 +102,23 @@ public class VirtualSpawnerInstance {
   }
 
   private boolean isActivated() {
+    if(activeCondition != null && !activeCondition.isConditionMet(world, structure)) {
+      return false;
+    }
     if(behaviour.getMinPlayerDistance() > 0) {
       return world.getClosestPlayer(worldPos.x + 0.5D, worldPos.y + 0.5D, worldPos.z + 0.5D, behaviour.getMinPlayerDistance()) != null;
     }
     return true;
   }
 
-  protected boolean trySpawnEntity() {    
-    Entity entity = createEntity(behaviour.isPersistEntities());
-    if(!(entity instanceof EntityLiving)) {
+  protected boolean trySpawnEntity() { 
+    
+    if(spawnCondition != null && !spawnCondition.isConditionMet(world, structure)) {
       return false;
     }
-    EntityLiving entityliving = (EntityLiving) entity;
+    
     int spawnRange = behaviour.getSpawnRange();
-
+    
     if(behaviour.getMaxNearbyEntities() > 0) {
       int range = spawnRange * 4;
       //int nearbyEntities = world.getEntitiesWithinAABB(entity.getClass(),
@@ -114,6 +132,12 @@ public class VirtualSpawnerInstance {
         return false;
       }
     }
+    
+    Entity entity = createEntity(behaviour.isPersistEntities());
+    if(!(entity instanceof EntityLiving)) {
+      return false;
+    }
+    EntityLiving entityliving = (EntityLiving) entity;
 
     while (remainingSpawnTries-- > 0) {
       double x = worldPos.x + (world.rand.nextDouble() - world.rand.nextDouble()) * spawnRange;

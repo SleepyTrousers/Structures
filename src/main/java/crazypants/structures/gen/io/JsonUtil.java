@@ -8,28 +8,53 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
 import crazypants.structures.api.util.Point3i;
 import crazypants.structures.gen.structure.Border;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class JsonUtil {
 
-  public static boolean getBooleanElement(JsonObject json, String field, boolean def) {
+  public static JsonObject getObjectField(JsonObject json, String field) {
+    if(!json.has(field)) {
+      return null;
+    }
+    JsonElement el = json.get(field);
+    if(!el.isJsonNull() && el.isJsonObject()) {
+      return el.getAsJsonObject();
+    }
+    return null;
+  }
+
+  public static JsonArray getArrayField(JsonObject json, String field) {
+    if(!json.has(field)) {
+      return null;
+    }
+    JsonElement el = json.get(field);
+    if(!el.isJsonNull() && el.isJsonArray()) {
+      return el.getAsJsonArray();
+    }
+    return null;
+  }
+
+  public static boolean getBooleanField(JsonObject json, String field, boolean def) {
     if(json.has(field)) {
-      String str = json.get(field).getAsString();      
+      String str = json.get(field).getAsString();
       if("true".equalsIgnoreCase(str)) {
         return true;
       }
       if("false".equalsIgnoreCase(str)) {
         return false;
       }
-      return def;              
+      return def;
     }
     return def;
   }
 
-  public static List<String> getStringArrayElement(JsonObject obj, String element) {
-    JsonElement je = obj.get(element);
+  public static List<String> getStringArrayField(JsonObject obj, String field) {
+    JsonElement je = obj.get(field);
     if(je == null) {
       return Collections.emptyList();
     }
@@ -47,8 +72,8 @@ public class JsonUtil {
     return res;
   }
 
-  public static int getIntElement(JsonObject obj, String element, int def) {
-    JsonElement je = obj.get(element);
+  public static int getIntField(JsonObject obj, String field, int def) {
+    JsonElement je = obj.get(field);
     if(je == null) {
       return def;
     }
@@ -57,9 +82,9 @@ public class JsonUtil {
     }
     return def;
   }
-  
-  public static float getFloatElement(JsonObject obj, String element, float def) {
-    JsonElement je = obj.get(element);
+
+  public static float getFloatField(JsonObject obj, String field, float def) {
+    JsonElement je = obj.get(field);
     if(je == null) {
       return def;
     }
@@ -69,8 +94,8 @@ public class JsonUtil {
     return def;
   }
 
-  public static String getStringElement(JsonObject obj, String element, String def) {
-    JsonElement je = obj.get(element);
+  public static String getStringField(JsonObject obj, String field, String def) {
+    JsonElement je = obj.get(field);
     if(je == null) {
       return def;
     }
@@ -79,33 +104,84 @@ public class JsonUtil {
     }
     return def;
   }
-  
-  public static Border getBorder(JsonObject parent, Border def) {    
-    JsonObject obj = parent.getAsJsonObject("Border");
-    if(obj == null) {
-      return def;
-    }    
-    Border border = new Border();    
-    if(obj.has("sizeXZ")) {
-      border.setBorderXZ(getIntElement(obj, "sizeXZ", border.get(ForgeDirection.NORTH)));
+
+  public static TypedObject getTypedObjectField(JsonObject parent, String fieldName) {
+    JsonObject obj = getObjectField(parent, fieldName);
+    if(obj != null && !obj.isJsonNull() && obj.has("type")) {
+      String type = obj.get("type").getAsString();
+      return new TypedObject(type, obj);
     }
-    for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-      border.set(dir, JsonUtil.getIntElement(obj, dir.name().toLowerCase(), border.get(dir)));
-    }
-    return border;
+    return null;
   }
-  
-  public static Point3i getPoint3i(JsonObject valObj, String varName, Point3i def) {
-    if(valObj.has(varName)) {
-      JsonElement offsetJE = valObj.get(varName);
-      if(offsetJE.isJsonArray()) {
-        JsonArray arr = offsetJE.getAsJsonArray();
-        if(!arr.isJsonNull() && arr.size() == 3) {
-          return new Point3i(arr.get(0).getAsInt(), arr.get(1).getAsInt(), arr.get(2).getAsInt());                    
+
+  public static List<TypedObject> getTypedObjectArray(JsonObject parent, String arrayName) {
+    List<TypedObject> res = new ArrayList<TypedObject>();
+    JsonArray arr = getArrayField(parent, arrayName);
+    if(arr != null) {
+      for (JsonElement e : arr) {
+        if(e.isJsonObject()) {
+          JsonObject valObj = e.getAsJsonObject();
+          if(!valObj.isJsonNull() && valObj.has("type")) {
+            String type = valObj.get("type").getAsString();
+            res.add(new TypedObject(type, valObj));
+          }
         }
       }
     }
+    return res;
+  }
+
+  public static Border getBorder(JsonObject parent, Border def) {
+    JsonObject obj = parent.getAsJsonObject("Border");
+    if(obj == null) {
+      return def;
+    }
+    Border border = new Border();
+    if(obj.has("sizeXZ")) {
+      border.setBorderXZ(getIntField(obj, "sizeXZ", border.get(ForgeDirection.NORTH)));
+    }
+    for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+      border.set(dir, JsonUtil.getIntField(obj, dir.name().toLowerCase(), border.get(dir)));
+    }
+    return border;
+  }
+
+  public static Point3i getPoint3iField(JsonObject valObj, String field, Point3i def) {
+    JsonArray arr = getArrayField(valObj, field);
+    if(arr != null && !arr.isJsonNull() && arr.size() == 3) {
+      return new Point3i(arr.get(0).getAsInt(), arr.get(1).getAsInt(), arr.get(2).getAsInt());
+    }
     return def;
+  }
+
+  public static ItemStack getItemStack(JsonObject json, String element) {
+    JsonObject obj = getObjectField(json, element);
+    if(obj == null) {
+      return null;
+    }
+    String uid = getStringField(obj, "uid", null);
+    if(uid == null) {
+      return null;
+    }
+    UniqueIdentifier u = new UniqueIdentifier(uid);
+    ItemStack res = GameRegistry.findItemStack(u.modId, u.name, 1);
+    if(res == null) {
+      return res;
+    }
+    res.setItemDamage(getIntField(obj, "meta", res.getItemDamage()));
+
+    return res;
+  }
+
+  public static class TypedObject {
+    final String type;
+    JsonObject obj;
+
+    TypedObject(String type, JsonObject obj) {
+      this.type = type;
+      this.obj = obj;
+    }
+
   }
 
 }

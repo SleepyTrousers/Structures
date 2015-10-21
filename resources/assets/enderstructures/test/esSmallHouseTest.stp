@@ -69,7 +69,13 @@
                      "persistEntities" : "false",
                      "useVanillaSpawnChecks" : "true",
                      "renderParticles" : true,
-                     "position" : [4, 2, 4] 
+                     "position" : [2, 2, 2],
+                     "activeCondition" : { "type" : "AndCondition",
+                                           "conditions" : [
+                                             {"type" : "BlockExists", "block" : "minecraft:brick_block", "meta" : 0, "position" : [2,1,2] }
+                                            ]
+                                         }
+                      
              }
              
        

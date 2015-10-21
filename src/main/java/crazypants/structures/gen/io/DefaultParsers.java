@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.google.gson.JsonObject;
 
+import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
 import crazypants.structures.Log;
 import crazypants.structures.api.gen.IChunkValidator;
 import crazypants.structures.api.gen.IDecorator;
@@ -11,6 +13,9 @@ import crazypants.structures.api.gen.ILocationSampler;
 import crazypants.structures.api.gen.ISitePreperation;
 import crazypants.structures.api.gen.ISiteValidator;
 import crazypants.structures.api.runtime.IBehaviour;
+import crazypants.structures.api.runtime.ICondition;
+import crazypants.structures.api.util.Point3i;
+import crazypants.structures.gen.io.JsonUtil.TypedObject;
 import crazypants.structures.gen.structure.decorator.LootTableDecorator;
 import crazypants.structures.gen.structure.preperation.ClearPreperation;
 import crazypants.structures.gen.structure.preperation.FillPreperation;
@@ -24,7 +29,11 @@ import crazypants.structures.gen.structure.validator.biome.BiomeDescriptor;
 import crazypants.structures.gen.structure.validator.biome.BiomeFilterAll;
 import crazypants.structures.gen.structure.validator.biome.BiomeFilterAny;
 import crazypants.structures.gen.structure.validator.biome.IBiomeFilter;
+import crazypants.structures.runtime.AndCondition;
+import crazypants.structures.runtime.OrCondition;
+import crazypants.structures.runtime.condition.BlockExistsCondition;
 import crazypants.structures.runtime.vspawner.VirtualSpawnerBehaviour;
+import net.minecraft.block.Block;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.BiomeDictionary.Type;
 
@@ -41,6 +50,10 @@ public class DefaultParsers {
     add(new ClearPrepFact());   
     add(new LootTableDecFact());
     add(new VirtualSpawnerFact());
+    add(new AndConditionFact());
+    add(new OrConditionFact());
+    add(new BlockExistsConditionFact());
+    
   }
 
   private static void add(AbstractSingleParserFactory fact) {
@@ -57,8 +70,8 @@ public class DefaultParsers {
     @Override
     public ILocationSampler createSampler(String uid, JsonObject json) {
       SurfaceLocationSampler res = new SurfaceLocationSampler();
-      res.setDistanceFromSurface(JsonUtil.getIntElement(json, "distanceFromSurface", res.getDistanceFromSurface()));      
-      res.setCanGenerateOnFluid(JsonUtil.getBooleanElement(json, "canGenerateOnFluid", res.isCanPlaceInFluid()));      
+      res.setDistanceFromSurface(JsonUtil.getIntField(json, "distanceFromSurface", res.getDistanceFromSurface()));      
+      res.setCanGenerateOnFluid(JsonUtil.getBooleanField(json, "canGenerateOnFluid", res.isCanPlaceInFluid()));      
       return res;
     }
 
@@ -73,7 +86,7 @@ public class DefaultParsers {
     @Override
     public IChunkValidator createChunkValidator(String uid, JsonObject json) {
       RandomValidator res = new RandomValidator();
-      res.setChancePerChunk(JsonUtil.getFloatElement(json, "chancePerChunk", res.getChancePerChunk()));
+      res.setChancePerChunk(JsonUtil.getFloatField(json, "chancePerChunk", res.getChancePerChunk()));
       return res;
     }
 
@@ -89,8 +102,8 @@ public class DefaultParsers {
     @Override
     public IChunkValidator createChunkValidator(String uid, JsonObject json) {
       DimensionValidator res = new DimensionValidator();
-      res.addAll(JsonUtil.getStringArrayElement(json, "names"), false);
-      res.addAll(JsonUtil.getStringArrayElement(json, "namesExcluded"), true);      
+      res.addAll(JsonUtil.getStringArrayField(json, "names"), false);
+      res.addAll(JsonUtil.getStringArrayField(json, "namesExcluded"), true);      
       return res;
     }
   }
@@ -106,8 +119,8 @@ public class DefaultParsers {
     @Override
     public IChunkValidator createChunkValidator(String uid, JsonObject json) {
       SpacingValidator res = new SpacingValidator();
-      res.setMinSpacing(JsonUtil.getIntElement(json, "minSpacing", res.getMinSpacing()));                 
-      res.setTemplateFilter(JsonUtil.getStringArrayElement(json, "templateFilter"));    
+      res.setMinSpacing(JsonUtil.getIntField(json, "minSpacing", res.getMinSpacing()));                 
+      res.setTemplateFilter(JsonUtil.getStringArrayField(json, "templateFilter"));    
       res.setValidateChunk(true);
       res.setValidateLocation(false);
       return res;
@@ -117,8 +130,8 @@ public class DefaultParsers {
     @Override
     public ISiteValidator createSiteValidator(String uid, JsonObject json) {
       SpacingValidator res = new SpacingValidator();
-      res.setMinSpacing(JsonUtil.getIntElement(json, "minSpacing", res.getMinSpacing()));                 
-      res.setTemplateFilter(JsonUtil.getStringArrayElement(json, "templateFilter"));
+      res.setMinSpacing(JsonUtil.getIntField(json, "minSpacing", res.getMinSpacing()));                 
+      res.setTemplateFilter(JsonUtil.getStringArrayField(json, "templateFilter"));
       res.setValidateChunk(false);
       res.setValidateLocation(true);
       return res;
@@ -136,10 +149,10 @@ public class DefaultParsers {
     @Override
     public ISiteValidator createSiteValidator(String uid, JsonObject json) {
       LevelGroundValidator res = new LevelGroundValidator();
-      res.setCanSpawnOnWater(JsonUtil.getBooleanElement(json, "canSpawnOnWater", res.isCanSpawnOnWater()));
-      res.setTolerance(JsonUtil.getIntElement(json, "tolerance", res.getTolerance()));
-      res.setSampleSpacing(JsonUtil.getIntElement(json, "sampleSpacing", res.getTolerance()));
-      res.setMaxSampleCount(JsonUtil.getIntElement(json, "maxSamples", res.getTolerance()));
+      res.setCanSpawnOnWater(JsonUtil.getBooleanField(json, "canSpawnOnWater", res.isCanSpawnOnWater()));
+      res.setTolerance(JsonUtil.getIntField(json, "tolerance", res.getTolerance()));
+      res.setSampleSpacing(JsonUtil.getIntField(json, "sampleSpacing", res.getTolerance()));
+      res.setMaxSampleCount(JsonUtil.getIntField(json, "maxSamples", res.getTolerance()));
       res.setBorder(JsonUtil.getBorder(json, res.getBorder()));
       return res;
     }
@@ -154,17 +167,17 @@ public class DefaultParsers {
 
     @Override
     public IChunkValidator createChunkValidator(String uid, JsonObject json) {
-      String typeElement = JsonUtil.getStringElement(json, "match", "any");
+      String typeElement = JsonUtil.getStringField(json, "match", "any");
       IBiomeFilter filter;
       if("all".equals(typeElement)) {
         filter = new BiomeFilterAll();
       } else {
         filter = new BiomeFilterAny();
       }      
-      addBiomeTypes(filter, JsonUtil.getStringArrayElement(json, "types"), false);
-      addBiomeTypes(filter, JsonUtil.getStringArrayElement(json, "typesExcluded"), true);
-      addBiomesByName(filter, JsonUtil.getStringArrayElement(json, "names"), false);
-      addBiomesByName(filter, JsonUtil.getStringArrayElement(json, "namesExcluded"), true);
+      addBiomeTypes(filter, JsonUtil.getStringArrayField(json, "types"), false);
+      addBiomeTypes(filter, JsonUtil.getStringArrayField(json, "typesExcluded"), true);
+      addBiomesByName(filter, JsonUtil.getStringArrayField(json, "names"), false);
+      addBiomesByName(filter, JsonUtil.getStringArrayField(json, "namesExcluded"), true);
 
       return new BiomeValidator(filter);
     }
@@ -199,8 +212,8 @@ public class DefaultParsers {
     @Override
     public ISitePreperation createPreperation(String uid, JsonObject json) {
       ClearPreperation res = new ClearPreperation();
-      res.setClearPlants(JsonUtil.getBooleanElement(json, "clearPlants", res.isClearPlants()));
-      res.setClearBellowGround(JsonUtil.getBooleanElement(json, "clearBellowGround", res.getClearBellowGround()));
+      res.setClearPlants(JsonUtil.getBooleanField(json, "clearPlants", res.isClearPlants()));
+      res.setClearBellowGround(JsonUtil.getBooleanField(json, "clearBellowGround", res.getClearBellowGround()));
       res.setBorder(JsonUtil.getBorder(json, res.getBorder()));
       return res;
     }
@@ -217,7 +230,7 @@ public class DefaultParsers {
     @Override
     public ISitePreperation createPreperation(String uid, JsonObject json) {
       FillPreperation res = new FillPreperation();
-      res.setClearPlants(JsonUtil.getBooleanElement(json, "clearPlants", res.isClearPlants()));
+      res.setClearPlants(JsonUtil.getBooleanField(json, "clearPlants", res.isClearPlants()));
       res.setBorder(JsonUtil.getBorder(json, res.getBorder()));
       return res;
     }
@@ -235,8 +248,8 @@ public class DefaultParsers {
     @Override
     public IDecorator createDecorator(String uid, JsonObject json) {
       LootTableDecorator res = new LootTableDecorator();
-      res.setCategory(JsonUtil.getStringElement(json, "category", null));
-      res.setTargets(JsonUtil.getStringArrayElement(json, "targets"));      
+      res.setCategory(JsonUtil.getStringField(json, "category", null));
+      res.setTargets(JsonUtil.getStringArrayField(json, "targets"));      
       return res;
     }    
   }  
@@ -252,24 +265,105 @@ public class DefaultParsers {
     @Override
     public IBehaviour createBehaviour(String uid, JsonObject json) {
       VirtualSpawnerBehaviour res = new VirtualSpawnerBehaviour();    
-      String entStr = JsonUtil.getStringElement(json, "entity", null);
+      String entStr = JsonUtil.getStringField(json, "entity", null);
       if(entStr == null) {
         Log.warn("DefaultParsers.VirtualSpawnerFact.createBehaviour: No entity specified for Virtual Spawner.");
         return null;
       }
       res.setEntityTypeName(entStr);      
-      res.setNumberSpawned(JsonUtil.getIntElement(json, "numSpawned", res.getNumberSpawned()));
-      res.setMinSpawnDelay(JsonUtil.getIntElement(json, "minSpawnDelay", res.getMinSpawnDelay()));
-      res.setMaxSpawnDelay(JsonUtil.getIntElement(json, "maxSpawnDelay", res.getMaxSpawnDelay()));
-      res.setMinPlayerDistance(JsonUtil.getIntElement(json, "minPlayerDistance", res.getMinPlayerDistance()));
-      res.setSpawnRange(JsonUtil.getIntElement(json, "spawnRange", res.getSpawnRange()));
-      res.setMaxNearbyEntities(JsonUtil.getIntElement(json, "maxNearbyEntities", res.getMaxNearbyEntities()));
-      res.setPersistEntities(JsonUtil.getBooleanElement(json, "persistEntities", res.isPersistEntities()));
-      res.setUseVanillaSpawnChecks(JsonUtil.getBooleanElement(json, "useVanillaSpawnChecks", res.isUseVanillaSpawnChecks()));
-      res.setRenderParticles(JsonUtil.getBooleanElement(json, "renderParticles", res.isRenderParticles()));
-      res.setStructureLocalPosition(JsonUtil.getPoint3i(json, "position", res.getStructureLocalPosition()));      
-           
+      res.setNumberSpawned(JsonUtil.getIntField(json, "numSpawned", res.getNumberSpawned()));
+      res.setMinSpawnDelay(JsonUtil.getIntField(json, "minSpawnDelay", res.getMinSpawnDelay()));
+      res.setMaxSpawnDelay(JsonUtil.getIntField(json, "maxSpawnDelay", res.getMaxSpawnDelay()));
+      res.setMinPlayerDistance(JsonUtil.getIntField(json, "minPlayerDistance", res.getMinPlayerDistance()));
+      res.setSpawnRange(JsonUtil.getIntField(json, "spawnRange", res.getSpawnRange()));
+      res.setMaxNearbyEntities(JsonUtil.getIntField(json, "maxNearbyEntities", res.getMaxNearbyEntities()));
+      res.setPersistEntities(JsonUtil.getBooleanField(json, "persistEntities", res.isPersistEntities()));
+      res.setUseVanillaSpawnChecks(JsonUtil.getBooleanField(json, "useVanillaSpawnChecks", res.isUseVanillaSpawnChecks()));
+      res.setRenderParticles(JsonUtil.getBooleanField(json, "renderParticles", res.isRenderParticles()));
+      res.setStructureLocalPosition(JsonUtil.getPoint3iField(json, "position", res.getStructureLocalPosition()));      
+      
+      TypedObject obj = JsonUtil.getTypedObjectField(json, "activeCondition");
+      if(obj != null) {
+        ICondition con = ParserRegister.instance.createCondition(obj.type, obj.obj);
+        if(con != null) {
+          res.setActiveCondition(con);
+        }
+      }
+      
       return res;
     }    
+  }
+  
+//-----------------------------------------------------------------
+  static class AndConditionFact extends AbstractSingleParserFactory {
+
+    AndConditionFact() {
+      super("AndCondition");
+    }    
+
+    @Override
+    public ICondition createCondition(String uid, JsonObject json) {
+      
+      AndCondition res = new AndCondition();
+      List<TypedObject> arrayContents = JsonUtil.getTypedObjectArray(json, "conditions");      
+      for(TypedObject o : arrayContents) {
+        ICondition con = ParserRegister.instance.createCondition(o.type, o.obj);
+        if(con != null) {
+          res.addCondition(con);   
+        }
+      }     
+      return res;
+    }
+  }
+  
+//-----------------------------------------------------------------
+  static class OrConditionFact extends AbstractSingleParserFactory {
+
+    OrConditionFact() {
+      super("AndCondition");
+    }    
+
+    @Override
+    public ICondition createCondition(String uid, JsonObject json) {      
+      OrCondition res = new OrCondition();
+      List<TypedObject> arrayContents = JsonUtil.getTypedObjectArray(json, "conditions");      
+      for(TypedObject o : arrayContents) {
+        ICondition con = ParserRegister.instance.createCondition(o.type, o.obj);
+        if(con != null) {
+          res.addCondition(con);   
+        }
+      }     
+      return res;
+    }
   }  
+  
+//-----------------------------------------------------------------
+  static class BlockExistsConditionFact extends AbstractSingleParserFactory {
+
+    BlockExistsConditionFact() {
+      super("BlockExists");
+    }    
+
+    @Override
+    public ICondition createCondition(String uid, JsonObject json) {      
+      
+      String blkStr = JsonUtil.getStringField(json, "block", null);
+      if(blkStr == null) {
+        return null;
+      }
+      UniqueIdentifier blkId = new UniqueIdentifier(blkStr);
+      Block blk = GameRegistry.findBlock(blkId.modId, blkId.name);
+      if(blk == null) {
+        return null;
+      }      
+      int meta = JsonUtil.getIntField(json, "meta", -1);
+      
+      Point3i pos = JsonUtil.getPoint3iField(json, "position", null);
+      if(pos == null) {
+        return null;
+      }      
+      return new BlockExistsCondition(blk, meta, pos);
+    }
+  }
+
 }

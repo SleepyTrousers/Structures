@@ -5,13 +5,14 @@ import java.util.Map;
 
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.IBehaviour;
+import crazypants.structures.api.runtime.ICondition;
 import crazypants.structures.api.util.Point3i;
 import net.minecraft.world.World;
 
 public class VirtualSpawnerBehaviour implements IBehaviour {
 
-  static final String KEY_DESPAWN_TIME = "VirtualSpawnerBehaviour_spawnTime";  
-  
+  static final String KEY_DESPAWN_TIME = "VirtualSpawnerBehaviour_spawnTime";
+
   private Point3i structureLocalPosition = new Point3i();
 
   private String entityTypeName = "Pig";
@@ -19,37 +20,43 @@ public class VirtualSpawnerBehaviour implements IBehaviour {
   private int minSpawnDelay = 200;
   private int maxSpawnDelay = 800;
   private int minPlayerDistance = 16;
+  private int maxNearbyEntities = 6;
+
+  private ICondition activeCondition;
+  
+  private ICondition spawnCondition;
 
   private int numSpawned = 4;
   private int maxSpawnRetries = 3;
   private int spawnRange = 4;
-  private int maxNearbyEntities = 6;
-  
+
   //private int despawnTimeSeconds = 120;
-  
+
   private boolean useVanillaSpawnChecks = true;
-  
+
   private boolean renderParticles = true;
-  
+
   private boolean persistEntities = false;
-  
+
   //TODO: Need to add a block check so it can be broken if required
   //TODO: Allow for a list of entities
 
   private Map<InstanceKey, VirtualSpawnerInstance> instances = new HashMap<InstanceKey, VirtualSpawnerInstance>();
 
-  public VirtualSpawnerBehaviour() {
+  public VirtualSpawnerBehaviour() {    
+//    BlockExistsCondition con = new BlockExistsCondition(Blocks.brick_block, new Point3i(4,1,4));
+//    activeConditions.add(con);    
   }
-  
+
   @Override
   public void onStructureGenerated(World world, IStructure structure) {
     onStructureLoaded(world, structure);
   }
 
   @Override
-  public void onStructureLoaded(World world, IStructure structure) {    
+  public void onStructureLoaded(World world, IStructure structure) {
     InstanceKey key = new InstanceKey(structure, this);
-    VirtualSpawnerInstance instance = new VirtualSpawnerInstance(this, world, key.worldPos);
+    VirtualSpawnerInstance instance = new VirtualSpawnerInstance(structure, this, world, key.worldPos);
     instances.put(key, instance);
     instance.onLoad();
   }
@@ -62,6 +69,22 @@ public class VirtualSpawnerBehaviour implements IBehaviour {
       instance.onUnload();
       instances.remove(key);
     }
+  }
+
+  public ICondition getActiveCondition() {
+    return activeCondition;
+  }
+
+  public void setActiveCondition(ICondition activeCondition) {
+    this.activeCondition = activeCondition;
+  }
+
+  public ICondition getSpawnCondition() {
+    return spawnCondition;
+  }
+
+  public void setSpawnCondition(ICondition spawnCondition) {
+    this.spawnCondition = spawnCondition;
   }
 
   public Point3i getStructureLocalPosition() {
@@ -144,13 +167,13 @@ public class VirtualSpawnerBehaviour implements IBehaviour {
     this.useVanillaSpawnChecks = useVanillaSpawnChecks;
   }
 
-//  public int getDespawnTimeSeconds() {
-//    return despawnTimeSeconds;
-//  }
-//
-//  public void setDespawnTimeSeconds(int despawnTimeSeconds) {
-//    this.despawnTimeSeconds = despawnTimeSeconds;
-//  }
+  //  public int getDespawnTimeSeconds() {
+  //    return despawnTimeSeconds;
+  //  }
+  //
+  //  public void setDespawnTimeSeconds(int despawnTimeSeconds) {
+  //    this.despawnTimeSeconds = despawnTimeSeconds;
+  //  }
 
   public boolean isRenderParticles() {
     return renderParticles;

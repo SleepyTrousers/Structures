@@ -1,5 +1,7 @@
 package crazypants.structures.gen.io;
 
+import static  crazypants.structures.gen.io.JsonUtil.getTypedObjectArray;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +19,7 @@ import crazypants.structures.api.runtime.IBehaviour;
 import crazypants.structures.api.util.Point3i;
 import crazypants.structures.api.util.Rotation;
 import crazypants.structures.gen.StructureGenRegister;
+import crazypants.structures.gen.io.JsonUtil.TypedObject;
 import crazypants.structures.gen.structure.StructureTemplate;
 
 public class TemplateParser {
@@ -46,7 +49,7 @@ public class TemplateParser {
             String compUid = valObj.get("uid").getAsString();            
             IStructureComponent st = reg.getStructureComponent(compUid, true);            
             if(st != null) {              
-              Point3i offset = JsonUtil.getPoint3i(valObj, "offset", null);
+              Point3i offset = JsonUtil.getPoint3iField(valObj, "offset", null);
               res.addComponent(st, offset);
             }
           }
@@ -74,7 +77,7 @@ public class TemplateParser {
       
       List<TypedObject> arrayContents;
 
-      arrayContents = getTypedObjects("siteValidators", to);
+      arrayContents = getTypedObjectArray(to, "siteValidators");
       for(TypedObject o : arrayContents) {
         ISiteValidator sv = parsers.createSiteValidator(o.type, o.obj);
         if(sv != null) {
@@ -84,7 +87,7 @@ public class TemplateParser {
         }
       }
       
-      arrayContents = getTypedObjects("sitePreperations", to);
+      arrayContents = getTypedObjectArray(to, "sitePreperations");
       for(TypedObject o : arrayContents) {
         ISitePreperation sv = parsers.createPreperation(o.type, o.obj);
         if(sv != null) {
@@ -94,7 +97,7 @@ public class TemplateParser {
         }
       }
       
-      arrayContents = getTypedObjects("decorators", to);
+      arrayContents = getTypedObjectArray(to, "decorators");
       for(TypedObject o : arrayContents) {
         IDecorator dec = parsers.createDecorator(o.type, o.obj);
         if(dec != null) {
@@ -104,7 +107,7 @@ public class TemplateParser {
         }
       }
       
-      arrayContents = getTypedObjects("behaviours", to);
+      arrayContents = getTypedObjectArray(to, "behaviours");
       for(TypedObject o : arrayContents) {
         IBehaviour behav = parsers.ceateBehaviour(o.type, o.obj);
         if(behav != null) {
@@ -127,37 +130,5 @@ public class TemplateParser {
     return res;
   }
 
-  private List<TypedObject> getTypedObjects(String arrayName, JsonObject parent) {
-    List<TypedObject> res = new ArrayList<TemplateParser.TypedObject>();
-    
-    if(parent.has(arrayName)) {
-      JsonElement el = parent.get(arrayName);
-      if(!el.isJsonArray()) {
-        return res;
-      }
-      JsonArray arr = parent.getAsJsonArray(arrayName);
-      for (JsonElement e : arr) {
-        if(e.isJsonObject()) {
-          JsonObject valObj = e.getAsJsonObject();
-          if(!valObj.isJsonNull() && valObj.has("type")) {
-            String type = valObj.get("type").getAsString();
-            res.add(new TypedObject(type, valObj));            
-          }
-        }
-      }
-    }    
-    return res;
-  }
-  
-  private static class TypedObject {
-    final String type;
-    JsonObject obj;
-    
-    TypedObject(String type, JsonObject obj) {    
-      this.type = type;
-      this.obj = obj;
-    }
-    
-  }
   
 }

@@ -15,12 +15,14 @@ import crazypants.structures.api.gen.ISitePreperation;
 import crazypants.structures.api.gen.ISiteValidator;
 import crazypants.structures.api.io.IBehaviourParser;
 import crazypants.structures.api.io.IChunkValidatorParser;
+import crazypants.structures.api.io.IConditionParser;
 import crazypants.structures.api.io.IDecoratorParser;
 import crazypants.structures.api.io.ILocationSamplerParser;
 import crazypants.structures.api.io.IParser;
 import crazypants.structures.api.io.ISitePreperationParser;
 import crazypants.structures.api.io.ISiteValidatorParser;
 import crazypants.structures.api.runtime.IBehaviour;
+import crazypants.structures.api.runtime.ICondition;
 
 public class ParserRegister {
 
@@ -37,6 +39,8 @@ public class ParserRegister {
   private final Map<String, IDecoratorParser> decParsers = new HashMap<String, IDecoratorParser>();
     
   private final Map<String, IBehaviourParser> behavParsers = new HashMap<String, IBehaviourParser>();
+  
+  private final Map<String, IConditionParser> conditionParsers = new HashMap<String, IConditionParser>();
 
   public static final ParserRegister instance = new ParserRegister();
 
@@ -115,6 +119,15 @@ public class ParserRegister {
       behavParsers.put(uid, f);
     }
     return f.createBehaviour(uid, json);
+  }
+  
+  public ICondition createCondition(String uid, JsonObject json) {
+    IConditionParser f = conditionParsers.get(uid);
+    if(f == null) {
+      f = findFactory(uid, IConditionParser.class);
+      conditionParsers.put(uid, f);
+    }
+    return f.createCondition(uid, json);
   }
 
   @SuppressWarnings("unchecked")
