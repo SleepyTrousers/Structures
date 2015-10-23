@@ -59,20 +59,32 @@
        "behaviours" : [
            
            { "type": "VirtualSpawner",
-                     "entity" : "SnowMan",
+                     "entity" : "Wolf",
                      "numSpawned" : 4,
-                     "minSpawnDelay" : 300,
-                     "maxSpawnDelay" : 400,
-                     "minPlayerDistance" : 32,
+                     "minSpawnDelay" : 200,
+                     "maxSpawnDelay" : 300,
                      "spawnRange" : 4,
-                     "maxNearbyEntities" : 10,
                      "persistEntities" : "false",
                      "useVanillaSpawnChecks" : "true",
                      "renderParticles" : true,
                      "position" : [2, 2, 2],
                      "activeCondition" : { "type" : "AndCondition",
                                            "conditions" : [
+                                             {"type" : "PlayerInRange", "range" : 32, "position" : [2,1,2]  },
                                              {"type" : "BlockExists", "block" : "minecraft:brick_block", "meta" : 0, "position" : [2,1,2] }
+                                            ]
+                                         },
+                     "spawnCondition" : { "type" : "AndCondition",
+                                           "conditions" : [
+                                             {"type" : "MaxEntitiesInRange", 
+                                                       "maxEntities" : 8, 
+                                                       "range" : 32, 
+                                                       "position" : [2,1,2],
+                                                       "entities" : [ "Wolf"]  },
+                                             {"type" : "MaxEntitiesInRange", 
+                                                       "maxEntities" : 16, 
+                                                       "range" : 32, 
+                                                       "position" : [2,1,2]}
                                             ]
                                          }
                       

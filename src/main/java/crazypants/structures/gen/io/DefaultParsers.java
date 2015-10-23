@@ -32,32 +32,36 @@ import crazypants.structures.gen.structure.validator.biome.IBiomeFilter;
 import crazypants.structures.runtime.AndCondition;
 import crazypants.structures.runtime.OrCondition;
 import crazypants.structures.runtime.condition.BlockExistsCondition;
+import crazypants.structures.runtime.condition.MaxEntitiesInRangeCondition;
+import crazypants.structures.runtime.condition.PlayerInRangeCondition;
 import crazypants.structures.runtime.vspawner.VirtualSpawnerBehaviour;
 import net.minecraft.block.Block;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.BiomeDictionary.Type;
 
 public class DefaultParsers {
-  
-  public static void register() {        
+
+  public static void register() {
     add(new SurfaceSamplerFact());
     add(new RandomValFac());
-    add(new DimValFact());    
+    add(new DimValFact());
     add(new SpacingValFact());
     add(new LevGrndFact());
     add(new BiomeValFact());
     add(new FillPrepFact());
-    add(new ClearPrepFact());   
+    add(new ClearPrepFact());
     add(new LootTableDecFact());
     add(new VirtualSpawnerFact());
     add(new AndConditionFact());
     add(new OrConditionFact());
     add(new BlockExistsConditionFact());
-    
+    add(new PlayerInRangeConditionFact());
+    add(new MaxEntitiesInRangeFact());
+
   }
 
   private static void add(AbstractSingleParserFactory fact) {
-    ParserRegister.instance.register(fact);    
+    ParserRegister.instance.register(fact);
   }
 
   //-----------------------------------------------------------------
@@ -70,8 +74,8 @@ public class DefaultParsers {
     @Override
     public ILocationSampler createSampler(String uid, JsonObject json) {
       SurfaceLocationSampler res = new SurfaceLocationSampler();
-      res.setDistanceFromSurface(JsonUtil.getIntField(json, "distanceFromSurface", res.getDistanceFromSurface()));      
-      res.setCanGenerateOnFluid(JsonUtil.getBooleanField(json, "canGenerateOnFluid", res.isCanPlaceInFluid()));      
+      res.setDistanceFromSurface(JsonUtil.getIntField(json, "distanceFromSurface", res.getDistanceFromSurface()));
+      res.setCanGenerateOnFluid(JsonUtil.getBooleanField(json, "canGenerateOnFluid", res.isCanPlaceInFluid()));
       return res;
     }
 
@@ -82,7 +86,7 @@ public class DefaultParsers {
     RandomValFac() {
       super("RandomValidator");
     }
-    
+
     @Override
     public IChunkValidator createChunkValidator(String uid, JsonObject json) {
       RandomValidator res = new RandomValidator();
@@ -91,7 +95,7 @@ public class DefaultParsers {
     }
 
   }
-  
+
   //-----------------------------------------------------------------
   static class DimValFact extends AbstractSingleParserFactory {
 
@@ -103,49 +107,46 @@ public class DefaultParsers {
     public IChunkValidator createChunkValidator(String uid, JsonObject json) {
       DimensionValidator res = new DimensionValidator();
       res.addAll(JsonUtil.getStringArrayField(json, "names"), false);
-      res.addAll(JsonUtil.getStringArrayField(json, "namesExcluded"), true);      
+      res.addAll(JsonUtil.getStringArrayField(json, "namesExcluded"), true);
       return res;
     }
   }
-  
+
   //-----------------------------------------------------------------
   static class SpacingValFact extends AbstractSingleParserFactory {
-    
+
     public SpacingValFact() {
       super("SpacingValidator");
     }
-    
-    
+
     @Override
     public IChunkValidator createChunkValidator(String uid, JsonObject json) {
       SpacingValidator res = new SpacingValidator();
-      res.setMinSpacing(JsonUtil.getIntField(json, "minSpacing", res.getMinSpacing()));                 
-      res.setTemplateFilter(JsonUtil.getStringArrayField(json, "templateFilter"));    
+      res.setMinSpacing(JsonUtil.getIntField(json, "minSpacing", res.getMinSpacing()));
+      res.setTemplateFilter(JsonUtil.getStringArrayField(json, "templateFilter"));
       res.setValidateChunk(true);
       res.setValidateLocation(false);
       return res;
     }
 
-
     @Override
     public ISiteValidator createSiteValidator(String uid, JsonObject json) {
       SpacingValidator res = new SpacingValidator();
-      res.setMinSpacing(JsonUtil.getIntField(json, "minSpacing", res.getMinSpacing()));                 
+      res.setMinSpacing(JsonUtil.getIntField(json, "minSpacing", res.getMinSpacing()));
       res.setTemplateFilter(JsonUtil.getStringArrayField(json, "templateFilter"));
       res.setValidateChunk(false);
       res.setValidateLocation(true);
       return res;
     }
-    
-    
+
   }
-  
+
   //-----------------------------------------------------------------
   static class LevGrndFact extends AbstractSingleParserFactory {
     public LevGrndFact() {
       super("LevelGroundValidator");
     }
-    
+
     @Override
     public ISiteValidator createSiteValidator(String uid, JsonObject json) {
       LevelGroundValidator res = new LevelGroundValidator();
@@ -157,7 +158,7 @@ public class DefaultParsers {
       return res;
     }
   }
-  
+
   //-----------------------------------------------------------------
   static class BiomeValFact extends AbstractSingleParserFactory {
 
@@ -173,7 +174,7 @@ public class DefaultParsers {
         filter = new BiomeFilterAll();
       } else {
         filter = new BiomeFilterAny();
-      }      
+      }
       addBiomeTypes(filter, JsonUtil.getStringArrayField(json, "types"), false);
       addBiomeTypes(filter, JsonUtil.getStringArrayField(json, "typesExcluded"), true);
       addBiomesByName(filter, JsonUtil.getStringArrayField(json, "names"), false);
@@ -201,9 +202,9 @@ public class DefaultParsers {
       return true;
     }
   }
-  
+
   //-----------------------------------------------------------------
-  static class ClearPrepFact extends AbstractSingleParserFactory  {
+  static class ClearPrepFact extends AbstractSingleParserFactory {
 
     ClearPrepFact() {
       super("ClearPreperation");
@@ -217,7 +218,7 @@ public class DefaultParsers {
       res.setBorder(JsonUtil.getBorder(json, res.getBorder()));
       return res;
     }
-        
+
   }
 
   //-----------------------------------------------------------------
@@ -234,119 +235,125 @@ public class DefaultParsers {
       res.setBorder(JsonUtil.getBorder(json, res.getBorder()));
       return res;
     }
-        
-  }  
-  
-//-----------------------------------------------------------------
+
+  }
+
+  //-----------------------------------------------------------------
   static class LootTableDecFact extends AbstractSingleParserFactory {
 
     LootTableDecFact() {
       super("LootTableInventory");
     }
 
-    
     @Override
     public IDecorator createDecorator(String uid, JsonObject json) {
       LootTableDecorator res = new LootTableDecorator();
       res.setCategory(JsonUtil.getStringField(json, "category", null));
-      res.setTargets(JsonUtil.getStringArrayField(json, "targets"));      
+      res.setTargets(JsonUtil.getStringArrayField(json, "targets"));
       return res;
-    }    
-  }  
-  
-//-----------------------------------------------------------------
+    }
+  }
+
+  //-----------------------------------------------------------------
   static class VirtualSpawnerFact extends AbstractSingleParserFactory {
 
     VirtualSpawnerFact() {
       super("VirtualSpawner");
     }
 
-    
     @Override
     public IBehaviour createBehaviour(String uid, JsonObject json) {
-      VirtualSpawnerBehaviour res = new VirtualSpawnerBehaviour();    
+      VirtualSpawnerBehaviour res = new VirtualSpawnerBehaviour();
       String entStr = JsonUtil.getStringField(json, "entity", null);
       if(entStr == null) {
         Log.warn("DefaultParsers.VirtualSpawnerFact.createBehaviour: No entity specified for Virtual Spawner.");
         return null;
       }
-      res.setEntityTypeName(entStr);      
+      res.setEntityTypeName(entStr);
       res.setNumberSpawned(JsonUtil.getIntField(json, "numSpawned", res.getNumberSpawned()));
       res.setMinSpawnDelay(JsonUtil.getIntField(json, "minSpawnDelay", res.getMinSpawnDelay()));
       res.setMaxSpawnDelay(JsonUtil.getIntField(json, "maxSpawnDelay", res.getMaxSpawnDelay()));
-      res.setMinPlayerDistance(JsonUtil.getIntField(json, "minPlayerDistance", res.getMinPlayerDistance()));
-      res.setSpawnRange(JsonUtil.getIntField(json, "spawnRange", res.getSpawnRange()));
-      res.setMaxNearbyEntities(JsonUtil.getIntField(json, "maxNearbyEntities", res.getMaxNearbyEntities()));
+      res.setSpawnRange(JsonUtil.getIntField(json, "spawnRange", res.getSpawnRange()));      
       res.setPersistEntities(JsonUtil.getBooleanField(json, "persistEntities", res.isPersistEntities()));
       res.setUseVanillaSpawnChecks(JsonUtil.getBooleanField(json, "useVanillaSpawnChecks", res.isUseVanillaSpawnChecks()));
       res.setRenderParticles(JsonUtil.getBooleanField(json, "renderParticles", res.isRenderParticles()));
-      res.setStructureLocalPosition(JsonUtil.getPoint3iField(json, "position", res.getStructureLocalPosition()));      
+      res.setStructureLocalPosition(JsonUtil.getPoint3iField(json, "position", res.getStructureLocalPosition()));
+
       
-      TypedObject obj = JsonUtil.getTypedObjectField(json, "activeCondition");
-      if(obj != null) {
-        ICondition con = ParserRegister.instance.createCondition(obj.type, obj.obj);
-        if(con != null) {
-          res.setActiveCondition(con);
-        }
+      ICondition con = createCondition(json, "activeCondition");
+      if(con != null) {
+        res.setActiveCondition(con);
       }
-      
+      con = createCondition(json, "spawnCondition");
+      if(con != null) {
+        res.setSpawnCondition(con);
+      }
+
       return res;
-    }    
+    }
+
+    private ICondition createCondition(JsonObject json, String f) {
+      TypedObject obj = JsonUtil.getTypedObjectField(json, f);
+      if(obj != null) {
+        return ParserRegister.instance.createCondition(obj.type, obj.obj);        
+      }
+      return null;
+    }
   }
-  
-//-----------------------------------------------------------------
+
+  //-----------------------------------------------------------------
   static class AndConditionFact extends AbstractSingleParserFactory {
 
     AndConditionFact() {
       super("AndCondition");
-    }    
+    }
 
     @Override
     public ICondition createCondition(String uid, JsonObject json) {
-      
+
       AndCondition res = new AndCondition();
-      List<TypedObject> arrayContents = JsonUtil.getTypedObjectArray(json, "conditions");      
-      for(TypedObject o : arrayContents) {
+      List<TypedObject> arrayContents = JsonUtil.getTypedObjectArray(json, "conditions");
+      for (TypedObject o : arrayContents) {
         ICondition con = ParserRegister.instance.createCondition(o.type, o.obj);
         if(con != null) {
-          res.addCondition(con);   
+          res.addCondition(con);
         }
-      }     
+      }
       return res;
     }
   }
-  
-//-----------------------------------------------------------------
+
+  //-----------------------------------------------------------------
   static class OrConditionFact extends AbstractSingleParserFactory {
 
     OrConditionFact() {
       super("AndCondition");
-    }    
+    }
 
     @Override
-    public ICondition createCondition(String uid, JsonObject json) {      
+    public ICondition createCondition(String uid, JsonObject json) {
       OrCondition res = new OrCondition();
-      List<TypedObject> arrayContents = JsonUtil.getTypedObjectArray(json, "conditions");      
-      for(TypedObject o : arrayContents) {
+      List<TypedObject> arrayContents = JsonUtil.getTypedObjectArray(json, "conditions");
+      for (TypedObject o : arrayContents) {
         ICondition con = ParserRegister.instance.createCondition(o.type, o.obj);
         if(con != null) {
-          res.addCondition(con);   
+          res.addCondition(con);
         }
-      }     
+      }
       return res;
     }
-  }  
-  
-//-----------------------------------------------------------------
+  }
+
+  //-----------------------------------------------------------------
   static class BlockExistsConditionFact extends AbstractSingleParserFactory {
 
     BlockExistsConditionFact() {
       super("BlockExists");
-    }    
+    }
 
     @Override
-    public ICondition createCondition(String uid, JsonObject json) {      
-      
+    public ICondition createCondition(String uid, JsonObject json) {
+
       String blkStr = JsonUtil.getStringField(json, "block", null);
       if(blkStr == null) {
         return null;
@@ -355,15 +362,59 @@ public class DefaultParsers {
       Block blk = GameRegistry.findBlock(blkId.modId, blkId.name);
       if(blk == null) {
         return null;
-      }      
+      }
       int meta = JsonUtil.getIntField(json, "meta", -1);
-      
+
       Point3i pos = JsonUtil.getPoint3iField(json, "position", null);
       if(pos == null) {
         return null;
-      }      
+      }
       return new BlockExistsCondition(blk, meta, pos);
     }
   }
 
+  //-----------------------------------------------------------------
+  static class PlayerInRangeConditionFact extends AbstractSingleParserFactory {
+
+    PlayerInRangeConditionFact() {
+      super("PlayerInRange");
+    }
+
+    @Override
+    public ICondition createCondition(String uid, JsonObject json) {
+      PlayerInRangeCondition con = new PlayerInRangeCondition();
+      con.setRange(JsonUtil.getIntField(json, "range", con.getRange()));
+      Point3i pos = JsonUtil.getPoint3iField(json, "position", null);
+      if(pos != null) {
+        con.setLocalPos(pos);
+      }
+      return con;
+    }
+  }
+  
+  //{"type" : "MaxEntitiesInRange", "maxEntities" : 10, "range" : 32, "position" : [2,1,2]  }
+
+  //-----------------------------------------------------------------
+  static class MaxEntitiesInRangeFact extends AbstractSingleParserFactory {
+
+    MaxEntitiesInRangeFact() {
+      super("MaxEntitiesInRange");
+    }
+
+    @Override
+    public ICondition createCondition(String uid, JsonObject json) {
+      MaxEntitiesInRangeCondition con = new MaxEntitiesInRangeCondition();
+      con.setMaxEntities(JsonUtil.getIntField(json, "maxEntities", con.getMaxEntities()));
+      con.setRange(JsonUtil.getIntField(json, "range", con.getRange()));      
+      Point3i pos = JsonUtil.getPoint3iField(json, "position", null);
+      if(pos != null) {
+        con.setLocalPos(pos);
+      }
+      List<String> ents = JsonUtil.getStringArrayField(json, "entities");
+      if(ents != null) {
+        con.setEntities(ents);
+      }      
+      return con;
+    }
+  }
 }

@@ -65,7 +65,7 @@ public class StructureGenRegister {
     }
     generators.put(gen.getUid(), gen);
     genUids.add(gen.getUid());
-    Log.info("StructureRegister: Registered generator " + gen.getUid());
+    Log.info("StructureGenRegister: Registered Structure Gen: " + gen.getUid());
   }
 
   public void registerVillagerGenerator(IVillagerGenerator gen) {
@@ -75,7 +75,7 @@ public class StructureGenRegister {
     villagerUids.add(gen.getUid());
     villagerGen.addCreationHandler(gen.getCreationHandler());    
     gen.register();
-    Log.info("StructureRegister: Registered villager generator " + gen.getUid());
+    Log.info("StructureGenRegister: Registered Village Gen: " + gen.getUid());
   }
 
   public void registerTemplate(IStructureTemplate st) {
@@ -84,7 +84,7 @@ public class StructureGenRegister {
     }
     templates.put(st.getUid(), st);
 
-    Log.info("StructureRegister: Registered template " + st.getUid());
+    Log.info("StructureGenRegister: Registered Template: " + st.getUid());
   }
 
   public void registerStructureComponent(IStructureComponent sc) {
@@ -92,7 +92,7 @@ public class StructureGenRegister {
       return;
     }
     components.put(sc.getUid(), sc);
-    Log.info("StructureRegister: Registered component " + sc.getUid());
+    Log.info("StructureGenRegister: Registered Component: " + sc.getUid());
   }
 
   public Collection<IStructureGenerator> getGenerators() {

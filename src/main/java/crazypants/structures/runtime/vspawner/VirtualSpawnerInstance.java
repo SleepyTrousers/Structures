@@ -13,7 +13,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EnumCreatureType;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
 public class VirtualSpawnerInstance {
@@ -21,17 +20,17 @@ public class VirtualSpawnerInstance {
   static {
     PacketHandler.INSTANCE.registerMessage(PacketSpawnParticles.class, PacketSpawnParticles.class, PacketHandler.nextID(), Side.CLIENT);
   }
-  
+
   private IStructure structure;
   private VirtualSpawnerBehaviour behaviour;
   private Point3i worldPos;
   private World world;
 
-  private int ticksTillNextSpawn = 20;
+  private int ticksTillNextSpawn = -1;
   private int remainingSpawnTries;
 
   private boolean registered = false;
-  
+
   private ICondition activeCondition;
   private ICondition spawnCondition;
 
@@ -40,9 +39,9 @@ public class VirtualSpawnerInstance {
     this.behaviour = behaviour;
     this.world = world;
     this.worldPos = worldPos;
-    
+
     if(behaviour.getActiveCondition() != null) {
-      activeCondition = behaviour.getActiveCondition().createPerStructureInstance(world, structure);      
+      activeCondition = behaviour.getActiveCondition().createPerStructureInstance(world, structure);
     }
     if(behaviour.getSpawnCondition() != null) {
       spawnCondition = behaviour.getSpawnCondition().createPerStructureInstance(world, structure);
@@ -62,7 +61,10 @@ public class VirtualSpawnerInstance {
 
   @SubscribeEvent
   public void update(WorldTickEvent evt) {
-    if(evt.world != world || !isActivated()) {
+    if(evt.world != world) {
+      return;
+    }
+    if(activeCondition != null && !activeCondition.isConditionMet(world, structure)) {
       return;
     }
 
@@ -82,14 +84,16 @@ public class VirtualSpawnerInstance {
         break;
       }
     }
+    --ticksTillNextSpawn;
 
   }
 
   private void spawnParticles() {
     if(!behaviour.isRenderParticles()) {
       return;
-    }    
-    PacketHandler.INSTANCE.sendToAllAround(new PacketSpawnParticles(worldPos), new TargetPoint(world.provider.dimensionId, worldPos.x, worldPos.y, worldPos.z, 64));    
+    }
+    PacketHandler.INSTANCE.sendToAllAround(new PacketSpawnParticles(worldPos),
+        new TargetPoint(world.provider.dimensionId, worldPos.x, worldPos.y, worldPos.z, 64));
   }
 
   private void resetTimer() {
@@ -101,54 +105,29 @@ public class VirtualSpawnerInstance {
     }
   }
 
-  private boolean isActivated() {
-    if(activeCondition != null && !activeCondition.isConditionMet(world, structure)) {
-      return false;
-    }
-    if(behaviour.getMinPlayerDistance() > 0) {
-      return world.getClosestPlayer(worldPos.x + 0.5D, worldPos.y + 0.5D, worldPos.z + 0.5D, behaviour.getMinPlayerDistance()) != null;
-    }
-    return true;
-  }
+ 
+  protected boolean trySpawnEntity() {
 
-  protected boolean trySpawnEntity() { 
-    
     if(spawnCondition != null && !spawnCondition.isConditionMet(world, structure)) {
       return false;
     }
     
-    int spawnRange = behaviour.getSpawnRange();
-    
-    if(behaviour.getMaxNearbyEntities() > 0) {
-      int range = spawnRange * 4;
-      //int nearbyEntities = world.getEntitiesWithinAABB(entity.getClass(),
-      int nearbyEntities = world.getEntitiesWithinAABB(EntityLiving.class,
-          AxisAlignedBB.getBoundingBox(
-              worldPos.x - range, worldPos.y - range, worldPos.z - range,
-              worldPos.x + range, worldPos.y + range, worldPos.z + range))
-          .size();
-
-      if(nearbyEntities >= behaviour.getMaxNearbyEntities()) {
-        return false;
-      }
-    }
-    
-    Entity entity = createEntity(behaviour.isPersistEntities());
-    if(!(entity instanceof EntityLiving)) {
+    EntityLiving entityliving = createEntity();
+    if(entityliving == null) {
       return false;
     }
-    EntityLiving entityliving = (EntityLiving) entity;
 
+    int spawnRange = behaviour.getSpawnRange();
     while (remainingSpawnTries-- > 0) {
       double x = worldPos.x + (world.rand.nextDouble() - world.rand.nextDouble()) * spawnRange;
       double y = worldPos.y + world.rand.nextInt(3) - 1;
       double z = worldPos.z + (world.rand.nextDouble() - world.rand.nextDouble()) * spawnRange;
-      entity.setLocationAndAngles(x, y, z, world.rand.nextFloat() * 360.0F, 0.0F);
+      entityliving.setLocationAndAngles(x, y, z, world.rand.nextFloat() * 360.0F, 0.0F);
 
       if(canSpawnEntity(entityliving)) {
         entityliving.onSpawnWithEgg(null);
         world.spawnEntityInWorld(entityliving);
-        world.playAuxSFX(2004, worldPos.x, worldPos.y, worldPos.z, 0);
+        //world.playAuxSFX(2004, worldPos.x, worldPos.y, worldPos.z, 0);
         entityliving.spawnExplosionParticle();
         return true;
       }
@@ -168,14 +147,16 @@ public class VirtualSpawnerInstance {
     return spaceClear;
   }
 
-  Entity createEntity(boolean persistEntity) {
+  EntityLiving createEntity() {
     Entity ent = EntityList.createEntityByName(behaviour.getEntityTypeName(), world);
-//    if(persistEntity && behaviour.getMinPlayerDistance() <= 0 && behaviour.getDespawnTimeSeconds() > 0 && ent instanceof EntityLiving) {
-//      ent.getEntityData().setLong(VirtualSpawnerBehaviour.KEY_DESPAWN_TIME, world.getTotalWorldTime() + behaviour.getDespawnTimeSeconds() * 20);
-    if(persistEntity && ent instanceof EntityLiving) {
-      ((EntityLiving) ent).func_110163_bv();
+    if(!(ent instanceof EntityLiving)) {
+      return null;
     }
-    return ent;
+    EntityLiving res = (EntityLiving)ent;
+    if(behaviour.isPersistEntities()) {
+      res.func_110163_bv();
+    }
+    return res;
   }
 
 }

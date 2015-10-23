@@ -19,8 +19,6 @@ public class VirtualSpawnerBehaviour implements IBehaviour {
 
   private int minSpawnDelay = 200;
   private int maxSpawnDelay = 800;
-  private int minPlayerDistance = 16;
-  private int maxNearbyEntities = 6;
 
   private ICondition activeCondition;
   
@@ -30,22 +28,17 @@ public class VirtualSpawnerBehaviour implements IBehaviour {
   private int maxSpawnRetries = 3;
   private int spawnRange = 4;
 
-  //private int despawnTimeSeconds = 120;
-
   private boolean useVanillaSpawnChecks = true;
 
   private boolean renderParticles = true;
 
   private boolean persistEntities = false;
 
-  //TODO: Need to add a block check so it can be broken if required
   //TODO: Allow for a list of entities
 
   private Map<InstanceKey, VirtualSpawnerInstance> instances = new HashMap<InstanceKey, VirtualSpawnerInstance>();
 
-  public VirtualSpawnerBehaviour() {    
-//    BlockExistsCondition con = new BlockExistsCondition(Blocks.brick_block, new Point3i(4,1,4));
-//    activeConditions.add(con);    
+  public VirtualSpawnerBehaviour() {      
   }
 
   @Override
@@ -119,14 +112,6 @@ public class VirtualSpawnerBehaviour implements IBehaviour {
     this.maxSpawnDelay = maxSpawnDelay;
   }
 
-  public int getMinPlayerDistance() {
-    return minPlayerDistance;
-  }
-
-  public void setMinPlayerDistance(int minPlayerDistance) {
-    this.minPlayerDistance = minPlayerDistance;
-  }
-
   public int getNumberSpawned() {
     return numSpawned;
   }
@@ -149,14 +134,6 @@ public class VirtualSpawnerBehaviour implements IBehaviour {
 
   public void setSpawnRange(int spawnRange) {
     this.spawnRange = spawnRange;
-  }
-
-  public int getMaxNearbyEntities() {
-    return maxNearbyEntities;
-  }
-
-  public void setMaxNearbyEntities(int maxNearbyEntities) {
-    this.maxNearbyEntities = maxNearbyEntities;
   }
 
   public boolean isUseVanillaSpawnChecks() {
