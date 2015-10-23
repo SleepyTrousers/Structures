@@ -20,6 +20,35 @@
                     "category" : "mineshaftCorridor",  
                     "comment_category" : "mineshaftCorridor, pyramidDesertyChest, pyramidJungleChest, pyramidJungleDispenser, strongholdCorridor, strongholdLibrary, strongholdCrossing, villageBlacksmith, bonusChest, dungeonChest",
                     "targets" : ["inv0", "inv1", "inv2"]} 
+       ],
+       
+       "behaviours" : [
+           
+           { "type": "VirtualSpawner",
+                     "entity" : "Wolf",
+                     "numSpawned" : 2,
+                     "minSpawnDelay" : 100,
+                     "maxSpawnDelay" : 100,                   
+                     "position" : [2, 2, 2],
+                     "activeCondition" : { "type" : "AndCondition",
+                                           "conditions" : [
+                                             {"type" : "PlayerInRange", "range" : 12, "position" : [2,1,2]  },
+                                             {"__type" : "BlockExists", "block" : "minecraft:brick_block", "meta" : 0, "position" : [2,1,2] }
+                                            ]
+                                         },
+                     "spawnCondition" : { "type" : "AndCondition",
+                                           "conditions" : [
+                                             {"type" : "MaxEntitiesInRange", 
+                                                       "maxEntities" : 16, 
+                                                       "range" : 32, 
+                                                       "position" : [2,1,2],
+                                                       "entities" : [ "Wolf"] }
+                                            ]
+                                         }
+                      
+             }
+             
+       
        ]                           
        
     }

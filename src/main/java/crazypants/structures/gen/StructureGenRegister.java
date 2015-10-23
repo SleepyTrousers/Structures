@@ -115,7 +115,7 @@ public class StructureGenRegister {
     try {
       sd = resourceManager.loadStructureComponent(uid);
     } catch (IOException e) {
-      Log.error("StructureRegister: Could not load structure component: " + uid + " Ex: " + e);
+      Log.error("StructureGenRegister: Could not load structure component: " + uid + " Ex: " + e);
     } finally {
       components.put(uid, sd);
     }
@@ -130,7 +130,7 @@ public class StructureGenRegister {
     try {
       sd = resourceManager.loadTemplate(uid);
     } catch (Exception e) {
-      Log.error("StructureRegister: Could not load structure template: " + uid + " Ex: " + e);
+      Log.error("StructureGenRegister: Could not load structure template: " + uid + " Ex: " + e);
     } finally {
       templates.put(uid, sd);
     }
@@ -144,7 +144,7 @@ public class StructureGenRegister {
       try {
         registerGenerator(resourceManager.loadGenerator(uid));
       } catch (Exception e) {
-        Log.warn("StructureResourceManager.loadAndRegisterAllResources: Error loading component " + uid + " Exception: " + e);
+        Log.warn("StructureGenRegister.loadAndRegisterAllResources: Error loading component " + uid + " Exception: " + e);
       }
     }
 
@@ -156,7 +156,7 @@ public class StructureGenRegister {
           registerVillagerGenerator(gen);
         }
       } catch (Exception e) {
-        Log.warn("StructureResourceManager.loadAndRegisterAllResources: Error loading component " + uid + " Exception: " + e);
+        Log.warn("StructureGenRegister.loadAndRegisterAllResources: Error loading component " + uid + " Exception: " + e);
       }
     }
 
@@ -165,7 +165,7 @@ public class StructureGenRegister {
       try {
         resourceManager.loadLootTableDefination(uid);
       } catch (Exception e) {
-        Log.warn("StructureResourceManager.loadAndRegisterAllResources: Could not load loot table categories from: " + uid + " error: " + e);
+        Log.warn("StructureGenRegister.loadAndRegisterAllResources: Could not load loot table categories from: " + uid + " error: " + e);
       }
     }
 
@@ -176,7 +176,7 @@ public class StructureGenRegister {
           IStructureTemplate tmp = resourceManager.loadTemplate(uid);
           registerTemplate(tmp);
         } catch (Exception e) {
-          Log.warn("StructureResourceManager.loadAndRegisterAllResources: Error loading template " + uid + " Exception: " + e);
+          Log.warn("StructureGenRegister.loadAndRegisterAllResources: Error loading template " + uid + " Exception: " + e);
         }
       }
 
@@ -186,7 +186,7 @@ public class StructureGenRegister {
           StructureComponentNBT sc = resourceManager.loadStructureComponent(uid);
           registerStructureComponent(sc);
         } catch (Exception e) {
-          Log.warn("StructureResourceManager.loadAndRegisterAllResources: Error loading component " + uid + " Exception: " + e);
+          Log.warn("StructureGenRegister.loadAndRegisterAllResources: Error loading component " + uid + " Exception: " + e);
         }
       }
     }
@@ -209,7 +209,7 @@ public class StructureGenRegister {
           registerGenerator(tmp);
         }
       } catch (Exception e) {
-        Log.error("StructureRegister: Could not load structure data for " + uid + " Ex: " + e);
+        Log.error("StructureGenRegister: Could not load structure data for " + uid + " Ex: " + e);
       }
     }
     for (String uid : villagerUids) {
@@ -221,7 +221,7 @@ public class StructureGenRegister {
           tmp.onReload();
         }
       } catch (Exception e) {
-        Log.error("StructureRegister: Could not load structure data for " + uid + " Ex: " + e);
+        Log.error("StructureGenRegister: Could not load structure data for " + uid + " Ex: " + e);
       }
     }
 

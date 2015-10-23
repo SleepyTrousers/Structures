@@ -139,7 +139,7 @@ public class Structure implements IStructure {
   
   @Override
   public boolean isValid() {
-    return origin != null && template != null;
+    return origin != null && template != null && template.isValid();
   }
 
   @Override

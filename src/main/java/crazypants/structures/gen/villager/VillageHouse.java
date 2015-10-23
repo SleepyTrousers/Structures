@@ -2,8 +2,11 @@ package crazypants.structures.gen.villager;
 
 import java.util.Random;
 
+import crazypants.structures.EnderStructures;
+import crazypants.structures.Log;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.gen.IStructureTemplate;
+import crazypants.structures.api.gen.IWorldStructures;
 import crazypants.structures.api.util.Point3i;
 import crazypants.structures.api.util.Rotation;
 import crazypants.structures.gen.StructureGenRegister;
@@ -79,7 +82,11 @@ public class VillageHouse extends StructureVillagePieces.House1 {
       origin.z++;
     }
     structure.setOrigin(origin);
+    if(!structure.isValid()) {
+      return false;
+    }    
     template.build(structure, world, random, bb);
+    
     if(villagerId > 0) {
       addingVilagers = true;
       try {
@@ -89,6 +96,11 @@ public class VillageHouse extends StructureVillagePieces.House1 {
       }
     }
 
+    IWorldStructures worldStructs = EnderStructures.structureRegister.getStructuresForWorld(world);
+    worldStructs.add(structure);
+    if(template.getBehaviour() != null) {
+      template.getBehaviour().onStructureGenerated(world, structure);
+    }
     return true;
   }
 
@@ -135,12 +147,10 @@ public class VillageHouse extends StructureVillagePieces.House1 {
     if(nbt.hasKey("structure")) {
       NBTTagCompound strRoot = nbt.getCompoundTag("structure");
       structure = new Structure(strRoot);
-      if(structure.isValid()) {
-        template = structure.getTemplate();
-        if(!template.isValid()) {
-          structure = null;
-          template = null;
-        }
+      if(!structure.isValid()) {
+        structure = null;
+        template = null;
+        Log.warn("VillageHouse: Could not load template for previously generated house: " + structure.getUid());
       }
     }
   }
