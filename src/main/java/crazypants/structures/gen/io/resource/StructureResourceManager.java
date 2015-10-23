@@ -1,8 +1,10 @@
 package crazypants.structures.gen.io.resource;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -125,7 +127,22 @@ public class StructureResourceManager {
     if(str == null) {
       throw new IOException("Could not find the resource for generator: " + uid);
     }
-    return IoUtil.readStream(str);
+    String res = IoUtil.readStream(str);
+    boolean stripComments = true;
+    if(!stripComments) {
+      return res;
+    }
+    StringBuffer buf = new StringBuffer();
+    BufferedReader br = new BufferedReader(new StringReader(res));
+    String line = br.readLine();
+    while(line != null) {
+      line = line.trim();
+      if(!line.startsWith("#")) {
+        buf.append(line + "\n");
+      }
+      line = br.readLine();
+    }        
+    return buf.toString();
   }
 
   private InputStream getStream(String uid, String extension) {

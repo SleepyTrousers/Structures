@@ -32,8 +32,10 @@ import crazypants.structures.gen.structure.validator.biome.IBiomeFilter;
 import crazypants.structures.runtime.AndCondition;
 import crazypants.structures.runtime.OrCondition;
 import crazypants.structures.runtime.condition.BlockExistsCondition;
+import crazypants.structures.runtime.condition.ElapasedTimeCondition;
 import crazypants.structures.runtime.condition.MaxEntitiesInRangeCondition;
 import crazypants.structures.runtime.condition.PlayerInRangeCondition;
+import crazypants.structures.runtime.condition.TickCountCondition;
 import crazypants.structures.runtime.vspawner.VirtualSpawnerBehaviour;
 import net.minecraft.block.Block;
 import net.minecraftforge.common.BiomeDictionary;
@@ -57,7 +59,8 @@ public class DefaultParsers {
     add(new BlockExistsConditionFact());
     add(new PlayerInRangeConditionFact());
     add(new MaxEntitiesInRangeFact());
-
+    add(new ElapasedTimeConditionFact());
+    add(new TickCountConditionFact());
   }
 
   private static void add(AbstractSingleParserFactory fact) {
@@ -271,8 +274,6 @@ public class DefaultParsers {
       }
       res.setEntityTypeName(entStr);
       res.setNumberSpawned(JsonUtil.getIntField(json, "numSpawned", res.getNumberSpawned()));
-      res.setMinSpawnDelay(JsonUtil.getIntField(json, "minSpawnDelay", res.getMinSpawnDelay()));
-      res.setMaxSpawnDelay(JsonUtil.getIntField(json, "maxSpawnDelay", res.getMaxSpawnDelay()));
       res.setSpawnRange(JsonUtil.getIntField(json, "spawnRange", res.getSpawnRange()));      
       res.setPersistEntities(JsonUtil.getBooleanField(json, "persistEntities", res.isPersistEntities()));
       res.setUseVanillaSpawnChecks(JsonUtil.getBooleanField(json, "useVanillaSpawnChecks", res.isUseVanillaSpawnChecks()));
@@ -391,8 +392,6 @@ public class DefaultParsers {
       return con;
     }
   }
-  
-  //{"type" : "MaxEntitiesInRange", "maxEntities" : 10, "range" : 32, "position" : [2,1,2]  }
 
   //-----------------------------------------------------------------
   static class MaxEntitiesInRangeFact extends AbstractSingleParserFactory {
@@ -414,6 +413,43 @@ public class DefaultParsers {
       if(ents != null) {
         con.setEntities(ents);
       }      
+      return con;
+    }
+  }
+  
+  //-----------------------------------------------------------------
+  static class ElapasedTimeConditionFact extends AbstractSingleParserFactory {
+
+    ElapasedTimeConditionFact() {
+      super("ElapasedTimeCondition");
+    }
+
+    @Override
+    public ICondition createCondition(String uid, JsonObject json) {
+      ElapasedTimeCondition con = new ElapasedTimeCondition();
+      con.setInitialTime(JsonUtil.getIntField(json, "initialTime", con.getInitialTime()));
+      con.setMinTime(JsonUtil.getIntField(json, "minTime", con.getMinTime()));
+      con.setMaxTime(JsonUtil.getIntField(json, "maxTime", con.getMaxTime()));
+      con.setPersisted(JsonUtil.getBooleanField(json, "persisted", con.isPersisted()));            
+      return con;
+    }
+  }
+  
+  //TickCountCondition
+  //-----------------------------------------------------------------
+  static class TickCountConditionFact extends AbstractSingleParserFactory {
+
+    TickCountConditionFact() {
+      super("TickCountCondition");
+    }
+
+    @Override
+    public ICondition createCondition(String uid, JsonObject json) {
+      TickCountCondition con = new TickCountCondition();
+      con.setInitialCount(JsonUtil.getIntField(json, "initialCount", con.getInitialCount()));
+      con.setMinCount(JsonUtil.getIntField(json, "minCount", con.getMinCount()));
+      con.setMaxCount(JsonUtil.getIntField(json, "maxCount", con.getMaxCount()));
+      con.setPersisted(JsonUtil.getBooleanField(json, "persisted", con.isPersisted()));            
       return con;
     }
   }

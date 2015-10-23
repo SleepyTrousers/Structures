@@ -26,7 +26,6 @@ public class VirtualSpawnerInstance {
   private Point3i worldPos;
   private World world;
 
-  private int ticksTillNextSpawn = -1;
   private int remainingSpawnTries;
 
   private boolean registered = false;
@@ -68,27 +67,21 @@ public class VirtualSpawnerInstance {
       return;
     }
 
-    spawnParticles();
+    spawnActiveParticles();
 
-    if(ticksTillNextSpawn == -1) {
-      resetTimer();
-    }
-    if(ticksTillNextSpawn > 0) {
-      --ticksTillNextSpawn;
+    if(spawnCondition != null && !spawnCondition.isConditionMet(world, structure)) {
       return;
     }
-
     remainingSpawnTries = behaviour.getNumberSpawned() + behaviour.getMaxSpawnRetries();
     for (int i = 0; i < behaviour.getNumberSpawned() && remainingSpawnTries > 0; ++i) {
       if(!trySpawnEntity()) {
         break;
       }
     }
-    --ticksTillNextSpawn;
 
   }
 
-  private void spawnParticles() {
+  private void spawnActiveParticles() {
     if(!behaviour.isRenderParticles()) {
       return;
     }
@@ -96,27 +89,13 @@ public class VirtualSpawnerInstance {
         new TargetPoint(world.provider.dimensionId, worldPos.x, worldPos.y, worldPos.z, 64));
   }
 
-  private void resetTimer() {
-    if(behaviour.getMaxSpawnDelay() <= behaviour.getMinSpawnDelay()) {
-      this.ticksTillNextSpawn = behaviour.getMinSpawnDelay();
-    } else {
-      int i = behaviour.getMaxSpawnDelay() - behaviour.getMinSpawnDelay();
-      ticksTillNextSpawn = behaviour.getMinSpawnDelay() + world.rand.nextInt(i);
-    }
-  }
-
  
   protected boolean trySpawnEntity() {
 
-    if(spawnCondition != null && !spawnCondition.isConditionMet(world, structure)) {
-      return false;
-    }
-    
     EntityLiving entityliving = createEntity();
     if(entityliving == null) {
       return false;
     }
-
     int spawnRange = behaviour.getSpawnRange();
     while (remainingSpawnTries-- > 0) {
       double x = worldPos.x + (world.rand.nextDouble() - world.rand.nextDouble()) * spawnRange;

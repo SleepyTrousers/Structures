@@ -6,7 +6,6 @@ import crazypants.structures.EnderStructures;
 import crazypants.structures.Log;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.gen.IStructureTemplate;
-import crazypants.structures.api.gen.IWorldStructures;
 import crazypants.structures.api.util.Point3i;
 import crazypants.structures.api.util.Rotation;
 import crazypants.structures.gen.StructureGenRegister;
@@ -85,7 +84,10 @@ public class VillageHouse extends StructureVillagePieces.House1 {
     if(!structure.isValid()) {
       return false;
     }    
-    template.build(structure, world, random, bb);
+    
+    template.build(structure, world, random, bb);    
+    EnderStructures.structureRegister.getStructuresForWorld(world).add(structure);    
+    structure.onGenerated(world);
     
     if(villagerId > 0) {
       addingVilagers = true;
@@ -96,11 +98,8 @@ public class VillageHouse extends StructureVillagePieces.House1 {
       }
     }
 
-    IWorldStructures worldStructs = EnderStructures.structureRegister.getStructuresForWorld(world);
-    worldStructs.add(structure);
-    if(template.getBehaviour() != null) {
-      template.getBehaviour().onStructureGenerated(world, structure);
-    }
+    
+    
     return true;
   }
 

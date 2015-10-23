@@ -73,12 +73,12 @@ public class WorldGenerator implements IWorldGenerator {
       for (IStructureGenerator generator : StructureGenRegister.instance.getGenerators()) {
         Random r = new Random(chunkSeed ^ generator.getUid().hashCode());
         Collection<IStructure> generatedStructs = generator.generate(worldStructs, r, chunkX, chunkZ, world, chunkGenerator, chunkProvider);
-        if(generatedStructs != null) {
-          worldStructs.addAll(generatedStructs);          
-        }  
-        for(IStructure s : generatedStructs) {
-          if(s != null && s.getTemplate() != null) {
-            s.getTemplate().getBehaviour().onStructureGenerated(world, s);
+        if(generatedStructs != null) {          
+          for (IStructure s : generatedStructs) {
+            if(s != null && s.isValid()) {
+              worldStructs.add(s);
+              s.onGenerated(world);              
+            }
           }
         }
       }
@@ -92,7 +92,7 @@ public class WorldGenerator implements IWorldGenerator {
     }
   }
 
-  public void serverStopped(FMLServerStoppedEvent event) {       
+  public void serverStopped(FMLServerStoppedEvent event) {
     generating.clear();
   }
 

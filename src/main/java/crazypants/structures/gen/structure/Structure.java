@@ -29,6 +29,8 @@ public class Structure implements IStructure {
   private AxisAlignedBB bb;
   private Point3i size;
   
+  private NBTTagCompound state;
+  
 
   public Structure(Point3i origin, Rotation rotation, IStructureTemplate template) {    
     if(origin == null) {
@@ -51,6 +53,49 @@ public class Structure implements IStructure {
     rotation = Rotation.values()[MathHelper.clamp_int(root.getShort("rotation"), 0, Rotation.values().length - 1)];    
     updateBounds();
   }
+  
+
+  @Override
+  public void onGenerated(World world) {
+    if(!isValid()) {
+      return;
+    }
+    state = new NBTTagCompound();
+    getTemplate().getBehaviour().onStructureGenerated(world, this);     
+  }
+  
+  @Override
+  public void onLoaded(World world) {
+    if(!isValid()) {
+      return;
+    }     
+    getTemplate().getBehaviour().onStructureLoaded(world, this);
+  }
+
+  @Override
+  public void onUnloaded(World world) {
+    if(!isValid()) {
+      return;
+    }
+    getTemplate().getBehaviour().onStructureUnloaded(world, this);    
+  }
+ 
+  @Override
+  public NBTTagCompound getState() {
+    return state;
+  }
+  
+  @Override
+  public void setState(NBTTagCompound state) {    
+    if(state == null) {
+      this.state = new NBTTagCompound();
+    } else {
+      this.state = state;  
+    }
+  }
+  
+  
+  
 
   @Override
   public AxisAlignedBB getBounds() {

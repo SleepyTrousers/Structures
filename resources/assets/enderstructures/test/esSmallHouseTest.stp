@@ -60,9 +60,7 @@
            
            { "type": "VirtualSpawner",
                      "entity" : "Wolf",
-                     "numSpawned" : 4,
-                     "minSpawnDelay" : 200,
-                     "maxSpawnDelay" : 300,
+                     "numSpawned" : 4,                    
                      "spawnRange" : 4,
                      "persistEntities" : "false",
                      "useVanillaSpawnChecks" : "true",
@@ -76,11 +74,18 @@
                                          },
                      "spawnCondition" : { "type" : "AndCondition",
                                            "conditions" : [
+                                             {"type" : "TickCountCondition", 
+                                                       "initialCount" : 10, 
+                                                       "minCount" : 100, 
+                                                       "maxCount" : 200,
+                                                       "persisted" : false },
+                                                       
                                              {"type" : "MaxEntitiesInRange", 
                                                        "maxEntities" : 8, 
                                                        "range" : 32, 
                                                        "position" : [2,1,2],
                                                        "entities" : [ "Wolf"]  },
+                                                       
                                              {"type" : "MaxEntitiesInRange", 
                                                        "maxEntities" : 16, 
                                                        "range" : 32, 

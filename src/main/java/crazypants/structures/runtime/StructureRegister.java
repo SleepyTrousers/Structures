@@ -10,7 +10,9 @@ import cpw.mods.fml.common.event.FMLServerStoppedEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.gen.IWorldStructures;
+import crazypants.structures.api.util.Point3i;
 import crazypants.structures.gen.WorldStructures;
+import crazypants.structures.gen.io.WorldData;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.ChunkEvent;
@@ -67,9 +69,10 @@ public class StructureRegister {
     public void onChunkLoad(ChunkEvent.Load evt) {
       Collection<IStructure> structs = getStructuresForWorld(evt.world).getStructuresWithOriginInChunk(evt.getChunk().getChunkCoordIntPair());
       if(!structs.isEmpty()) {
-        loadedStructures.addAll(structs);
+        loadedStructures.addAll(structs);        
         for(IStructure s : structs) {
-          s.getTemplate().getBehaviour().onStructureLoaded(evt.world, s);
+          s.setState(WorldData.INSTANCE.loadNBT(evt.world, getStateKey(s)));
+          s.onLoaded(evt.world);          
         }
       }
     }
@@ -80,7 +83,8 @@ public class StructureRegister {
       if(!structs.isEmpty()) {
         loadedStructures.removeAll(structs);
         for(IStructure s : structs) {
-          s.getTemplate().getBehaviour().onStructureUnloaded(evt.world, s);
+          s.onUnloaded(evt.world);          
+          WorldData.INSTANCE.saveNBT(evt.world, getStateKey(s), s.getState());
         }
       }
     }
@@ -91,6 +95,15 @@ public class StructureRegister {
       if(wm != null) {
         wm.save();
       }
+      for(IStructure s : loadedStructures) {
+        WorldData.INSTANCE.saveNBT(evt.world, getStateKey(s), s.getState());
+      }
+      
+    }
+    
+    private String getStateKey(IStructure structure) {
+      Point3i origin = structure.getOrigin();
+      return origin.x + "_" + origin.y + "_" + origin.z + "_" + structure.getTemplate().getUid(); 
     }
 
   }

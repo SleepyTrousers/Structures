@@ -17,9 +17,6 @@ public class VirtualSpawnerBehaviour implements IBehaviour {
 
   private String entityTypeName = "Pig";
 
-  private int minSpawnDelay = 200;
-  private int maxSpawnDelay = 800;
-
   private ICondition activeCondition;
   
   private ICondition spawnCondition;
@@ -94,22 +91,6 @@ public class VirtualSpawnerBehaviour implements IBehaviour {
 
   public void setEntityTypeName(String entityTypeName) {
     this.entityTypeName = entityTypeName;
-  }
-
-  public int getMinSpawnDelay() {
-    return minSpawnDelay;
-  }
-
-  public void setMinSpawnDelay(int minSpawnDelay) {
-    this.minSpawnDelay = minSpawnDelay;
-  }
-
-  public int getMaxSpawnDelay() {
-    return maxSpawnDelay;
-  }
-
-  public void setMaxSpawnDelay(int maxSpawnDelay) {
-    this.maxSpawnDelay = maxSpawnDelay;
   }
 
   public int getNumberSpawned() {

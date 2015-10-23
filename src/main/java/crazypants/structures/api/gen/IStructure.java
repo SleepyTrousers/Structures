@@ -30,6 +30,10 @@ public interface IStructure {
   
   Collection<Point3i> getTaggedLocations(String target);
   
+  NBTTagCompound getState();
+  
+  void setState(NBTTagCompound state);
+  
   //-- bounds
   
   Point3i getSize();
@@ -62,5 +66,11 @@ public interface IStructure {
   void writeToNBT(NBTTagCompound root);
   
   Point3i transformLocalToWorld(Point3i local);
+
+  void onGenerated(World world);
+  
+  void onLoaded(World world);
+  
+  void onUnloaded(World world);
 
 }
