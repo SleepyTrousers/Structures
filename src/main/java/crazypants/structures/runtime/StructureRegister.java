@@ -13,6 +13,7 @@ import crazypants.structures.api.gen.IWorldStructures;
 import crazypants.structures.api.util.Point3i;
 import crazypants.structures.gen.WorldStructures;
 import crazypants.structures.gen.io.WorldData;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.ChunkEvent;
@@ -70,9 +71,8 @@ public class StructureRegister {
       Collection<IStructure> structs = getStructuresForWorld(evt.world).getStructuresWithOriginInChunk(evt.getChunk().getChunkCoordIntPair());
       if(!structs.isEmpty()) {
         loadedStructures.addAll(structs);        
-        for(IStructure s : structs) {
-          s.setState(WorldData.INSTANCE.loadNBT(evt.world, getStateKey(s)));
-          s.onLoaded(evt.world);          
+        for(IStructure s : structs) {          
+          s.onLoaded(evt.world, WorldData.INSTANCE.loadNBT(evt.world, getStateKey(s)));          
         }
       }
     }
@@ -83,8 +83,8 @@ public class StructureRegister {
       if(!structs.isEmpty()) {
         loadedStructures.removeAll(structs);
         for(IStructure s : structs) {
-          s.onUnloaded(evt.world);          
-          WorldData.INSTANCE.saveNBT(evt.world, getStateKey(s), s.getState());
+          NBTTagCompound state = s.onUnloaded(evt.world);          
+          WorldData.INSTANCE.saveNBT(evt.world, getStateKey(s), state);
         }
       }
     }
@@ -94,9 +94,11 @@ public class StructureRegister {
       WorldStructures wm = getStructuresForWorldImpl(evt.world);
       if(wm != null) {
         wm.save();
-      }
+      }      
       for(IStructure s : loadedStructures) {
-        WorldData.INSTANCE.saveNBT(evt.world, getStateKey(s), s.getState());
+        if(wm.contains(s)) {
+          WorldData.INSTANCE.saveNBT(evt.world, getStateKey(s), s.getState());
+        }
       }
       
     }

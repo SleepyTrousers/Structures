@@ -5,7 +5,6 @@ import java.lang.reflect.Field;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.ReflectionHelper;
 import crazypants.structures.Log;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
@@ -36,26 +35,26 @@ public class DespawnController {
   
   @SubscribeEvent
   public void onLivingUpdate(LivingUpdateEvent livingUpdate) {
-
-    Entity ent = livingUpdate.entityLiving;
-    if(!ent.getEntityData().hasKey(VirtualSpawnerBehaviour.KEY_DESPAWN_TIME)) {
-      return;
-    }
-    if(fieldpersistenceRequired == null) {
-      ent.getEntityData().removeTag(VirtualSpawnerBehaviour.KEY_DESPAWN_TIME);
-      return;
-    }
-
-    long despawnTime = ent.getEntityData().getLong(VirtualSpawnerBehaviour.KEY_DESPAWN_TIME);    
-    if(despawnTime <= livingUpdate.entity.worldObj.getTotalWorldTime() ) {
-      try {
-        fieldpersistenceRequired.setBoolean(livingUpdate.entityLiving, false);
-        ent.getEntityData().removeTag(VirtualSpawnerBehaviour.KEY_DESPAWN_TIME);
-      } catch (Exception e) {
-        Log.warn("BlockPoweredSpawner.onLivingUpdate: Error occured allowing entity to despawn: " + e);
-        ent.getEntityData().removeTag(VirtualSpawnerBehaviour.KEY_DESPAWN_TIME);
-      }
-    }
+//
+//    Entity ent = livingUpdate.entityLiving;
+//    if(!ent.getEntityData().hasKey(VirtualSpawnerBehaviour.KEY_DESPAWN_TIME)) {
+//      return;
+//    }
+//    if(fieldpersistenceRequired == null) {
+//      ent.getEntityData().removeTag(VirtualSpawnerBehaviour.KEY_DESPAWN_TIME);
+//      return;
+//    }
+//
+//    long despawnTime = ent.getEntityData().getLong(VirtualSpawnerBehaviour.KEY_DESPAWN_TIME);    
+//    if(despawnTime <= livingUpdate.entity.worldObj.getTotalWorldTime() ) {
+//      try {
+//        fieldpersistenceRequired.setBoolean(livingUpdate.entityLiving, false);
+//        ent.getEntityData().removeTag(VirtualSpawnerBehaviour.KEY_DESPAWN_TIME);
+//      } catch (Exception e) {
+//        Log.warn("BlockPoweredSpawner.onLivingUpdate: Error occured allowing entity to despawn: " + e);
+//        ent.getEntityData().removeTag(VirtualSpawnerBehaviour.KEY_DESPAWN_TIME);
+//      }
+//    }
   }
 
 }

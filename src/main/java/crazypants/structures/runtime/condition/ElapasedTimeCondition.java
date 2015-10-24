@@ -2,6 +2,7 @@ package crazypants.structures.runtime.condition;
 
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.ICondition;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
 public class ElapasedTimeCondition implements ICondition {
@@ -13,26 +14,39 @@ public class ElapasedTimeCondition implements ICondition {
 
   private long conditionMetAtTime = -1;
 
-  public ElapasedTimeCondition() {
-    
+  public ElapasedTimeCondition() {    
   }
   
-  public ElapasedTimeCondition(ElapasedTimeCondition template, World world) {
+  public ElapasedTimeCondition(ElapasedTimeCondition template, World world, NBTTagCompound state) {
     initialTime = template.initialTime;
     minTime = template.minTime;
     maxTime = template.maxTime;
 
-    conditionMetAtTime = world.getTotalWorldTime();
-    if(initialTime >= 0) {
-      conditionMetAtTime += initialTime;
+    if(state != null && state.hasKey("conditionMetAtTime")) {
+      conditionMetAtTime = state.getLong("conditionMetAtTime");
     } else {
-      updateConditionTime(world);
+      conditionMetAtTime = world.getTotalWorldTime();
+      if(initialTime >= 0) {
+        conditionMetAtTime += initialTime;
+      } else {
+        updateConditionTime(world);
+      }
     }
+  }
+    
+  @Override
+  public NBTTagCompound getState() {
+    if(!persisted) {
+      return null;
+    }
+    NBTTagCompound res = new NBTTagCompound();
+    res.setLong("conditionMetAtTime", conditionMetAtTime);
+    return res;
   }
 
   @Override
-  public ICondition createPerStructureInstance(World world, IStructure structure) {
-    return new ElapasedTimeCondition(this, world);
+  public ICondition createInstance(World world, IStructure structure, NBTTagCompound state) {
+    return new ElapasedTimeCondition(this, world, state);
   }
 
   @Override
@@ -52,7 +66,7 @@ public class ElapasedTimeCondition implements ICondition {
     }
 
   }
-  
+
   public int getInitialTime() {
     return initialTime;
   }
@@ -84,7 +98,5 @@ public class ElapasedTimeCondition implements ICondition {
   public void setPersisted(boolean persisted) {
     this.persisted = persisted;
   }
-
-  
 
 }

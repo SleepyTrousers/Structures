@@ -29,11 +29,7 @@ public interface IStructure {
   Rotation getRotation();
   
   Collection<Point3i> getTaggedLocations(String target);
-  
-  NBTTagCompound getState();
-  
-  void setState(NBTTagCompound state);
-  
+
   //-- bounds
   
   Point3i getSize();
@@ -67,10 +63,13 @@ public interface IStructure {
   
   Point3i transformLocalToWorld(Point3i local);
 
+  //-- Runtime stuff
+  NBTTagCompound getState();
+  
   void onGenerated(World world);
   
-  void onLoaded(World world);
+  void onLoaded(World world, NBTTagCompound state);
   
-  void onUnloaded(World world);
+  NBTTagCompound onUnloaded(World world);
 
 }

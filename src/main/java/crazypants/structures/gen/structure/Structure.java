@@ -6,6 +6,7 @@ import java.util.Random;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.gen.IStructureTemplate;
 import crazypants.structures.api.gen.IWorldStructures;
+import crazypants.structures.api.runtime.IBehaviour;
 import crazypants.structures.api.util.BoundingCircle;
 import crazypants.structures.api.util.ChunkBounds;
 import crazypants.structures.api.util.Point3i;
@@ -20,19 +21,18 @@ import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 
 public class Structure implements IStructure {
-  
+
   private final Point3i origin;
   private final Rotation rotation;
   private final IStructureTemplate template;
 
-  private BoundingCircle bc; 
+  private BoundingCircle bc;
   private AxisAlignedBB bb;
   private Point3i size;
-  
-  private NBTTagCompound state;
-  
 
-  public Structure(Point3i origin, Rotation rotation, IStructureTemplate template) {    
+  private IBehaviour runtimeBehaviour;
+
+  public Structure(Point3i origin, Rotation rotation, IStructureTemplate template) {
     if(origin == null) {
       origin = new Point3i();
     }
@@ -42,60 +42,69 @@ public class Structure implements IStructure {
     } else {
       this.rotation = rotation;
     }
-    
     this.template = template;
     updateBounds();
   }
 
-  public Structure(NBTTagCompound root) {        
-    template = StructureGenRegister.instance.getStructureTemplate(root.getString("template"), true);      
+  public Structure(NBTTagCompound root) {
+    template = StructureGenRegister.instance.getStructureTemplate(root.getString("template"), true);
     origin = new Point3i(root.getInteger("x"), root.getInteger("y"), root.getInteger("z"));
-    rotation = Rotation.values()[MathHelper.clamp_int(root.getShort("rotation"), 0, Rotation.values().length - 1)];    
+    rotation = Rotation.values()[MathHelper.clamp_int(root.getShort("rotation"), 0, Rotation.values().length - 1)];
     updateBounds();
   }
-  
 
   @Override
   public void onGenerated(World world) {
     if(!isValid()) {
       return;
     }
-    state = new NBTTagCompound();
-    getTemplate().getBehaviour().onStructureGenerated(world, this);     
-  }
-  
-  @Override
-  public void onLoaded(World world) {
-    if(!isValid()) {
-      return;
-    }     
-    getTemplate().getBehaviour().onStructureLoaded(world, this);
+    runtimeBehaviour = getTemplate().getBehaviour().createInstance(world, this, null);
+    runtimeBehaviour.onStructureGenerated(world, this);
   }
 
   @Override
-  public void onUnloaded(World world) {
+  public void onLoaded(World world, NBTTagCompound state) {
     if(!isValid()) {
       return;
     }
-    getTemplate().getBehaviour().onStructureUnloaded(world, this);    
+
+    NBTTagCompound behavState = null;
+    if(state != null && state.hasKey("rootBehaviour")) {
+      behavState = state.getCompoundTag("rootBehaviour");
+    }
+    if(runtimeBehaviour == null) {
+      runtimeBehaviour = getTemplate().getBehaviour().createInstance(world, this, behavState);
+    }
+    runtimeBehaviour.onStructureLoaded(world, this, behavState);
   }
- 
+
+  @Override
+  public NBTTagCompound onUnloaded(World world) {
+    if(!isValid()) {
+      return null;
+    }
+    if(runtimeBehaviour != null) {
+      runtimeBehaviour.onStructureUnloaded(world, this);
+    }
+    NBTTagCompound res = getState();
+    runtimeBehaviour = null;
+    return res;
+
+  }
+
   @Override
   public NBTTagCompound getState() {
-    return state;
-  }
-  
-  @Override
-  public void setState(NBTTagCompound state) {    
-    if(state == null) {
-      this.state = new NBTTagCompound();
-    } else {
-      this.state = state;  
+    if(runtimeBehaviour == null) {
+      return null;
     }
-  }
-  
-  
-  
+    NBTTagCompound res = null;
+    NBTTagCompound behavState = runtimeBehaviour.getState();
+    if(behavState != null && !behavState.hasNoTags()) {
+      res = new NBTTagCompound();
+      res.setTag("rootBehaviour", behavState);
+    }
+    return res;
+  }  
 
   @Override
   public AxisAlignedBB getBounds() {
@@ -126,11 +135,11 @@ public class Structure implements IStructure {
       bc = new BoundingCircle(bb);
     }
   }
-  
+
   @Override
-  public int getSurfaceOffset() {    
+  public int getSurfaceOffset() {
     return template.getSurfaceOffset();
-  }  
+  }
 
   @Override
   public ChunkCoordIntPair getChunkCoord() {
@@ -158,7 +167,7 @@ public class Structure implements IStructure {
   }
 
   @Override
-  public boolean canSpanChunks() {    
+  public boolean canSpanChunks() {
     return template.getCanSpanChunks();
   }
 
@@ -166,7 +175,7 @@ public class Structure implements IStructure {
   public void build(World world, Random random, StructureBoundingBox bounds) {
     template.build(this, world, random, bounds);
   }
-  
+
   @Override
   public boolean getGenerationRequiresLoadedChunks() {
     return template.getGenerationRequiresLoadedChunks();
@@ -181,7 +190,7 @@ public class Structure implements IStructure {
   public BoundingCircle getBoundingCircle() {
     return bc;
   }
-  
+
   @Override
   public boolean isValid() {
     return origin != null && template != null && template.isValid();
@@ -193,8 +202,8 @@ public class Structure implements IStructure {
   }
 
   @Override
-  public String toString() {    
-    return "Structure [template=" + (template == null ? "null" : template.getUid()) + ", origin=" + origin + "]";    
+  public String toString() {
+    return "Structure [template=" + (template == null ? "null" : template.getUid()) + ", origin=" + origin + "]";
   }
 
   @Override
@@ -218,7 +227,7 @@ public class Structure implements IStructure {
   }
 
   @Override
-  public Point3i transformLocalToWorld(Point3i local) {  
+  public Point3i transformLocalToWorld(Point3i local) {
     return VecUtil.transformStructureCoodToWorld(this, local);
   }
 

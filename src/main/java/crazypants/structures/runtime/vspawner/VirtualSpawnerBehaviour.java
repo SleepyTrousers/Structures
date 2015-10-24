@@ -1,20 +1,17 @@
 package crazypants.structures.runtime.vspawner;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.IBehaviour;
 import crazypants.structures.api.runtime.ICondition;
 import crazypants.structures.api.util.Point3i;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
 public class VirtualSpawnerBehaviour implements IBehaviour {
+ 
+  private Point3i localPosition = new Point3i();
 
-  static final String KEY_DESPAWN_TIME = "VirtualSpawnerBehaviour_spawnTime";
-
-  private Point3i structureLocalPosition = new Point3i();
-
+//TODO: Allow for a list of entities
   private String entityTypeName = "Pig";
 
   private ICondition activeCondition;
@@ -30,36 +27,55 @@ public class VirtualSpawnerBehaviour implements IBehaviour {
   private boolean renderParticles = true;
 
   private boolean persistEntities = false;
-
-  //TODO: Allow for a list of entities
-
-  private Map<InstanceKey, VirtualSpawnerInstance> instances = new HashMap<InstanceKey, VirtualSpawnerInstance>();
-
-  public VirtualSpawnerBehaviour() {      
+  
+  
+  //-------------- runtime / per instance state
+  private final VirtualSpawnerInstance instance;
+ 
+  public VirtualSpawnerBehaviour() {   
+    this(null);
   }
+  
+  public VirtualSpawnerBehaviour(VirtualSpawnerInstance instance) {
+    this.instance = instance;
+  }
+
+
+  @Override
+  public NBTTagCompound getState() {  
+    if(instance != null) {
+      return instance.getState();
+    }
+    return null;
+  }
+
+  @Override
+  public IBehaviour createInstance(World world, IStructure structure, NBTTagCompound state) {      
+    Point3i worldPos = structure.transformLocalToWorld(localPosition);
+    VirtualSpawnerInstance ins = new VirtualSpawnerInstance(structure, this, world, worldPos, state);
+    return new VirtualSpawnerBehaviour(ins);
+  }
+
 
   @Override
   public void onStructureGenerated(World world, IStructure structure) {
-    onStructureLoaded(world, structure);
+    onStructureLoaded(world, structure, null);
   }
 
   @Override
-  public void onStructureLoaded(World world, IStructure structure) {
-    InstanceKey key = new InstanceKey(structure, this);
-    VirtualSpawnerInstance instance = new VirtualSpawnerInstance(structure, this, world, key.worldPos);
-    instances.put(key, instance);
-    instance.onLoad();
+  public void onStructureLoaded(World world, IStructure structure, NBTTagCompound state) {
+    if(instance != null) {
+      instance.onLoad();      
+    }
   }
 
   @Override
   public void onStructureUnloaded(World world, IStructure structure) {
-    InstanceKey key = new InstanceKey(structure, this);
-    VirtualSpawnerInstance instance = instances.get(key);
     if(instance != null) {
       instance.onUnload();
-      instances.remove(key);
-    }
+    }    
   }
+  
 
   public ICondition getActiveCondition() {
     return activeCondition;
@@ -78,11 +94,11 @@ public class VirtualSpawnerBehaviour implements IBehaviour {
   }
 
   public Point3i getStructureLocalPosition() {
-    return structureLocalPosition;
+    return localPosition;
   }
 
   public void setStructureLocalPosition(Point3i structureLocalPosition) {
-    this.structureLocalPosition = structureLocalPosition;
+    this.localPosition = structureLocalPosition;
   }
 
   public String getEntityTypeName() {
@@ -125,14 +141,6 @@ public class VirtualSpawnerBehaviour implements IBehaviour {
     this.useVanillaSpawnChecks = useVanillaSpawnChecks;
   }
 
-  //  public int getDespawnTimeSeconds() {
-  //    return despawnTimeSeconds;
-  //  }
-  //
-  //  public void setDespawnTimeSeconds(int despawnTimeSeconds) {
-  //    this.despawnTimeSeconds = despawnTimeSeconds;
-  //  }
-
   public boolean isRenderParticles() {
     return renderParticles;
   }
@@ -147,49 +155,6 @@ public class VirtualSpawnerBehaviour implements IBehaviour {
 
   public void setPersistEntities(boolean persistEntities) {
     this.persistEntities = persistEntities;
-  }
-
-  private static class InstanceKey {
-
-    private final String structureUid;
-    private final Point3i worldPos;
-
-    public InstanceKey(IStructure s, VirtualSpawnerBehaviour b) {
-      structureUid = s.getUid();
-      worldPos = s.transformLocalToWorld(b.structureLocalPosition);
-    }
-
-    @Override
-    public int hashCode() {
-      final int prime = 31;
-      int result = 1;
-      result = prime * result + ((structureUid == null) ? 0 : structureUid.hashCode());
-      result = prime * result + ((worldPos == null) ? 0 : worldPos.hashCode());
-      return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-      if(this == obj)
-        return true;
-      if(obj == null)
-        return false;
-      if(getClass() != obj.getClass())
-        return false;
-      InstanceKey other = (InstanceKey) obj;
-      if(structureUid == null) {
-        if(other.structureUid != null)
-          return false;
-      } else if(!structureUid.equals(other.structureUid))
-        return false;
-      if(worldPos == null) {
-        if(other.worldPos != null)
-          return false;
-      } else if(!worldPos.equals(other.worldPos))
-        return false;
-      return true;
-    }
-
   }
 
 }

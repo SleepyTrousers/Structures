@@ -2,6 +2,7 @@ package crazypants.structures.runtime.condition;
 
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.ICondition;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
 public class TickCountCondition implements ICondition {
@@ -12,20 +13,34 @@ public class TickCountCondition implements ICondition {
   private boolean persisted = false;
   private int ticksUntilConditionMet = 0;
 
-  public TickCountCondition() {    
+  public TickCountCondition() {
   }
-  
-  public TickCountCondition(TickCountCondition template, World world) {
+
+  public TickCountCondition(TickCountCondition template, World world, NBTTagCompound state) {
     initialCount = template.initialCount;
     minCount = template.minCount;
     maxCount = template.maxCount;
     persisted = template.persisted;
 
-    if(initialCount >= 0) {
-      ticksUntilConditionMet = initialCount;
+    if(state != null && state.hasKey("ticksUntilConditionMet")) {
+      ticksUntilConditionMet = state.getInteger("ticksUntilConditionMet");
     } else {
-      updateRemainingTicks(world);
+      if(initialCount >= 0) {
+        ticksUntilConditionMet = initialCount;
+      } else {
+        updateRemainingTicks(world);
+      }
     }
+  }
+
+  @Override
+  public NBTTagCompound getState() {    
+    if(!persisted) {
+      return null;
+    }
+    NBTTagCompound res = new NBTTagCompound();
+    res.setInteger("ticksUntilConditionMet", ticksUntilConditionMet);
+    return res;
   }
 
   private void updateRemainingTicks(World world) {
@@ -36,8 +51,8 @@ public class TickCountCondition implements ICondition {
   }
 
   @Override
-  public ICondition createPerStructureInstance(World world, IStructure structure) {
-    return new TickCountCondition(this, world);
+  public ICondition createInstance(World world, IStructure structure, NBTTagCompound state) {
+    return new TickCountCondition(this, world, state);
   }
 
   @Override

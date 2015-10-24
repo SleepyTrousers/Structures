@@ -13,6 +13,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
 public class VirtualSpawnerInstance {
@@ -28,22 +29,24 @@ public class VirtualSpawnerInstance {
 
   private int remainingSpawnTries;
 
-  private boolean registered = false;
-
   private ICondition activeCondition;
   private ICondition spawnCondition;
 
-  public VirtualSpawnerInstance(IStructure structure, VirtualSpawnerBehaviour behaviour, World world, Point3i worldPos) {
+  private boolean registered = false;
+  
+  public VirtualSpawnerInstance(IStructure structure, VirtualSpawnerBehaviour behaviour, World world, Point3i worldPos, NBTTagCompound state) {
     this.structure = structure;
     this.behaviour = behaviour;
-    this.world = world;
-    this.worldPos = worldPos;
+    this.world = world;    
+    this.worldPos = worldPos;        
 
     if(behaviour.getActiveCondition() != null) {
-      activeCondition = behaviour.getActiveCondition().createPerStructureInstance(world, structure);
+      NBTTagCompound conState = state == null ? null : state.getCompoundTag("activeCondition");
+      activeCondition = behaviour.getActiveCondition().createInstance(world, structure, conState);
     }
     if(behaviour.getSpawnCondition() != null) {
-      spawnCondition = behaviour.getSpawnCondition().createPerStructureInstance(world, structure);
+      NBTTagCompound conState = state == null ? null : state.getCompoundTag("spawnCondition");
+      spawnCondition = behaviour.getSpawnCondition().createInstance(world, structure, conState);
     }
   }
 
@@ -55,7 +58,10 @@ public class VirtualSpawnerInstance {
   }
 
   public void onUnload() {
-    FMLCommonHandler.instance().bus().unregister(this);
+    if(registered) {
+      FMLCommonHandler.instance().bus().unregister(this);
+      registered = false;
+    }
   }
 
   @SubscribeEvent
@@ -136,6 +142,22 @@ public class VirtualSpawnerInstance {
       res.func_110163_bv();
     }
     return res;
+  }
+
+  public NBTTagCompound getState() {
+    
+    NBTTagCompound res = new NBTTagCompound();
+    
+    NBTTagCompound acs = activeCondition.getState();
+    if(acs != null && !acs.hasNoTags()) {
+      res.setTag("activeCondition", acs);  
+    }
+    
+    NBTTagCompound scs = spawnCondition.getState();
+    if(scs != null && !scs.hasNoTags()) {
+      res.setTag("spawnCondition", scs);  
+    }        
+    return res.hasNoTags() ? null : res;
   }
 
 }

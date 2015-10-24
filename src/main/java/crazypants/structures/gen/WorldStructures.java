@@ -105,7 +105,22 @@ public class WorldStructures implements IWorldStructures {
 
   @Override
   public int getStructureCount() {
-    return structures.size();
+    int res = 0;    
+    for(List<IStructure> str : structures.values()) {
+      if(str != null) {
+        res += str.size();
+      }
+    }
+    return res;
+  }
+  
+  public boolean contains(IStructure structure) {
+    for(List<IStructure> str : structures.values()) {
+      if(str != null && str.contains(structure)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public void writeToNBT(NBTTagCompound root) {
@@ -152,5 +167,7 @@ public class WorldStructures implements IWorldStructures {
     writeToNBT(root);
     WorldData.INSTANCE.saveNBT(structFile, root);
   }
+
+  
 
 }

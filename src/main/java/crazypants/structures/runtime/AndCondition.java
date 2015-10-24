@@ -6,6 +6,8 @@ import java.util.List;
 
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.ICondition;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 
 public class AndCondition implements ICondition {
@@ -29,10 +31,44 @@ public class AndCondition implements ICondition {
   }
   
   @Override
-  public ICondition createPerStructureInstance(World world, IStructure structure) {
-    AndCondition res = new AndCondition();
+  public NBTTagCompound getState() {    
+    NBTTagList childStates = new NBTTagList();
     for(ICondition con : conditions) {
-      res.addCondition(con.createPerStructureInstance(world, structure));
+      NBTTagCompound conState = con.getState();
+      if(conState != null) {
+        childStates.appendTag(conState);
+      }
+    }
+    
+    if(childStates.tagCount() <= 0) {
+      return null;
+    }    
+    NBTTagCompound res = new NBTTagCompound();
+    res.setTag("childStates", childStates);
+    return res;
+    
+  }
+  
+  @Override
+  public ICondition createInstance(World world, IStructure structure, NBTTagCompound state) {
+    
+    NBTTagList childStates; 
+    if(state != null && state.hasKey("childStates")) {
+      childStates = (NBTTagList)state.getTag("childStates");
+    } else {
+      childStates = new NBTTagList();
+    }
+    
+    AndCondition res = new AndCondition();
+    int index = 0;
+    for(ICondition con : conditions) {
+      NBTTagCompound childState = null;
+      if(childStates.tagCount() > index) {
+        childState = childStates.getCompoundTagAt(index);
+      }
+      res.addCondition(con.createInstance(world, structure, childState));
+      
+      ++index;
     }
     return res;
   }
@@ -46,5 +82,7 @@ public class AndCondition implements ICondition {
     }
     return true;
   }
+
+  
 
 }

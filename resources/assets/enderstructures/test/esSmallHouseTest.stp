@@ -78,7 +78,7 @@
                                                        "initialCount" : 10, 
                                                        "minCount" : 100, 
                                                        "maxCount" : 200,
-                                                       "persisted" : false },
+                                                       "persisted" : true },
                                                        
                                              {"type" : "MaxEntitiesInRange", 
                                                        "maxEntities" : 8, 

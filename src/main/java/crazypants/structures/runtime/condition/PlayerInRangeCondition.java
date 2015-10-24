@@ -1,15 +1,14 @@
 package crazypants.structures.runtime.condition;
 
 import crazypants.structures.api.gen.IStructure;
-import crazypants.structures.api.runtime.ICondition;
 import crazypants.structures.api.util.Point3i;
 import net.minecraft.world.World;
 
-public class PlayerInRangeCondition implements ICondition {
+public class PlayerInRangeCondition extends StatelessCondition {
 
   private int distance = 32;
   private Point3i localPos = new Point3i();
-  
+    
   public int getRange() {
     return distance;
   }
@@ -24,11 +23,6 @@ public class PlayerInRangeCondition implements ICondition {
 
   public void setLocalPos(Point3i localPos) {
     this.localPos = localPos;
-  }
-
-  @Override
-  public ICondition createPerStructureInstance(World world, IStructure structure) {
-    return this;
   }
 
   @Override

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import crazypants.structures.api.gen.IStructure;
-import crazypants.structures.api.runtime.ICondition;
 import crazypants.structures.api.util.Point3i;
 import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
@@ -13,7 +12,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
-public class MaxEntitiesInRangeCondition implements ICondition {
+public class MaxEntitiesInRangeCondition extends StatelessCondition {
 
   private int maxEntities = 10;
   private int range = 32;
@@ -23,10 +22,22 @@ public class MaxEntitiesInRangeCondition implements ICondition {
   private List<String> ents = new ArrayList<String>();
 
   @Override
-  public ICondition createPerStructureInstance(World world, IStructure structure) {
-    return this;
-  }
+  public boolean isConditionMet(World world, IStructure structure) {
+    if(range <= 0) {
+      return true;
+    }
 
+    Point3i worldPos = structure.transformLocalToWorld(localPos);
+    int nearbyEntities = world.selectEntitiesWithinAABB(EntityLiving.class,
+        AxisAlignedBB.getBoundingBox(
+            worldPos.x - range, worldPos.y - range, worldPos.z - range,
+            worldPos.x + range, worldPos.y + range, worldPos.z + range),
+        selector)
+        .size();
+
+    return nearbyEntities < maxEntities;
+  }
+  
   public int getMaxEntities() {
     return maxEntities;
   }
@@ -57,24 +68,6 @@ public class MaxEntitiesInRangeCondition implements ICondition {
 
   public void setEntities(List<String> ents) {
     this.ents = ents;
-  }
-
-  @Override
-  public boolean isConditionMet(World world, IStructure structure) {
-
-    if(range <= 0) {
-      return true;
-    }
-
-    Point3i worldPos = structure.transformLocalToWorld(localPos);
-    int nearbyEntities = world.selectEntitiesWithinAABB(EntityLiving.class,
-        AxisAlignedBB.getBoundingBox(
-            worldPos.x - range, worldPos.y - range, worldPos.z - range,
-            worldPos.x + range, worldPos.y + range, worldPos.z + range),
-        selector)
-        .size();
-
-    return nearbyEntities < maxEntities;
   }
 
   private class Selector implements IEntitySelector {
