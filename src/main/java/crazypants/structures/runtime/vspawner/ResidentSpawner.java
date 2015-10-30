@@ -12,6 +12,7 @@ import crazypants.structures.api.util.Point3i;
 import crazypants.structures.runtime.EntityUtil;
 import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.nbt.NBTTagCompound;
@@ -167,10 +168,14 @@ public class ResidentSpawner implements IBehaviour {
     EntityLiving res = (EntityLiving) ent;
     res.func_110163_bv(); //persist  
     res.getEntityData().setInteger("residentId", residentId);
+        
+    Point3i worldPos = structure.transformLocalToWorld(localPos);
+    if(res instanceof EntityCreature) {
+      EntityCreature creature = (EntityCreature)res;
+      creature.setHomeArea(worldPos.x, worldPos.y, worldPos.z, homeRadius - 1);
+    }    
     return res;
   }
-  
-  
 
   public String getEntity() {
     return entity;
