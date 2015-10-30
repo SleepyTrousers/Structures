@@ -36,6 +36,7 @@ import crazypants.structures.runtime.condition.ElapasedTimeCondition;
 import crazypants.structures.runtime.condition.MaxEntitiesInRangeCondition;
 import crazypants.structures.runtime.condition.PlayerInRangeCondition;
 import crazypants.structures.runtime.condition.TickCountCondition;
+import crazypants.structures.runtime.vspawner.ResidentSpawner;
 import crazypants.structures.runtime.vspawner.VirtualSpawnerBehaviour;
 import net.minecraft.block.Block;
 import net.minecraftforge.common.BiomeDictionary;
@@ -61,6 +62,7 @@ public class DefaultParsers {
     add(new MaxEntitiesInRangeFact());
     add(new ElapasedTimeConditionFact());
     add(new TickCountConditionFact());
+    add(new ResidentSpawnerFact());
   }
 
   private static void add(AbstractSingleParserFactory fact) {
@@ -274,18 +276,17 @@ public class DefaultParsers {
       }
       res.setEntityTypeName(entStr);
       res.setNumberSpawned(JsonUtil.getIntField(json, "numSpawned", res.getNumberSpawned()));
-      res.setSpawnRange(JsonUtil.getIntField(json, "spawnRange", res.getSpawnRange()));      
+      res.setSpawnRange(JsonUtil.getIntField(json, "spawnRange", res.getSpawnRange()));
       res.setPersistEntities(JsonUtil.getBooleanField(json, "persistEntities", res.isPersistEntities()));
       res.setUseVanillaSpawnChecks(JsonUtil.getBooleanField(json, "useVanillaSpawnChecks", res.isUseVanillaSpawnChecks()));
       res.setRenderParticles(JsonUtil.getBooleanField(json, "renderParticles", res.isRenderParticles()));
       res.setStructureLocalPosition(JsonUtil.getPoint3iField(json, "position", res.getStructureLocalPosition()));
 
-      
-      ICondition con = createCondition(json, "activeCondition");
+      ICondition con = parseCondition(json, "activeCondition");
       if(con != null) {
         res.setActiveCondition(con);
       }
-      con = createCondition(json, "spawnCondition");
+      con = parseCondition(json, "spawnCondition");
       if(con != null) {
         res.setSpawnCondition(con);
       }
@@ -293,13 +294,14 @@ public class DefaultParsers {
       return res;
     }
 
-    private ICondition createCondition(JsonObject json, String f) {
+    private ICondition parseCondition(JsonObject json, String f) {
       TypedObject obj = JsonUtil.getTypedObjectField(json, f);
       if(obj != null) {
-        return ParserRegister.instance.createCondition(obj.type, obj.obj);        
+        return ParserRegister.instance.createCondition(obj.type, obj.obj);
       }
       return null;
     }
+
   }
 
   //-----------------------------------------------------------------
@@ -404,7 +406,7 @@ public class DefaultParsers {
     public ICondition createCondition(String uid, JsonObject json) {
       MaxEntitiesInRangeCondition con = new MaxEntitiesInRangeCondition();
       con.setMaxEntities(JsonUtil.getIntField(json, "maxEntities", con.getMaxEntities()));
-      con.setRange(JsonUtil.getIntField(json, "range", con.getRange()));      
+      con.setRange(JsonUtil.getIntField(json, "range", con.getRange()));
       Point3i pos = JsonUtil.getPoint3iField(json, "position", null);
       if(pos != null) {
         con.setLocalPos(pos);
@@ -412,11 +414,11 @@ public class DefaultParsers {
       List<String> ents = JsonUtil.getStringArrayField(json, "entities");
       if(ents != null) {
         con.setEntities(ents);
-      }      
+      }
       return con;
     }
   }
-  
+
   //-----------------------------------------------------------------
   static class ElapasedTimeConditionFact extends AbstractSingleParserFactory {
 
@@ -430,11 +432,11 @@ public class DefaultParsers {
       con.setInitialTime(JsonUtil.getIntField(json, "initialTime", con.getInitialTime()));
       con.setMinTime(JsonUtil.getIntField(json, "minTime", con.getMinTime()));
       con.setMaxTime(JsonUtil.getIntField(json, "maxTime", con.getMaxTime()));
-      con.setPersisted(JsonUtil.getBooleanField(json, "persisted", con.isPersisted()));            
+      con.setPersisted(JsonUtil.getBooleanField(json, "persisted", con.isPersisted()));
       return con;
     }
   }
-  
+
   //TickCountCondition
   //-----------------------------------------------------------------
   static class TickCountConditionFact extends AbstractSingleParserFactory {
@@ -449,8 +451,41 @@ public class DefaultParsers {
       con.setInitialCount(JsonUtil.getIntField(json, "initialCount", con.getInitialCount()));
       con.setMinCount(JsonUtil.getIntField(json, "minCount", con.getMinCount()));
       con.setMaxCount(JsonUtil.getIntField(json, "maxCount", con.getMaxCount()));
-      con.setPersisted(JsonUtil.getBooleanField(json, "persisted", con.isPersisted()));            
+      con.setPersisted(JsonUtil.getBooleanField(json, "persisted", con.isPersisted()));
       return con;
     }
+  }
+
+  //TickCountCondition
+  //-----------------------------------------------------------------
+  static class ResidentSpawnerFact extends AbstractSingleParserFactory {
+
+    ResidentSpawnerFact() {
+      super("ResidentSpawner");
+    }
+
+    @Override
+    public IBehaviour createBehaviour(String uid, JsonObject json) {
+      ResidentSpawner res = new ResidentSpawner();
+      res.setEntity(JsonUtil.getStringField(json, "entity", res.getEntity()));
+      res.setNumSpawned(JsonUtil.getIntField(json, "numSpawned", res.getNumSpawned()));
+      res.setRespawnRate(JsonUtil.getIntField(json, "respawnRate", res.getNumSpawned()));
+      res.setRespawnRate(JsonUtil.getIntField(json, "homeRadius", res.getHomeRadius()));
+      res.setLocalPos(JsonUtil.getPoint3iField(json, "position", res.getLocalPos()));
+      ICondition con = parseCondition(json, "preCondition");
+      if(con != null) {
+        res.setPreCondition(con);
+      }
+      return res;      
+    }
+
+    private ICondition parseCondition(JsonObject json, String f) {
+      TypedObject obj = JsonUtil.getTypedObjectField(json, f);
+      if(obj != null) {
+        return ParserRegister.instance.createCondition(obj.type, obj.obj);
+      }
+      return null;
+    }
+
   }
 }

@@ -1,7 +1,10 @@
 package crazypants.structures.gen;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
@@ -69,8 +72,11 @@ public class WorldGenerator implements IWorldGenerator {
       long zSeed = fmlRandom.nextLong() >> 2 + 1L;
       long chunkSeed = (xSeed * chunkX + zSeed * chunkZ) ^ worldSeed;
 
+      //TODO: Round robin?
+      List<IStructureGenerator> shuffledGens = new ArrayList<IStructureGenerator>(StructureGenRegister.instance.getGenerators());
+      Collections.shuffle(shuffledGens);
       IWorldStructures worldStructs = EnderStructures.structureRegister.getStructuresForWorld(world);
-      for (IStructureGenerator generator : StructureGenRegister.instance.getGenerators()) {
+      for (IStructureGenerator generator : shuffledGens) {
         Random r = new Random(chunkSeed ^ generator.getUid().hashCode());
         Collection<IStructure> generatedStructs = generator.generate(worldStructs, r, chunkX, chunkZ, world, chunkGenerator, chunkProvider);
         if(generatedStructs != null) {          

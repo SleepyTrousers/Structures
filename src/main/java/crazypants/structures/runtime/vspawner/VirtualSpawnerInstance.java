@@ -9,10 +9,10 @@ import crazypants.structures.PacketHandler;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.ICondition;
 import crazypants.structures.api.util.Point3i;
+import crazypants.structures.runtime.EntityUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
@@ -109,7 +109,7 @@ public class VirtualSpawnerInstance {
       double z = worldPos.z + (world.rand.nextDouble() - world.rand.nextDouble()) * spawnRange;
       entityliving.setLocationAndAngles(x, y, z, world.rand.nextFloat() * 360.0F, 0.0F);
 
-      if(canSpawnEntity(entityliving)) {
+      if(EntityUtil.canSpawnEntity(world, entityliving, behaviour.isUseVanillaSpawnChecks())) {
         entityliving.onSpawnWithEgg(null);
         world.spawnEntityInWorld(entityliving);
         //world.playAuxSFX(2004, worldPos.x, worldPos.y, worldPos.z, 0);
@@ -119,17 +119,6 @@ public class VirtualSpawnerInstance {
     }
 
     return false;
-  }
-
-  protected boolean canSpawnEntity(EntityLiving entityliving) {
-    boolean spaceClear = world.checkNoEntityCollision(entityliving.boundingBox)
-        && world.getCollidingBoundingBoxes(entityliving, entityliving.boundingBox).isEmpty()
-        && (!world.isAnyLiquid(entityliving.boundingBox) || entityliving.isCreatureType(EnumCreatureType.waterCreature, false));
-    if(spaceClear && behaviour.isUseVanillaSpawnChecks()) {
-      //Full checks for lighting, dimension etc 
-      spaceClear = entityliving.getCanSpawnHere();
-    }
-    return spaceClear;
   }
 
   EntityLiving createEntity() {

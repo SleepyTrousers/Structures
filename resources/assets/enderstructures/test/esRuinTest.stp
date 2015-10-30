@@ -69,6 +69,19 @@
            ]
         }
                 
-      ]
+      ],
+      
+      "behaviours" : [
+           
+           { "type": "ResidentSpawner",
+                     "entity" : "PigZombie",
+                     "numSpawned" : 4,                    
+                     "spawnRange" : 4,
+                     "respawnRate" : 2500,
+                     "homeRadius" : 64,
+                     "position" : [2, 8, 2],
+                     "preCondition" : {"type" : "PlayerInRange", "range" : 32, "position" : [2,8,2]  }
+           }
+         ]
     }
 }
