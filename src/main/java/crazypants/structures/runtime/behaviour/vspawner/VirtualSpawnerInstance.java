@@ -1,4 +1,4 @@
-package crazypants.structures.runtime.vspawner;
+package crazypants.structures.runtime.behaviour.vspawner;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;

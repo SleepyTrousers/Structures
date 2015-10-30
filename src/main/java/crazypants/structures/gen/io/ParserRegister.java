@@ -159,7 +159,7 @@ public class ParserRegister {
     return (T) nullFactory;
   }
 
-  private class NullFactory extends ParserFactoryAdapater {
+  private class NullFactory extends ParserAdapater {
 
     private NullFactory() {
       super(null);

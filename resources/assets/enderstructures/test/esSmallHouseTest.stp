@@ -93,9 +93,31 @@
                                             ]
                                          }
                       
-             }
+           },
              
-       
+           { "type": "ServerTickBehaviour",
+                     "executionInterval" : 20,
+                     "condition" : { "type" : "AndCondition",
+                                              "conditions" : [
+                                               {"type" : "PlayerInRange", 
+                                                         "range" : 32, 
+                                                         "position" : [2,1,2]  },
+                                               {"type" : "ElapasedTimeCondition", 
+                                                         "initialTime" : 10, 
+                                                         "minTime" : 200, 
+                                                         "maxTime" : 300,
+                                                         "persisted" : true }
+                                              ]
+                                 },
+                                   
+                      "action" : {"type" : "ExecuteCommand", 
+                                           "position" : [2,10,2],
+                                           "commands" : [
+                                               "effect @a[r=32] 1 5",
+                                               "summon Fireball ~ ~ ~ {direction:[0.0,-4.0,0.0]}"
+                                           ]                                 
+                                 }          
+          }                            
        ]
        
     }

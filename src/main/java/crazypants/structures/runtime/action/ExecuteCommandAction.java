@@ -18,14 +18,6 @@ import net.minecraft.world.World;
 
 public class ExecuteCommandAction implements IAction {
 
-  
-//String  str = "tellraw @a [[[[\"The \"],[[\"quick \",\"brown \"],[{selector:\"@p\"},\" jumps \"],\"over \"],\"the \"],[\"lazy \",\"dog.\"]]]";      
-//str = "say cheese";      
-//str = "summon LightningBolt ~-10 ~ ~";
-//str = "summon Creeper ~ ~ ~ {powered:1,CustomName:Powered Creeper}";
-  
-  //private String command = "summon Creeper ~ ~ ~ {powered:1,CustomName:John}";
-  //private String command = null;
   private List<String> commands = new ArrayList<String>();
   private Point3i position = new Point3i();
   private String chat = "What is this for?";
@@ -55,10 +47,7 @@ public class ExecuteCommandAction implements IAction {
       ICommandManager icommandmanager = minecraftserver.getCommandManager();
       for(String cmd : commands) {
         icommandmanager.executeCommand(sender, cmd);
-      }
-      //icommandmanager.executeCommand(new InnerSender(world, structure, wp, chat), command);
-      //icommandmanager.executeCommand(new InnerSender(world, structure, wp, chat), "summon Fireball ~ ~ ~ {direction:[0.0,-4.0,0.0]}");      
-      //summon Fireball ~ ~ ~ {direction:[0.0,0.0,0.0]}
+      }     
     }
   }
   

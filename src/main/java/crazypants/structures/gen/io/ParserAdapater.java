@@ -19,11 +19,11 @@ import crazypants.structures.api.runtime.IAction;
 import crazypants.structures.api.runtime.IBehaviour;
 import crazypants.structures.api.runtime.ICondition;
 
-public abstract class ParserFactoryAdapater implements ISiteValidatorParser, IChunkValidatorParser, ILocationSamplerParser, ISitePreperationParser, IDecoratorParser, IBehaviourParser, IConditionParser, IActionParser  {
+public abstract class ParserAdapater implements ISiteValidatorParser, IChunkValidatorParser, ILocationSamplerParser, ISitePreperationParser, IDecoratorParser, IBehaviourParser, IConditionParser, IActionParser  {
 
   private final String uid;
 
-  protected ParserFactoryAdapater(String uid) {    
+  protected ParserAdapater(String uid) {    
     this.uid = uid;
   }
 

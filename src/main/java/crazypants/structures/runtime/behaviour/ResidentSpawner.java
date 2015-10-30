@@ -1,8 +1,7 @@
-package crazypants.structures.runtime.vspawner;
+package crazypants.structures.runtime.behaviour;
 
 import java.util.List;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
 import crazypants.structures.api.gen.IStructure;
@@ -20,7 +19,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
-public class ResidentSpawner implements IBehaviour {
+public class ResidentSpawner extends AbstractEventBehaviour {
 
   //template variables
   private String entity = "";
@@ -36,7 +35,6 @@ public class ResidentSpawner implements IBehaviour {
   private World world;
   private IStructure structure;
   private long lastTimePresent = -1;
-  private boolean registered = false;
   private int residentId = -1;
 
   private ICondition preCondition;
@@ -46,7 +44,10 @@ public class ResidentSpawner implements IBehaviour {
   }
 
   public ResidentSpawner(ResidentSpawner template, World world, IStructure structure, NBTTagCompound state) {
-    this();
+    
+    this.world = world;
+    this.structure = structure;
+    
     entity = template.entity;
     respawnRate = template.respawnRate;
     checkPeriod = respawnRate / 10;
@@ -55,17 +56,13 @@ public class ResidentSpawner implements IBehaviour {
     numToSpawn = template.numToSpawn;
     spawnRange = template.spawnRange;
 
-    if(template.getPreCondition() != null) {
-      NBTTagCompound subState = state == null ? null : state.getCompoundTag("preCondition");
-      preCondition = template.getPreCondition().createInstance(world, structure, subState);
+    if(template.getPreCondition() != null) {      
+      preCondition = template.getPreCondition().createInstance(world, structure, getSubState(state, "preCondition"));
     }
-    if(template.getOnSpawnAction() != null) {
-      NBTTagCompound subState = state == null ? null : state.getCompoundTag("onSpawnAction");
-      onSpawnAction = template.getOnSpawnAction().createInstance(world, structure, subState);
+    if(template.getOnSpawnAction() != null) {      
+      onSpawnAction = template.getOnSpawnAction().createInstance(world, structure,getSubState(state, "onSpawnAction"));
     }
 
-    this.world = world;
-    this.structure = structure;
     if(state != null) {
       if(state.hasKey("lastTimePresent")) {
         lastTimePresent = state.getLong("lastTimePresent");
@@ -91,44 +88,18 @@ public class ResidentSpawner implements IBehaviour {
     }
     if(residentId >= 0) {
       res.setLong("residentId", residentId);
-    }
-    if(preCondition != null) {
-      NBTTagCompound acs = preCondition.getState();
-      if(acs != null && !acs.hasNoTags()) {
-        res.setTag("preCondition", acs);
-      }
-    }
-    NBTTagCompound scs = onSpawnAction.getState();
-    if(scs != null && !scs.hasNoTags()) {
-      res.setTag("onSpawnAction", scs);
-    }
+    }    
+    addSubState(res, "preCondition", preCondition);
+    addSubState(res, "onSpawnAction", onSpawnAction);       
     return res.hasNoTags() ? null : res;
 
   }
 
   @Override
   public void onStructureGenerated(World world, IStructure structure) {
+    super.onStructureGenerated(world, structure);
     residentId = world.rand.nextInt(Integer.MAX_VALUE);
-    spawnResidents(numToSpawn);
-    onStructureLoaded(world, structure, null);
-  }
-
-  @Override
-  public void onStructureLoaded(World world, IStructure structure, NBTTagCompound state) {
-    if(!registered) {
-      FMLCommonHandler.instance().bus().register(this);
-      registered = true;
-    }
-
-  }
-
-  @Override
-  public void onStructureUnloaded(World world, IStructure structure) {
-    if(registered) {
-      FMLCommonHandler.instance().bus().unregister(this);
-      registered = false;
-    }
-
+    spawnResidents(numToSpawn);    
   }
 
   @SubscribeEvent

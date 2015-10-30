@@ -1,4 +1,4 @@
-package crazypants.structures.runtime.vspawner;
+package crazypants.structures.runtime.behaviour.vspawner;
 
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.IBehaviour;

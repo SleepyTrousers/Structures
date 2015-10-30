@@ -31,6 +31,9 @@ import crazypants.structures.gen.structure.validator.biome.BiomeFilterAll;
 import crazypants.structures.gen.structure.validator.biome.BiomeFilterAny;
 import crazypants.structures.gen.structure.validator.biome.IBiomeFilter;
 import crazypants.structures.runtime.action.ExecuteCommandAction;
+import crazypants.structures.runtime.behaviour.ResidentSpawner;
+import crazypants.structures.runtime.behaviour.ServerTickBehaviour;
+import crazypants.structures.runtime.behaviour.vspawner.VirtualSpawnerBehaviour;
 import crazypants.structures.runtime.condition.AndCondition;
 import crazypants.structures.runtime.condition.BlockExistsCondition;
 import crazypants.structures.runtime.condition.ElapasedTimeCondition;
@@ -38,8 +41,6 @@ import crazypants.structures.runtime.condition.MaxEntitiesInRangeCondition;
 import crazypants.structures.runtime.condition.OrCondition;
 import crazypants.structures.runtime.condition.PlayerInRangeCondition;
 import crazypants.structures.runtime.condition.TickCountCondition;
-import crazypants.structures.runtime.vspawner.ResidentSpawner;
-import crazypants.structures.runtime.vspawner.VirtualSpawnerBehaviour;
 import net.minecraft.block.Block;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.BiomeDictionary.Type;
@@ -47,35 +48,50 @@ import net.minecraftforge.common.BiomeDictionary.Type;
 public class DefaultParsers {
 
   public static void register() {
-    add(new SurfaceSamplerFact());
-    add(new RandomValFac());
-    add(new DimValFact());
-    add(new SpacingValFact());
-    add(new LevGrndFact());
-    add(new BiomeValFact());
-    add(new FillPrepFact());
-    add(new ClearPrepFact());
+  
+    //Location samplers
+    add(new SurfaceSamplerParser());
+    
+    //validators
+    add(new RandomValParser());
+    add(new DimValParser());
+    add(new SpacingValParser());    
+    add(new LevGrnValdParser());
+    add(new BiomeValParser());
+    
+    //site preps
+    add(new FillPrepParser());
+    add(new ClearPrepParser());
+    
+    //Decorators
     add(new LootTableDecFact());
-    add(new VirtualSpawnerFact());
-    add(new AndConditionFact());
-    add(new OrConditionFact());
-    add(new BlockExistsConditionFact());
-    add(new PlayerInRangeConditionFact());
-    add(new MaxEntitiesInRangeFact());
-    add(new ElapasedTimeConditionFact());
-    add(new TickCountConditionFact());
-    add(new ResidentSpawnerFact());
-    add(new ExecuteCommandFact());
+    
+    //behaviours
+    add(new ResidentSpawnerParser());
+    add(new VirtualSpawnerParser());
+    add(new ServerTickBehaviourParser());
+    
+    //conditions
+    add(new AndConditionParser());
+    add(new OrConditionParser());
+    add(new BlockExistsConditionParser());
+    add(new PlayerInRangeConditionParser());
+    add(new MaxEntitiesInRangeParser());
+    add(new ElapasedTimeConditionParser());
+    add(new TickCountConditionParser());
+    
+    //actions
+    add(new ExecuteCommandParser());
   }
 
-  private static void add(ParserFactoryAdapater fact) {
+  private static void add(ParserAdapater fact) {
     ParserRegister.instance.register(fact);
   }
 
   //-----------------------------------------------------------------
-  static class SurfaceSamplerFact extends ParserFactoryAdapater {
+  static class SurfaceSamplerParser extends ParserAdapater {
 
-    SurfaceSamplerFact() {
+    SurfaceSamplerParser() {
       super("SurfaceSampler");
     }
 
@@ -90,8 +106,8 @@ public class DefaultParsers {
   }
 
   //-----------------------------------------------------------------
-  static class RandomValFac extends ParserFactoryAdapater {
-    RandomValFac() {
+  static class RandomValParser extends ParserAdapater {
+    RandomValParser() {
       super("RandomValidator");
     }
 
@@ -105,9 +121,9 @@ public class DefaultParsers {
   }
 
   //-----------------------------------------------------------------
-  static class DimValFact extends ParserFactoryAdapater {
+  static class DimValParser extends ParserAdapater {
 
-    DimValFact() {
+    DimValParser() {
       super("DimensionValidator");
     }
 
@@ -121,9 +137,9 @@ public class DefaultParsers {
   }
 
   //-----------------------------------------------------------------
-  static class SpacingValFact extends ParserFactoryAdapater {
+  static class SpacingValParser extends ParserAdapater {
 
-    public SpacingValFact() {
+    public SpacingValParser() {
       super("SpacingValidator");
     }
 
@@ -150,8 +166,8 @@ public class DefaultParsers {
   }
 
   //-----------------------------------------------------------------
-  static class LevGrndFact extends ParserFactoryAdapater {
-    public LevGrndFact() {
+  static class LevGrnValdParser extends ParserAdapater {
+    public LevGrnValdParser() {
       super("LevelGroundValidator");
     }
 
@@ -168,9 +184,9 @@ public class DefaultParsers {
   }
 
   //-----------------------------------------------------------------
-  static class BiomeValFact extends ParserFactoryAdapater {
+  static class BiomeValParser extends ParserAdapater {
 
-    BiomeValFact() {
+    BiomeValParser() {
       super("BiomeValidator");
     }
 
@@ -212,9 +228,9 @@ public class DefaultParsers {
   }
 
   //-----------------------------------------------------------------
-  static class ClearPrepFact extends ParserFactoryAdapater {
+  static class ClearPrepParser extends ParserAdapater {
 
-    ClearPrepFact() {
+    ClearPrepParser() {
       super("ClearPreperation");
     }
 
@@ -230,9 +246,9 @@ public class DefaultParsers {
   }
 
   //-----------------------------------------------------------------
-  static class FillPrepFact extends ParserFactoryAdapater {
+  static class FillPrepParser extends ParserAdapater {
 
-    FillPrepFact() {
+    FillPrepParser() {
       super("FillPreperation");
     }
 
@@ -247,7 +263,7 @@ public class DefaultParsers {
   }
 
   //-----------------------------------------------------------------
-  static class LootTableDecFact extends ParserFactoryAdapater {
+  static class LootTableDecFact extends ParserAdapater {
 
     LootTableDecFact() {
       super("LootTableInventory");
@@ -262,55 +278,103 @@ public class DefaultParsers {
     }
   }
 
-  //-----------------------------------------------------------------
-  static class VirtualSpawnerFact extends ParserFactoryAdapater {
+  
+  static class AbstractBehaviourParser extends ParserAdapater {
 
-    VirtualSpawnerFact() {
-      super("VirtualSpawner");
+    public AbstractBehaviourParser(String uid) {
+      super(uid);    
     }
-
-    @Override
-    public IBehaviour createBehaviour(String uid, JsonObject json) {
-      VirtualSpawnerBehaviour res = new VirtualSpawnerBehaviour();
-      String entStr = JsonUtil.getStringField(json, "entity", null);
-      if(entStr == null) {
-        Log.warn("DefaultParsers.VirtualSpawnerFact.createBehaviour: No entity specified for Virtual Spawner.");
-        return null;
-      }
-      res.setEntityTypeName(entStr);
-      res.setNumberSpawned(JsonUtil.getIntField(json, "numSpawned", res.getNumberSpawned()));
-      res.setSpawnRange(JsonUtil.getIntField(json, "spawnRange", res.getSpawnRange()));
-      res.setPersistEntities(JsonUtil.getBooleanField(json, "persistEntities", res.isPersistEntities()));
-      res.setUseVanillaSpawnChecks(JsonUtil.getBooleanField(json, "useVanillaSpawnChecks", res.isUseVanillaSpawnChecks()));
-      res.setRenderParticles(JsonUtil.getBooleanField(json, "renderParticles", res.isRenderParticles()));
-      res.setStructureLocalPosition(JsonUtil.getPoint3iField(json, "position", res.getStructureLocalPosition()));
-
-      ICondition con = parseCondition(json, "activeCondition");
-      if(con != null) {
-        res.setActiveCondition(con);
-      }
-      con = parseCondition(json, "spawnCondition");
-      if(con != null) {
-        res.setSpawnCondition(con);
-      }
-
-      return res;
-    }
-
-    private ICondition parseCondition(JsonObject json, String f) {
+    
+    protected ICondition parseCondition(JsonObject json, String f) {
       TypedObject obj = JsonUtil.getTypedObjectField(json, f);
       if(obj != null) {
         return ParserRegister.instance.createCondition(obj.type, obj.obj);
       }
       return null;
     }
+    
+    protected IAction parseAction(JsonObject json, String f) {
+      TypedObject obj = JsonUtil.getTypedObjectField(json, f);
+      if(obj != null) {
+        return ParserRegister.instance.createAction(obj.type, obj.obj);
+      }
+      return null;
+    }
+    
+  }
+  
+  //-----------------------------------------------------------------
+  static class VirtualSpawnerParser extends AbstractBehaviourParser {
+
+    VirtualSpawnerParser() {
+      super("VirtualSpawner");
+    }
+
+    @Override
+    public IBehaviour createBehaviour(String uid, JsonObject json) {
+      VirtualSpawnerBehaviour res = new VirtualSpawnerBehaviour(); 
+      res.setEntityTypeName(JsonUtil.getStringField(json, "entity", res.getEntityTypeName()));
+      res.setNumberSpawned(JsonUtil.getIntField(json, "numSpawned", res.getNumberSpawned()));
+      res.setSpawnRange(JsonUtil.getIntField(json, "spawnRange", res.getSpawnRange()));
+      res.setPersistEntities(JsonUtil.getBooleanField(json, "persistEntities", res.isPersistEntities()));
+      res.setUseVanillaSpawnChecks(JsonUtil.getBooleanField(json, "useVanillaSpawnChecks", res.isUseVanillaSpawnChecks()));
+      res.setRenderParticles(JsonUtil.getBooleanField(json, "renderParticles", res.isRenderParticles()));
+      res.setStructureLocalPosition(JsonUtil.getPoint3iField(json, "position", res.getStructureLocalPosition()));
+      res.setActiveCondition(parseCondition(json, "activeCondition"));
+      res.setSpawnCondition(parseCondition(json, "spawnCondition"));
+      return res;
+    }
 
   }
-
+  
+  //ResidentSpawnerParser
   //-----------------------------------------------------------------
-  static class AndConditionFact extends ParserFactoryAdapater {
+  static class ResidentSpawnerParser extends AbstractBehaviourParser {
 
-    AndConditionFact() {
+    ResidentSpawnerParser() {
+      super("ResidentSpawner");
+    }
+
+    @Override
+    public IBehaviour createBehaviour(String uid, JsonObject json) {
+      ResidentSpawner res = new ResidentSpawner();
+      res.setEntity(JsonUtil.getStringField(json, "entity", res.getEntity()));
+      res.setNumSpawned(JsonUtil.getIntField(json, "numSpawned", res.getNumSpawned()));
+      res.setRespawnRate(JsonUtil.getIntField(json, "respawnRate", res.getNumSpawned()));
+      res.setRespawnRate(JsonUtil.getIntField(json, "homeRadius", res.getHomeRadius()));
+      res.setLocalPos(JsonUtil.getPoint3iField(json, "position", res.getLocalPos()));      
+      res.setPreCondition(parseCondition(json, "preCondition"));      
+      res.setOnSpawnAction(parseAction(json, "onSpawnAction"));         
+      return res;      
+    }
+
+   
+
+  }
+  
+//ServerTickBehaviourParser
+  //-----------------------------------------------------------------
+  static class ServerTickBehaviourParser extends AbstractBehaviourParser {
+
+    ServerTickBehaviourParser() {
+      super("ServerTickBehaviour");
+    }
+
+    @Override
+    public IBehaviour createBehaviour(String uid, JsonObject json) {
+      ServerTickBehaviour res = new ServerTickBehaviour();      
+      res.setPosition(JsonUtil.getPoint3iField(json, "position", res.getPosition()));
+      res.setExecutionInterval(JsonUtil.getIntField(json, "executionInterval", res.getExecutionInterval()));            
+      res.setCondition(parseCondition(json, "condition"));      
+      res.setAction(parseAction(json, "action"));         
+      return res;      
+    }   
+
+  }
+  //-----------------------------------------------------------------
+  static class AndConditionParser extends ParserAdapater {
+
+    AndConditionParser() {
       super("AndCondition");
     }
 
@@ -330,9 +394,9 @@ public class DefaultParsers {
   }
 
   //-----------------------------------------------------------------
-  static class OrConditionFact extends ParserFactoryAdapater {
+  static class OrConditionParser extends ParserAdapater {
 
-    OrConditionFact() {
+    OrConditionParser() {
       super("AndCondition");
     }
 
@@ -351,9 +415,9 @@ public class DefaultParsers {
   }
 
   //-----------------------------------------------------------------
-  static class BlockExistsConditionFact extends ParserFactoryAdapater {
+  static class BlockExistsConditionParser extends ParserAdapater {
 
-    BlockExistsConditionFact() {
+    BlockExistsConditionParser() {
       super("BlockExists");
     }
 
@@ -380,9 +444,9 @@ public class DefaultParsers {
   }
 
   //-----------------------------------------------------------------
-  static class PlayerInRangeConditionFact extends ParserFactoryAdapater {
+  static class PlayerInRangeConditionParser extends ParserAdapater {
 
-    PlayerInRangeConditionFact() {
+    PlayerInRangeConditionParser() {
       super("PlayerInRange");
     }
 
@@ -399,9 +463,9 @@ public class DefaultParsers {
   }
 
   //-----------------------------------------------------------------
-  static class MaxEntitiesInRangeFact extends ParserFactoryAdapater {
+  static class MaxEntitiesInRangeParser extends ParserAdapater {
 
-    MaxEntitiesInRangeFact() {
+    MaxEntitiesInRangeParser() {
       super("MaxEntitiesInRange");
     }
 
@@ -423,9 +487,9 @@ public class DefaultParsers {
   }
 
   //-----------------------------------------------------------------
-  static class ElapasedTimeConditionFact extends ParserFactoryAdapater {
+  static class ElapasedTimeConditionParser extends ParserAdapater {
 
-    ElapasedTimeConditionFact() {
+    ElapasedTimeConditionParser() {
       super("ElapasedTimeCondition");
     }
 
@@ -442,9 +506,9 @@ public class DefaultParsers {
 
   //TickCountCondition
   //-----------------------------------------------------------------
-  static class TickCountConditionFact extends ParserFactoryAdapater {
+  static class TickCountConditionParser extends ParserAdapater {
 
-    TickCountConditionFact() {
+    TickCountConditionParser() {
       super("TickCountCondition");
     }
 
@@ -458,53 +522,12 @@ public class DefaultParsers {
       return con;
     }
   }
-
-  //TickCountCondition
-  //-----------------------------------------------------------------
-  static class ResidentSpawnerFact extends ParserFactoryAdapater {
-
-    ResidentSpawnerFact() {
-      super("ResidentSpawner");
-    }
-
-    @Override
-    public IBehaviour createBehaviour(String uid, JsonObject json) {
-      ResidentSpawner res = new ResidentSpawner();
-      res.setEntity(JsonUtil.getStringField(json, "entity", res.getEntity()));
-      res.setNumSpawned(JsonUtil.getIntField(json, "numSpawned", res.getNumSpawned()));
-      res.setRespawnRate(JsonUtil.getIntField(json, "respawnRate", res.getNumSpawned()));
-      res.setRespawnRate(JsonUtil.getIntField(json, "homeRadius", res.getHomeRadius()));
-      res.setLocalPos(JsonUtil.getPoint3iField(json, "position", res.getLocalPos()));      
-      res.setPreCondition(parseCondition(json, "preCondition"));      
-      res.setOnSpawnAction(parseAction(json, "onSpawnAction"));         
-      return res;      
-    }
-
-    private ICondition parseCondition(JsonObject json, String f) {
-      TypedObject obj = JsonUtil.getTypedObjectField(json, f);
-      if(obj != null) {
-        return ParserRegister.instance.createCondition(obj.type, obj.obj);
-      }
-      return null;
-    }
-    
-    private IAction parseAction(JsonObject json, String f) {
-      TypedObject obj = JsonUtil.getTypedObjectField(json, f);
-      if(obj != null) {
-        return ParserRegister.instance.createAction(obj.type, obj.obj);
-      }
-      return null;
-    }
-
-  }
-  
+ 
   //ExecuteCommandFact
-  
-  //TickCountCondition
   //-----------------------------------------------------------------
-  static class ExecuteCommandFact extends ParserFactoryAdapater {
+  static class ExecuteCommandParser extends ParserAdapater {
 
-    ExecuteCommandFact() {
+    ExecuteCommandParser() {
       super("ExecuteCommand");
     }
 

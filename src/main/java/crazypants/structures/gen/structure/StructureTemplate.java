@@ -18,7 +18,7 @@ import crazypants.structures.api.util.Rotation;
 import crazypants.structures.gen.structure.decorator.CompositeDecorator;
 import crazypants.structures.gen.structure.preperation.CompositePreperation;
 import crazypants.structures.gen.structure.validator.CompositeSiteValidator;
-import crazypants.structures.runtime.CompositeBehaviour;
+import crazypants.structures.runtime.behaviour.CompositeBehaviour;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
