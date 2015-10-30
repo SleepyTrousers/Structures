@@ -80,7 +80,14 @@
                      "respawnRate" : 2500,
                      "homeRadius" : 64,
                      "position" : [2, 8, 2],
-                     "preCondition" : {"type" : "PlayerInRange", "range" : 32, "position" : [2,8,2]  }
+                     "preCondition" : {"type" : "PlayerInRange", "range" : 32, "position" : [2,8,2]  },
+                     "onSpawnAction" : {"type" : "ExecuteCommand", 
+                                                 "commands" : [
+                                                      "summon Creeper ~ ~ ~ {powered:1,CustomName:Powered Creeper}",
+                                                      "summon Fireball ~ ~ ~ {direction:[0.0,-4.0,0.0]}"
+                                                    ]
+                                                 }
+                                                    
            }
          ]
     }

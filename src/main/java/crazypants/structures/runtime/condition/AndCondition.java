@@ -1,4 +1,4 @@
-package crazypants.structures.runtime;
+package crazypants.structures.runtime.condition;
 
 import java.util.ArrayList;
 import java.util.Collection;

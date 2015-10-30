@@ -6,6 +6,7 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
 import crazypants.structures.api.gen.IStructure;
+import crazypants.structures.api.runtime.IAction;
 import crazypants.structures.api.runtime.IBehaviour;
 import crazypants.structures.api.runtime.ICondition;
 import crazypants.structures.api.util.Point3i;
@@ -26,7 +27,7 @@ public class ResidentSpawner implements IBehaviour {
   private int numToSpawn = 1;
   private int spawnRange = 4;
   private int respawnRate = 200;
-  private int homeRadius = 64;  
+  private int homeRadius = 64;
   private Point3i localPos = new Point3i();
 
   //instance variables
@@ -37,10 +38,11 @@ public class ResidentSpawner implements IBehaviour {
   private long lastTimePresent = -1;
   private boolean registered = false;
   private int residentId = -1;
-  
-  private ICondition preCondition;
 
-  public ResidentSpawner() {    
+  private ICondition preCondition;
+  private IAction onSpawnAction;
+
+  public ResidentSpawner() {
   }
 
   public ResidentSpawner(ResidentSpawner template, World world, IStructure structure, NBTTagCompound state) {
@@ -52,8 +54,15 @@ public class ResidentSpawner implements IBehaviour {
     localPos = template.localPos;
     numToSpawn = template.numToSpawn;
     spawnRange = template.spawnRange;
-    preCondition = template.preCondition;
-    
+
+    if(template.getPreCondition() != null) {
+      NBTTagCompound subState = state == null ? null : state.getCompoundTag("preCondition");
+      preCondition = template.getPreCondition().createInstance(world, structure, subState);
+    }
+    if(template.getOnSpawnAction() != null) {
+      NBTTagCompound subState = state == null ? null : state.getCompoundTag("onSpawnAction");
+      onSpawnAction = template.getOnSpawnAction().createInstance(world, structure, subState);
+    }
 
     this.world = world;
     this.structure = structure;
@@ -83,10 +92,18 @@ public class ResidentSpawner implements IBehaviour {
     if(residentId >= 0) {
       res.setLong("residentId", residentId);
     }
-    if(res.hasNoTags()) {
-      return null;
+    if(preCondition != null) {
+      NBTTagCompound acs = preCondition.getState();
+      if(acs != null && !acs.hasNoTags()) {
+        res.setTag("preCondition", acs);
+      }
     }
-    return res;
+    NBTTagCompound scs = onSpawnAction.getState();
+    if(scs != null && !scs.hasNoTags()) {
+      res.setTag("onSpawnAction", scs);
+    }
+    return res.hasNoTags() ? null : res;
+
   }
 
   @Override
@@ -116,19 +133,19 @@ public class ResidentSpawner implements IBehaviour {
 
   @SubscribeEvent
   public void update(ServerTickEvent evt) {
-    long curTime = world.getTotalWorldTime();    
+    long curTime = world.getTotalWorldTime();
     if(curTime % checkPeriod != 0) {
       return;
     }
-    
+
     if(preCondition != null && !preCondition.isConditionMet(world, structure)) {
       return;
     }
-    
-    int curNum = getNumResidentsInHomeBounds();      
+
+    int curNum = getNumResidentsInHomeBounds();
     if(curNum >= numToSpawn) { //TODO: Optional to wait for all to be dead?
-      lastTimePresent = world.getTotalWorldTime();      
-    } else if(curTime - lastTimePresent >= respawnRate) {      
+      lastTimePresent = world.getTotalWorldTime();
+    } else if(curTime - lastTimePresent >= respawnRate) {
       spawnResidents(numToSpawn - curNum);
     }
   }
@@ -139,7 +156,7 @@ public class ResidentSpawner implements IBehaviour {
         AxisAlignedBB.getBoundingBox(
             worldPos.x - homeRadius, worldPos.y - homeRadius, worldPos.z - homeRadius,
             worldPos.x + homeRadius, worldPos.y + homeRadius, worldPos.z + homeRadius),
-        selector);    
+        selector);
     return ents.size();
 
   }
@@ -147,15 +164,19 @@ public class ResidentSpawner implements IBehaviour {
   private void spawnResidents(int numToSpawn) {
     if(numToSpawn <= 0) {
       return;
-    }    
+    }
     lastTimePresent = world.getTotalWorldTime();
     Point3i worldPos = structure.transformLocalToWorld(localPos);
     for (int i = 0; i < numToSpawn; i++) {
       EntityLiving ent = createEntity();
       if(ent == null) {
         return;
-      }      
-      EntityUtil.spawnEntity(world, ent, worldPos, spawnRange, 6, false);
+      }
+      if(EntityUtil.spawnEntity(world, ent, worldPos, spawnRange, 6, false)) {
+        if(onSpawnAction != null) {
+          onSpawnAction.doAction(world, structure, new Point3i((int) ent.posX, (int) ent.posY, (int) ent.posZ));
+        }
+      }
     }
 
   }
@@ -168,12 +189,12 @@ public class ResidentSpawner implements IBehaviour {
     EntityLiving res = (EntityLiving) ent;
     res.func_110163_bv(); //persist  
     res.getEntityData().setInteger("residentId", residentId);
-        
+
     Point3i worldPos = structure.transformLocalToWorld(localPos);
     if(res instanceof EntityCreature) {
-      EntityCreature creature = (EntityCreature)res;
+      EntityCreature creature = (EntityCreature) res;
       creature.setHomeArea(worldPos.x, worldPos.y, worldPos.z, homeRadius - 1);
-    }    
+    }
     return res;
   }
 
@@ -225,13 +246,21 @@ public class ResidentSpawner implements IBehaviour {
   public void setLocalPos(Point3i localPos) {
     this.localPos = localPos;
   }
-    
+
   public ICondition getPreCondition() {
     return preCondition;
   }
 
   public void setPreCondition(ICondition preCondition) {
     this.preCondition = preCondition;
+  }
+
+  public IAction getOnSpawnAction() {
+    return onSpawnAction;
+  }
+
+  public void setOnSpawnAction(IAction onSpawnAction) {
+    this.onSpawnAction = onSpawnAction;
   }
 
   private class Selector implements IEntitySelector {
@@ -243,7 +272,7 @@ public class ResidentSpawner implements IBehaviour {
         return false;
       }
       NBTTagCompound data = ent.getEntityData();
-      int resId = data.getInteger("residentId");   
+      int resId = data.getInteger("residentId");
       return resId == residentId;
     }
 

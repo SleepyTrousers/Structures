@@ -1,4 +1,4 @@
-package crazypants.structures.runtime;
+package crazypants.structures.runtime.condition;
 
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.ICondition;

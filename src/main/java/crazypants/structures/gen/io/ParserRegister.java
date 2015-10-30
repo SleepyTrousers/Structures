@@ -13,6 +13,7 @@ import crazypants.structures.api.gen.IDecorator;
 import crazypants.structures.api.gen.ILocationSampler;
 import crazypants.structures.api.gen.ISitePreperation;
 import crazypants.structures.api.gen.ISiteValidator;
+import crazypants.structures.api.io.IActionParser;
 import crazypants.structures.api.io.IBehaviourParser;
 import crazypants.structures.api.io.IChunkValidatorParser;
 import crazypants.structures.api.io.IConditionParser;
@@ -21,6 +22,7 @@ import crazypants.structures.api.io.ILocationSamplerParser;
 import crazypants.structures.api.io.IParser;
 import crazypants.structures.api.io.ISitePreperationParser;
 import crazypants.structures.api.io.ISiteValidatorParser;
+import crazypants.structures.api.runtime.IAction;
 import crazypants.structures.api.runtime.IBehaviour;
 import crazypants.structures.api.runtime.ICondition;
 
@@ -41,6 +43,8 @@ public class ParserRegister {
   private final Map<String, IBehaviourParser> behavParsers = new HashMap<String, IBehaviourParser>();
   
   private final Map<String, IConditionParser> conditionParsers = new HashMap<String, IConditionParser>();
+  
+  private final Map<String, IActionParser> actionParsers = new HashMap<String, IActionParser>();
 
   public static final ParserRegister instance = new ParserRegister();
 
@@ -129,6 +133,18 @@ public class ParserRegister {
     }
     return f.createCondition(uid, json);
   }
+  
+  public IAction createAction(String uid, JsonObject json) {
+    IActionParser f = actionParsers.get(uid);
+    if(f == null) {
+      f = findFactory(uid, IActionParser.class);
+      if(f == null) {
+        return null;
+      }
+      actionParsers.put(uid, f);
+    }    
+    return f.createAction(uid, json);
+  }
 
   @SuppressWarnings("unchecked")
   private <T extends IParser> T findFactory(String uid, Class<T> type) {
@@ -143,7 +159,7 @@ public class ParserRegister {
     return (T) nullFactory;
   }
 
-  private class NullFactory extends AbstractSingleParserFactory {
+  private class NullFactory extends ParserFactoryAdapater {
 
     private NullFactory() {
       super(null);
