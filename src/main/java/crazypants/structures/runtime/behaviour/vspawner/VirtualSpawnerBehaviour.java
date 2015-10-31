@@ -12,7 +12,9 @@ public class VirtualSpawnerBehaviour implements IBehaviour {
   private Point3i localPosition = new Point3i();
 
 //TODO: Allow for a list of entities
-  private String entityTypeName = "Pig";
+  private String entityTypeName = "Pig";  
+  
+  private String entityNbtText = "";
 
   private ICondition activeCondition;
   
@@ -107,6 +109,14 @@ public class VirtualSpawnerBehaviour implements IBehaviour {
 
   public void setEntityTypeName(String entityTypeName) {
     this.entityTypeName = entityTypeName;
+  }
+  
+  public String getEntityNbtText() {
+    return entityNbtText;
+  }
+
+  public void setEntityNbtText(String entityNbtText) {
+    this.entityNbtText = entityNbtText;
   }
 
   public int getNumberSpawned() {

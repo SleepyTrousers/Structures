@@ -34,11 +34,15 @@ public class VirtualSpawnerInstance {
 
   private boolean registered = false;
   
+  private NBTTagCompound entityNBT;
+  
   public VirtualSpawnerInstance(IStructure structure, VirtualSpawnerBehaviour behaviour, World world, Point3i worldPos, NBTTagCompound state) {
     this.structure = structure;
     this.behaviour = behaviour;
     this.world = world;    
-    this.worldPos = worldPos;        
+    this.worldPos = worldPos;   
+    
+    entityNBT = EntityUtil.createEntityNBT(behaviour.getEntityTypeName(), behaviour.getEntityNbtText()); 
 
     if(behaviour.getActiveCondition() != null) {
       NBTTagCompound conState = state == null ? null : state.getCompoundTag("activeCondition");
@@ -122,7 +126,9 @@ public class VirtualSpawnerInstance {
   }
 
   EntityLiving createEntity() {
-    Entity ent = EntityList.createEntityByName(behaviour.getEntityTypeName(), world);
+    //Entity ent = EntityList.createEntityByName(behaviour.getEntityTypeName(), world);
+    
+    Entity ent = EntityList.createEntityFromNBT(entityNBT, world);
     if(!(ent instanceof EntityLiving)) {
       return null;
     }

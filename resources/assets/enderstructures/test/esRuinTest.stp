@@ -74,7 +74,8 @@
       "behaviours" : [
            
            { "type": "ResidentSpawner",
-                     "entity" : "PigZombie",
+                     "entity" : "Creeper",
+                     "entityNbt" : "{powered:1,CustomName:McDoodle The Second}",
                      "numSpawned" : 4,                    
                      "spawnRange" : 4,
                      "respawnRate" : 2500,
@@ -83,7 +84,7 @@
                      "preCondition" : {"type" : "PlayerInRange", "range" : 32, "position" : [2,8,2]  },
                      "onSpawnAction" : {"type" : "ExecuteCommand", 
                                                  "commands" : [
-                                                      "summon Creeper ~ ~ ~ {powered:1,CustomName:Powered Creeper}",
+                                                      "summon PigZombie ~ ~ ~ {powered:1,CustomName:John}",
                                                       "summon Fireball ~ ~ ~ {direction:[0.0,-4.0,0.0]}"
                                                     ]
                                                  }

@@ -314,6 +314,7 @@ public class DefaultParsers {
     public IBehaviour createBehaviour(String uid, JsonObject json) {
       VirtualSpawnerBehaviour res = new VirtualSpawnerBehaviour(); 
       res.setEntityTypeName(JsonUtil.getStringField(json, "entity", res.getEntityTypeName()));
+      res.setEntityNbtText(JsonUtil.getStringField(json, "entityNbt", res.getEntityNbtText()));
       res.setNumberSpawned(JsonUtil.getIntField(json, "numSpawned", res.getNumberSpawned()));
       res.setSpawnRange(JsonUtil.getIntField(json, "spawnRange", res.getSpawnRange()));
       res.setPersistEntities(JsonUtil.getBooleanField(json, "persistEntities", res.isPersistEntities()));
@@ -339,12 +340,14 @@ public class DefaultParsers {
     public IBehaviour createBehaviour(String uid, JsonObject json) {
       ResidentSpawner res = new ResidentSpawner();
       res.setEntity(JsonUtil.getStringField(json, "entity", res.getEntity()));
+      res.setEntityNbtText(JsonUtil.getStringField(json, "entityNbt", res.getEntityNbtText()));
       res.setNumSpawned(JsonUtil.getIntField(json, "numSpawned", res.getNumSpawned()));
       res.setRespawnRate(JsonUtil.getIntField(json, "respawnRate", res.getNumSpawned()));
       res.setRespawnRate(JsonUtil.getIntField(json, "homeRadius", res.getHomeRadius()));
       res.setLocalPos(JsonUtil.getPoint3iField(json, "position", res.getLocalPos()));      
       res.setPreCondition(parseCondition(json, "preCondition"));      
-      res.setOnSpawnAction(parseAction(json, "onSpawnAction"));         
+      res.setOnSpawnAction(parseAction(json, "onSpawnAction")); 
+      
       return res;      
     }
 

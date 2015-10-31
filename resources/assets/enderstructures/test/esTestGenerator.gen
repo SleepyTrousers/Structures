@@ -4,12 +4,16 @@
         "maxAttemptsPerChunk" : 2,
         "maxGeneratedPerChunk" : 1,
         
-        "_templates" : [
+        "templates" : [
           {"uid" : "esSmallHouseTest"},
           {"uid" : "esRuinTest"}    
         ],
         
-         "templates" : [          
+        "_templates" : [
+          {"uid" : "esSmallHouseTest"}            
+        ],
+        
+         "_templates" : [          
           {"uid" : "esRuinTest"}    
         ],
         

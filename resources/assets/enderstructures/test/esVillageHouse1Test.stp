@@ -26,6 +26,7 @@
            
            { "type": "VirtualSpawner",
                      "entity" : "Wolf",
+                     "entityNbt" : "{CustomName:Puppy Rubs}",                                         
                      "numSpawned" : 2,
                      "position" : [2, 2, 2],
                      "activeCondition" : { "type" : "AndCondition",

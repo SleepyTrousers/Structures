@@ -1,8 +1,13 @@
 package crazypants.structures.runtime;
 
+import crazypants.structures.Log;
 import crazypants.structures.api.util.Point3i;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.nbt.JsonToNBT;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTException;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
 public class EntityUtil {
@@ -36,6 +41,28 @@ public class EntityUtil {
     }
 
     return false;
+  }
+  
+  public static NBTTagCompound createEntityNBT(String entityName, String entityNbtText) {
+    if(entityName == null) {
+      return null;
+    }    
+    NBTTagCompound entityNBT = null;
+    if(entityNbtText != null && entityNbtText.length() > 0) {
+      try {
+        //"{powered:1,CustomName:McDoodle}"
+        NBTBase nbtbase = JsonToNBT.func_150315_a(entityNbtText);
+        entityNBT = (NBTTagCompound) nbtbase;
+      } catch (NBTException e) {
+        Log.warn("EntityUtil.createEntityNBT: Could not parse NBT for entity: " + entityName + " nbt=" + entityNbtText + " Error: " + e);
+        e.printStackTrace();
+      }
+    }
+    if(entityNBT == null) {
+      entityNBT = new NBTTagCompound();
+    }    
+    entityNBT.setString("id", entityName);
+    return entityNBT;    
   }
   
 }

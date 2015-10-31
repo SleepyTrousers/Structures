@@ -22,7 +22,8 @@ import net.minecraft.world.World;
 public class ResidentSpawner extends AbstractEventBehaviour {
 
   //template variables
-  private String entity = "";
+  private String entityName = "";
+  private String entityNbtText = "";
   private int numToSpawn = 1;
   private int spawnRange = 4;
   private int respawnRate = 200;
@@ -36,6 +37,7 @@ public class ResidentSpawner extends AbstractEventBehaviour {
   private IStructure structure;
   private long lastTimePresent = -1;
   private int residentId = -1;
+  private NBTTagCompound entityNBT;
 
   private ICondition preCondition;
   private IAction onSpawnAction;
@@ -44,11 +46,14 @@ public class ResidentSpawner extends AbstractEventBehaviour {
   }
 
   public ResidentSpawner(ResidentSpawner template, World world, IStructure structure, NBTTagCompound state) {
-    
+
     this.world = world;
     this.structure = structure;
+
+    this.entityName = template.entityName;
+    this.entityNbtText = template.entityNbtText;
+    updateEntityNBT();
     
-    entity = template.entity;
     respawnRate = template.respawnRate;
     checkPeriod = respawnRate / 10;
     homeRadius = template.homeRadius;
@@ -56,11 +61,11 @@ public class ResidentSpawner extends AbstractEventBehaviour {
     numToSpawn = template.numToSpawn;
     spawnRange = template.spawnRange;
 
-    if(template.getPreCondition() != null) {      
+    if(template.getPreCondition() != null) {
       preCondition = template.getPreCondition().createInstance(world, structure, getSubState(state, "preCondition"));
     }
-    if(template.getOnSpawnAction() != null) {      
-      onSpawnAction = template.getOnSpawnAction().createInstance(world, structure,getSubState(state, "onSpawnAction"));
+    if(template.getOnSpawnAction() != null) {
+      onSpawnAction = template.getOnSpawnAction().createInstance(world, structure, getSubState(state, "onSpawnAction"));
     }
 
     if(state != null) {
@@ -88,9 +93,9 @@ public class ResidentSpawner extends AbstractEventBehaviour {
     }
     if(residentId >= 0) {
       res.setLong("residentId", residentId);
-    }    
+    }
     addSubState(res, "preCondition", preCondition);
-    addSubState(res, "onSpawnAction", onSpawnAction);       
+    addSubState(res, "onSpawnAction", onSpawnAction);
     return res.hasNoTags() ? null : res;
 
   }
@@ -99,7 +104,7 @@ public class ResidentSpawner extends AbstractEventBehaviour {
   public void onStructureGenerated(World world, IStructure structure) {
     super.onStructureGenerated(world, structure);
     residentId = world.rand.nextInt(Integer.MAX_VALUE);
-    spawnResidents(numToSpawn);    
+    spawnResidents(numToSpawn);
   }
 
   @SubscribeEvent
@@ -153,11 +158,13 @@ public class ResidentSpawner extends AbstractEventBehaviour {
   }
 
   EntityLiving createEntity() {
-    Entity ent = EntityList.createEntityByName(entity, world);
+  
+    Entity ent = EntityList.createEntityFromNBT(entityNBT, world);
     if(!(ent instanceof EntityLiving)) {
       return null;
     }
     EntityLiving res = (EntityLiving) ent;
+
     res.func_110163_bv(); //persist  
     res.getEntityData().setInteger("residentId", residentId);
 
@@ -170,11 +177,25 @@ public class ResidentSpawner extends AbstractEventBehaviour {
   }
 
   public String getEntity() {
-    return entity;
+    return entityName;
   }
 
-  public void setEntity(String entity) {
-    this.entity = entity;
+  public final void setEntity(String entity) {
+    this.entityName = entity;
+    updateEntityNBT();
+  }
+
+  public String getEntityNbtText() {
+    return entityNbtText;
+  }
+
+  public void setEntityNbtText(String entityNbtText) {
+    this.entityNbtText = entityNbtText;
+    updateEntityNBT();
+  }
+
+  private void updateEntityNBT() {
+    entityNBT = EntityUtil.createEntityNBT(entityName, entityNbtText);    
   }
 
   public int getNumSpawned() {
@@ -239,7 +260,7 @@ public class ResidentSpawner extends AbstractEventBehaviour {
     @Override
     public boolean isEntityApplicable(Entity ent) {
       String entityId = EntityList.getEntityString(ent);
-      if(!entity.equals(entityId)) {
+      if(!entityName.equals(entityId)) {
         return false;
       }
       NBTTagCompound data = ent.getEntityData();
