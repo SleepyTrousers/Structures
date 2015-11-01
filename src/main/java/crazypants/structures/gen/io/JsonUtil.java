@@ -10,9 +10,14 @@ import com.google.gson.JsonObject;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
+import crazypants.structures.Log;
 import crazypants.structures.api.util.Point3i;
 import crazypants.structures.gen.structure.Border;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.JsonToNBT;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTException;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class JsonUtil {
@@ -153,6 +158,20 @@ public class JsonUtil {
     }
     return def;
   }
+  
+  public static NBTTagCompound parseNBT(String nbtTxt) {
+    if(nbtTxt == null || nbtTxt.isEmpty()) {
+      return null;
+    }
+    try {
+      NBTBase nbtbase = JsonToNBT.func_150315_a(nbtTxt);
+      return (NBTTagCompound) nbtbase;
+    } catch (NBTException e) {
+      Log.warn("EntityUtil.parseNBT: Could not parse NBT " + nbtTxt + " Error: " + e);
+      e.printStackTrace();
+      return null;
+    }
+  }
 
   public static ItemStack getItemStack(JsonObject json, String element) {
     JsonObject obj = getObjectField(json, element);
@@ -169,6 +188,15 @@ public class JsonUtil {
       return res;
     }
     res.setItemDamage(getIntField(obj, "meta", res.getItemDamage()));
+    
+    String nbtStr = getStringField(obj, "nbt", null);
+    System.out.println("JsonUtil.getItemStack: uid=" + uid + " nbt=" + nbtStr);
+    if(nbtStr != null) {
+      NBTTagCompound nbt = parseNBT(nbtStr);
+      if(nbt != null) {
+        res.setTagCompound(nbt);  
+      }      
+    }
 
     return res;
   }

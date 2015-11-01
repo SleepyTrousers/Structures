@@ -7,8 +7,9 @@ import java.util.List;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.IAction;
 import crazypants.structures.api.util.Point3i;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.command.ICommandManager;
-import net.minecraft.command.ICommandSender;
+import net.minecraft.command.server.CommandBlockLogic;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
@@ -45,9 +46,15 @@ public class ExecuteCommandAction implements IAction {
       InnerSender sender = new InnerSender(world, structure, wp);
       
       ICommandManager icommandmanager = minecraftserver.getCommandManager();
+      
+      boolean origValue = minecraftserver.worldServers[0].getGameRules().getGameRuleBooleanValue("commandBlockOutput");      
+      minecraftserver.worldServers[0].getGameRules().setOrCreateGameRule("commandBlockOutput", "false");
+      
       for(String cmd : commands) {
         icommandmanager.executeCommand(sender, cmd);
       }     
+      
+      minecraftserver.worldServers[0].getGameRules().setOrCreateGameRule("commandBlockOutput", origValue + "");
     }
   }
   
@@ -93,7 +100,9 @@ public class ExecuteCommandAction implements IAction {
     this.chat = chat;
   }
 
-  private class InnerSender implements ICommandSender {
+  //RConConsoleSource
+ // private class InnerSender extends RConConsoleSource {//implements ICommandSender {
+  private class InnerSender extends CommandBlockLogic {//implements ICommandSender {
 
     private final ChunkCoordinates coords;
     private final World world;
@@ -135,6 +144,23 @@ public class ExecuteCommandAction implements IAction {
     @Override
     public boolean canCommandSenderUseCommand(int p_70003_1_, String p_70003_2_) {
       return true;
+    }
+
+    @Override
+    public void func_145756_e() {
+      
+    }
+
+    @Override
+    public int func_145751_f() {
+      // TODO Auto-generated method stub
+      return 0;
+    }
+
+    @Override
+    public void func_145757_a(ByteBuf p_145757_1_) {
+      // TODO Auto-generated method stub
+      
     }
 
   }
