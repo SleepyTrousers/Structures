@@ -1,7 +1,5 @@
 package crazypants.structures.gen.structure;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -14,9 +12,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import crazypants.structures.Log;
+import crazypants.structures.StructureUtils;
 import crazypants.structures.api.gen.IStructureComponent;
 import crazypants.structures.api.util.Point3i;
 import crazypants.structures.api.util.Rotation;
@@ -26,6 +29,7 @@ import crazypants.structures.gen.RotationHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAnvil;
 import net.minecraft.block.BlockGravel;
+import net.minecraft.block.BlockRedstoneWire;
 import net.minecraft.block.BlockSand;
 import net.minecraft.block.BlockTorch;
 import net.minecraft.block.BlockTripWireHook;
@@ -45,13 +49,13 @@ public class StructureComponentNBT implements IStructureComponent {
   private final Point3i size;
 
   private final Map<StructureBlock, List<Point3i>> blocks = new HashMap<StructureBlock, List<Point3i>>();
-  private final Map<String, List<Point3i>> taggedLocations = new HashMap<String, List<Point3i>>();
-
   private final String uid;
   private final int surfaceOffset;
 
   private final StructureBlock fillerBlock;
   private final StructureBlock topBlock;
+  
+  private final HashMultimap<String, Point3i> taggedLocations =  HashMultimap.create();
 
   public StructureComponentNBT(AxisAlignedBB bb, Point3i size, String uid, int surfaceOffset, StructureBlock fillerBlock, StructureBlock topBlock) {
     this.bb = bb;
@@ -75,7 +79,7 @@ public class StructureComponentNBT implements IStructureComponent {
       NBTTagCompound entryTag = dataList.getCompoundTagAt(i);
       NBTTagCompound blockTag = entryTag.getCompoundTag("block");
       StructureBlock sb = new StructureBlock(blockTag);
-      List<Point3i> coords = readCoords(entryTag);
+      List<Point3i> coords = StructureUtils.readCoords(entryTag);
       blocks.put(sb, coords);
     }
 
@@ -104,29 +108,14 @@ public class StructureComponentNBT implements IStructureComponent {
       topBlock = null;
     }
 
-    if(root.hasKey("taggedLocations")) {
-      NBTTagList locs = (NBTTagList) root.getTag("taggedLocations");
-      if(locs != null) {
-        for (int i = 0; i < locs.tagCount(); i++) {
-          NBTTagCompound tag = locs.getCompoundTagAt(i);
-          String tagStr = tag.getString("tag");
-          if(tagStr != null && !tagStr.trim().isEmpty()) {
-            byte[] coordData = tag.getByteArray("coords");
-            int numCoords = tag.getInteger("numCoords");
-            if(coordData != null && numCoords > 0) {
-              List<Point3i> points = new ArrayList<Point3i>();
-              readPoints(points, coordData, numCoords);
-              taggedLocations.put(tagStr, points);
-            }
-          }
-        }
-      }
-    }
+    StructureUtils.readTaggedLocations(taggedLocations, root);
 
     if(uid == null || bb == null || blocks.isEmpty()) {
       throw new IOException("Invalid NBT");
     }
   }
+
+  
 
   public void writeToNBT(NBTTagCompound root) {
 
@@ -145,19 +134,7 @@ public class StructureComponentNBT implements IStructureComponent {
       root.setTag("topBlock", topBlock.asNbt());
     }
 
-    if(taggedLocations != null && !taggedLocations.isEmpty()) {
-      NBTTagList locationsList = new NBTTagList();
-      for (Entry<String, List<Point3i>> e : taggedLocations.entrySet()) {
-        if(e.getValue() != null && !e.getValue().isEmpty()) {
-          NBTTagCompound loc = new NBTTagCompound();
-          loc.setString("tag", e.getKey());
-          loc.setInteger("numCoords", e.getValue().size());
-          loc.setByteArray("coords", writeToByteArray(e.getValue()));
-          locationsList.appendTag(loc);
-        }
-      }
-      root.setTag("taggedLocations", locationsList);
-    }
+    StructureUtils.writeTaggedLocationToNBT(taggedLocations, root);
 
     NBTTagList entryList = new NBTTagList();
     root.setTag("data", entryList);
@@ -173,54 +150,11 @@ public class StructureComponentNBT implements IStructureComponent {
   }
 
   private void writeCoords(Entry<StructureBlock, List<Point3i>> entry, NBTTagCompound entryTag) {
-    byte[] bytes = writeToByteArray(entry.getValue());
+    byte[] bytes = StructureUtils.writeCoordsToByteArray(entry.getValue());
     entryTag.setByteArray("coords", bytes);
     entryTag.setInteger("numCoords", entry.getValue().size());
   }
-
-  private byte[] writeToByteArray(Collection<Point3i> coords) {
-    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    DataOutputStream dos = new DataOutputStream(bos);
-    try {
-      for (Point3i coord : coords) {
-        writePoint(dos, coord);
-      }
-    } catch (IOException e) {
-      Log.error("StructureTemplate: Ccould not write coords: " + e);
-    }
-    byte[] bytes = bos.toByteArray();
-    return bytes;
-  }
-
-  private List<Point3i> readCoords(NBTTagCompound entryTag) {
-    byte[] bytes = entryTag.getByteArray("coords");
-    int numCoords = entryTag.getInteger("numCoords");
-    List<Point3i> coords = new ArrayList<Point3i>(numCoords);
-    readPoints(coords, bytes, numCoords);
-    return coords;
-  }
-
-  private void readPoints(List<Point3i> readInto, byte[] readFrom, int numCoords) {
-    DataInputStream dis = new DataInputStream(new ByteArrayInputStream(readFrom));
-    try {
-      for (int i = 0; i < numCoords; i++) {
-        readInto.add(readPoint(dis));
-      }
-    } catch (IOException e) {
-      Log.error("StructureTemplate: Ccould not read coords: " + e);
-    }
-  }
-
-  private Point3i readPoint(DataInputStream dis) throws IOException {
-    return new Point3i(dis.readShort(), dis.readShort(), dis.readShort());
-  }
-
-  private void writePoint(DataOutputStream dos, Point3i coord) throws IOException {
-    dos.writeShort((short) coord.x);
-    dos.writeShort((short) coord.y);
-    dos.writeShort((short) coord.z);
-  }
-
+  
   public void write(OutputStream os) throws IOException {
     NBTTagCompound root = new NBTTagCompound();
     writeToNBT(root);
@@ -285,7 +219,8 @@ public class StructureComponentNBT implements IStructureComponent {
     if(block == null) {
       return false;
     }
-    return block instanceof BlockTorch || block instanceof BlockSand || block instanceof BlockGravel || block instanceof BlockAnvil || block instanceof BlockTripWireHook;
+    
+    return block instanceof BlockTorch || block instanceof BlockSand || block instanceof BlockGravel || block instanceof BlockAnvil || block instanceof BlockTripWireHook || block instanceof BlockRedstoneWire;
   }
 
   private void fillBlocks(World world, int x, int y, int z, Rotation rot, StructureBoundingBox genBounds, List<Point3i> coords, Block filler) {
@@ -357,26 +292,31 @@ public class StructureComponentNBT implements IStructureComponent {
     if(tag == null || loc == null) {
       return;
     }
-    List<Point3i> res = taggedLocations.get(tag);
-    if(res == null) {
-      res = new ArrayList<Point3i>();
-      taggedLocations.put(tag, res);
-    }
-    res.add(loc);
+    taggedLocations.put(tag, loc);    
   }
 
   @Override
-  public List<Point3i> getTaggedLocations(String tag) {
-    List<Point3i> res = taggedLocations.get(tag);
+  public Collection<Point3i> getTaggedLocations(String tag) {
+    Set<Point3i> res = taggedLocations.get(tag);
     if(res == null) {
       return Collections.emptyList();
     }
     return res;
   }
+  
+  @Override
+  public Collection<String> getTagsAtLocation(Point3i loc) {
+    return StructureUtils.getTagsAtLocation(taggedLocations, loc);    
+  }
 
   @Override
   public String toString() {
     return "StructureTemplate [uid=" + uid + "]";
+  }
+
+  @Override
+  public Multimap<String, Point3i> getTaggedLocations() {
+    return taggedLocations;
   }
 
   

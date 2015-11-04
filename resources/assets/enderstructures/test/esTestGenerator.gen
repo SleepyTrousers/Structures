@@ -4,7 +4,7 @@
         "maxAttemptsPerChunk" : 2,
         "maxGeneratedPerChunk" : 1,
         
-        "templates" : [
+        "_templates" : [
           {"uid" : "esSmallHouseTest"},
           {"uid" : "esRuinTest"}    
         ],
@@ -13,7 +13,7 @@
           {"uid" : "esSmallHouseTest"}            
         ],
         
-         "_templates" : [          
+         "templates" : [          
           {"uid" : "esRuinTest"}    
         ],
         
@@ -25,7 +25,7 @@
         
         "chunkValidators" : [
                     
-            { "type" : "RandomValidator", 
+            { "_type" : "RandomValidator", 
                       "chancePerChunk" : 0.05 },
                       
             { "_type" : "RandomValidator", 
@@ -44,11 +44,11 @@
             
             
             { "type" : "SpacingValidator",
-                      "minSpacing" : 200,
+                      "minSpacing" : 100,
                       "templateFilter" : [ "esSmallHouseTest", "esRuinTest" ] },
                       
             { "type" : "SpacingValidator",
-                      "minSpacing" : 100 }                                    
+                      "minSpacing" : 50 }                                    
                                                            
        ]
        

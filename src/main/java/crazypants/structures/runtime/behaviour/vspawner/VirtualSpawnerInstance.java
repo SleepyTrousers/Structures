@@ -5,11 +5,11 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.WorldTickEvent;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
+import crazypants.structures.StructureUtils;
 import crazypants.structures.PacketHandler;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.ICondition;
 import crazypants.structures.api.util.Point3i;
-import crazypants.structures.runtime.EntityUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
@@ -42,7 +42,7 @@ public class VirtualSpawnerInstance {
     this.world = world;    
     this.worldPos = worldPos;   
     
-    entityNBT = EntityUtil.createEntityNBT(behaviour.getEntityTypeName(), behaviour.getEntityNbtText()); 
+    entityNBT = StructureUtils.createEntityNBT(behaviour.getEntityTypeName(), behaviour.getEntityNbtText()); 
 
     if(behaviour.getActiveCondition() != null) {
       NBTTagCompound conState = state == null ? null : state.getCompoundTag("activeCondition");
@@ -113,7 +113,7 @@ public class VirtualSpawnerInstance {
       double z = worldPos.z + (world.rand.nextDouble() - world.rand.nextDouble()) * spawnRange;
       entityliving.setLocationAndAngles(x, y, z, world.rand.nextFloat() * 360.0F, 0.0F);
 
-      if(EntityUtil.canSpawnEntity(world, entityliving, behaviour.isUseVanillaSpawnChecks())) {
+      if(StructureUtils.canSpawnEntity(world, entityliving, behaviour.isUseVanillaSpawnChecks())) {
         entityliving.onSpawnWithEgg(null);
         world.spawnEntityInWorld(entityliving);
         //world.playAuxSFX(2004, worldPos.x, worldPos.y, worldPos.z, 0);

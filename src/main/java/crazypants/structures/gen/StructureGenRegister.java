@@ -102,6 +102,10 @@ public class StructureGenRegister {
   public Collection<IStructureComponent> getStructureComponents() {
     return components.values();
   }
+  
+  public Map<String, IStructureComponent> getStructureComponentMap() {
+    return components;
+  }
 
   public IStructureComponent getStructureComponent(String uid) {
     return getStructureComponent(uid, false);

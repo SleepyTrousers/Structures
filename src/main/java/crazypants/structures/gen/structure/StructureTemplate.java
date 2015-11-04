@@ -205,7 +205,7 @@ public class StructureTemplate implements IStructureTemplate {
   public Collection<Point3i> getTaggedLocations(String target) {
     List<Point3i> res = new ArrayList<Point3i>();
     for(PositionedComponent pc : components) {
-      List<Point3i> r = pc.getComponent().getTaggedLocations(target);
+      Collection<Point3i> r = pc.getComponent().getTaggedLocations(target);
       if(r != null) {
         for(Point3i p : r) {
           Point3i newP = new Point3i(p);

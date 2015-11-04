@@ -1,6 +1,8 @@
 package crazypants.structures.api.gen;
 
-import java.util.List;
+import java.util.Collection;
+
+import com.google.common.collect.Multimap;
 
 import crazypants.structures.api.util.Point3i;
 import crazypants.structures.api.util.Rotation;
@@ -18,8 +20,14 @@ public interface IStructureComponent {
 
   Point3i getSize();
 
-  List<Point3i> getTaggedLocations(String tag);
+  Collection<Point3i> getTaggedLocations(String tag);
+  
+  Collection<String> getTagsAtLocation(Point3i loc);
+  
+  Multimap<String, Point3i> getTaggedLocations();
   
   void build(World world, int x, int y, int z, Rotation rot, StructureBoundingBox genBounds);
+
+  
 
 }

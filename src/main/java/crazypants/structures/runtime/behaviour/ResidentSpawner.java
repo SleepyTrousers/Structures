@@ -4,12 +4,12 @@ import java.util.List;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
+import crazypants.structures.StructureUtils;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.IAction;
 import crazypants.structures.api.runtime.IBehaviour;
 import crazypants.structures.api.runtime.ICondition;
 import crazypants.structures.api.util.Point3i;
-import crazypants.structures.runtime.EntityUtil;
 import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
@@ -148,7 +148,7 @@ public class ResidentSpawner extends AbstractEventBehaviour {
       if(ent == null) {
         return;
       }
-      if(EntityUtil.spawnEntity(world, ent, worldPos, spawnRange, 6, false)) {
+      if(StructureUtils.spawnEntity(world, ent, worldPos, spawnRange, 6, false)) {
         if(onSpawnAction != null) {
           onSpawnAction.doAction(world, structure, new Point3i((int) ent.posX, (int) ent.posY, (int) ent.posZ));
         }
@@ -195,7 +195,7 @@ public class ResidentSpawner extends AbstractEventBehaviour {
   }
 
   private void updateEntityNBT() {
-    entityNBT = EntityUtil.createEntityNBT(entityName, entityNbtText);    
+    entityNBT = StructureUtils.createEntityNBT(entityName, entityNbtText);    
   }
 
   public int getNumSpawned() {
