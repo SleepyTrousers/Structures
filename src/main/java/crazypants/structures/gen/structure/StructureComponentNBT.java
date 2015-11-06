@@ -277,7 +277,7 @@ public class StructureComponentNBT implements IStructureComponent {
     return size;
   }
 
-  private Map<StructureBlock, List<Point3i>> getBlocks() {
+  public Map<StructureBlock, List<Point3i>> getBlocks() {
     return blocks;
   }
 

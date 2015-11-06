@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import crazypants.structures.api.gen.IStructure;
+import crazypants.structures.api.gen.IStructureComponent;
 import crazypants.structures.api.gen.IStructureTemplate;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
@@ -85,6 +86,14 @@ public class VecUtil {
     Point3i res = localPos;
     if(localPos != null && structure != null) {
       res = VecUtil.transformStructureCoodToWorld(0, 0, 0, structure.getRotation(), structure.getTemplate().getSize(), localPos);
+    }
+    return res;
+  }
+  
+  public static Point3i getRotatedLocation(Point3i localPos, IStructureComponent structure, Rotation rotation) {
+    Point3i res = localPos;
+    if(localPos != null && structure != null) {
+      res = VecUtil.transformStructureCoodToWorld(0, 0, 0, rotation, structure.getSize(), localPos);
     }
     return res;
   }
