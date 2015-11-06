@@ -28,7 +28,12 @@ public interface IStructure {
   
   Rotation getRotation();
   
-  Collection<Point3i> getTaggedLocations(String target);
+  Point3i getRotatedLocation(Point3i localPos);
+  
+  Collection<Point3i> getTaggedLocationsInWorldCoords(String tag);
+  
+  Collection<Point3i> getTaggedLocationsInLocalCoords(String tag);
+  
 
   //-- bounds
   
@@ -71,5 +76,7 @@ public interface IStructure {
   void onLoaded(World world, NBTTagCompound state);
   
   NBTTagCompound onUnloaded(World world);
+
+  
 
 }

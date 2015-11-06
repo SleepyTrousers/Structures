@@ -15,6 +15,7 @@ import java.util.Set;
 
 import com.google.common.collect.HashMultimap;
 
+import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.util.Point3i;
 import crazypants.structures.gen.io.JsonUtil;
 import net.minecraft.entity.EntityLiving;
@@ -65,18 +66,38 @@ public class StructureUtils {
     entityNBT.setString("id", entityName);
     return entityNBT;
   }
-  
+
+  public static Point3i getTaggedLocation(String tag, IStructure structure, Point3i def) {
+    if(structure == null) {
+      return def;
+    }
+
+    if(tag != null) {
+      Collection<Point3i> locs = structure.getTaggedLocationsInLocalCoords(tag);
+      if(locs != null && !locs.isEmpty()) {
+        if(locs.size() > 1) {
+          Log.warn("StructureUtils: Found mroe than one position for tag [" + tag + "] Using first only");
+        }
+        return locs.iterator().next();
+      }
+    }
+
+    Log.warn("StructureUtils: Could not find position for tag  [" + tag + "] Using structure fallback position");    
+    return structure.getRotatedLocation(def);
+
+  }
+
   public static Collection<String> getTagsAtLocation(HashMultimap<String, Point3i> taggedLocations, Point3i loc) {
     if(loc == null) {
       return Collections.emptyList();
     }
     Set<String> res = new HashSet<String>();
     Set<Entry<String, Point3i>> entries = taggedLocations.entries();
-    for(Entry<String, Point3i> entry : entries) {
+    for (Entry<String, Point3i> entry : entries) {
       if(loc.equals(entry.getValue())) {
         res.add(entry.getKey());
       }
-   }
+    }
     return res;
   }
 
@@ -95,7 +116,7 @@ public class StructureUtils {
       root.setTag("taggedLocations", locationsList);
     }
   }
-  
+
   public static void readTaggedLocations(HashMultimap<String, Point3i> taggedLocations, NBTTagCompound root) {
     if(root.hasKey("taggedLocations")) {
       NBTTagList locs = (NBTTagList) root.getTag("taggedLocations");
@@ -159,7 +180,5 @@ public class StructureUtils {
     dos.writeShort((short) coord.y);
     dos.writeShort((short) coord.z);
   }
-
-  
 
 }

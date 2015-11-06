@@ -67,6 +67,27 @@ public class VecUtil {
     }
     return res;
   }
+  
+  public static Collection<Point3i> getTaggedLocationsInLocalCoords(IStructureTemplate template, String tag, int x, int y, int z, Rotation rotation) {
+    List<Point3i> res = new ArrayList<Point3i>();
+
+    Collection<Point3i> locs = template.getTaggedLocations(tag);
+    for (Point3i p : locs) {
+      Point3i xFormed = new Point3i(p);
+      xFormed = VecUtil.transformStructureCoodToWorld(0, 0, 0, rotation, template.getSize(), xFormed);
+      res.add(xFormed);
+    }
+    return res;
+
+  }
+  
+  public static Point3i getRotatedLocation(Point3i localPos, IStructure structure) {
+    Point3i res = localPos;
+    if(localPos != null && structure != null) {
+      res = VecUtil.transformStructureCoodToWorld(0, 0, 0, structure.getRotation(), structure.getTemplate().getSize(), localPos);
+    }
+    return res;
+  }
 
   public static Point3i size(AxisAlignedBB bb) {
     return new Point3i((int) Math.abs(bb.maxX - bb.minX), (int) Math.abs(bb.maxY - bb.minY), (int) Math.abs(bb.maxZ - bb.minZ));

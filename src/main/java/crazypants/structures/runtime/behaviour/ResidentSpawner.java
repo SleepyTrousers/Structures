@@ -29,6 +29,7 @@ public class ResidentSpawner extends AbstractEventBehaviour {
   private int respawnRate = 200;
   private int homeRadius = 64;
   private Point3i localPos = new Point3i();
+  private String taggedPos;
 
   //instance variables
   private Selector selector;
@@ -57,7 +58,12 @@ public class ResidentSpawner extends AbstractEventBehaviour {
     respawnRate = template.respawnRate;
     checkPeriod = respawnRate / 10;
     homeRadius = template.homeRadius;
+                    
     localPos = template.localPos;
+    taggedPos = template.taggedPos;    
+    localPos = StructureUtils.getTaggedLocation(taggedPos, structure, localPos != null ? localPos : new Point3i());
+    
+    
     numToSpawn = template.numToSpawn;
     spawnRange = template.spawnRange;
 
@@ -126,7 +132,7 @@ public class ResidentSpawner extends AbstractEventBehaviour {
     }
   }
 
-  private int getNumResidentsInHomeBounds() {
+  private int getNumResidentsInHomeBounds() {    
     Point3i worldPos = structure.transformLocalToWorld(localPos);
     List<?> ents = world.selectEntitiesWithinAABB(EntityLiving.class,
         AxisAlignedBB.getBoundingBox(
@@ -237,6 +243,14 @@ public class ResidentSpawner extends AbstractEventBehaviour {
 
   public void setLocalPos(Point3i localPos) {
     this.localPos = localPos;
+  }
+
+  public String getTaggedPos() {
+    return taggedPos;
+  }
+
+  public void setTaggedPos(String taggedPos) {
+    this.taggedPos = taggedPos;
   }
 
   public ICondition getPreCondition() {

@@ -222,8 +222,18 @@ public class Structure implements IStructure {
   }
 
   @Override
-  public Collection<Point3i> getTaggedLocations(String target) {
+  public Collection<Point3i> getTaggedLocationsInWorldCoords(String target) {
     return VecUtil.getTaggedLocationsInWorldCoords(template, target, origin.x, origin.y, origin.z, rotation);
+  }
+
+  @Override
+  public Collection<Point3i> getTaggedLocationsInLocalCoords(String tag) {
+    return VecUtil.getTaggedLocationsInLocalCoords(template, tag, origin.x, origin.y, origin.z, rotation);
+  }
+
+  @Override
+  public Point3i getRotatedLocation(Point3i localPos) {    
+    return VecUtil.getRotatedLocation(localPos, this);
   }
 
   @Override

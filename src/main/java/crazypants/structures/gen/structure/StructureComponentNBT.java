@@ -319,5 +319,12 @@ public class StructureComponentNBT implements IStructureComponent {
     return taggedLocations;
   }
 
+  public void setTags(Multimap<String, Point3i> tags) {
+    taggedLocations.clear();
+    if(tags != null) {
+      taggedLocations.putAll(tags);
+    }    
+  }
+
   
 }

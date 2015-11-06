@@ -25,7 +25,7 @@ public class LootTableDecorator implements IDecorator {
   @Override
   public void decorate(IStructure structure, World world, Random random, StructureBoundingBox bounds) {
     for (String target : targets) {
-      Collection<Point3i> locs = structure.getTaggedLocations(target);
+      Collection<Point3i> locs = structure.getTaggedLocationsInWorldCoords(target);
       for (Point3i loc : locs) {
         if(bounds == null || bounds.isVecInside(loc.x, loc.y, loc.z)) {
           IInventory inv = getInventory(world, loc);

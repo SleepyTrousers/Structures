@@ -344,10 +344,10 @@ public class DefaultParsers {
       res.setNumSpawned(JsonUtil.getIntField(json, "numSpawned", res.getNumSpawned()));
       res.setRespawnRate(JsonUtil.getIntField(json, "respawnRate", res.getNumSpawned()));
       res.setRespawnRate(JsonUtil.getIntField(json, "homeRadius", res.getHomeRadius()));
-      res.setLocalPos(JsonUtil.getPoint3iField(json, "position", res.getLocalPos()));      
+      res.setLocalPos(JsonUtil.getPoint3iField(json, "position", res.getLocalPos()));
+      res.setTaggedPos(JsonUtil.getStringField(json, "taggedPosition", res.getTaggedPos()));
       res.setPreCondition(parseCondition(json, "preCondition"));      
-      res.setOnSpawnAction(parseAction(json, "onSpawnAction")); 
-      
+      res.setOnSpawnAction(parseAction(json, "onSpawnAction"));       
       return res;      
     }
 

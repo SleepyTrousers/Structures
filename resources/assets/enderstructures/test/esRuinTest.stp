@@ -45,12 +45,17 @@
          { "type" : "LootTableInventory",
                     "category" : "esRuinTestPrivateCat",  
                     "comment_category" : "mineshaftCorridor, pyramidDesertyChest, pyramidJungleChest, pyramidJungleDispenser, strongholdCorridor, strongholdLibrary, strongholdCrossing, villageBlacksmith, bonusChest, dungeonChest",
-                    "targets" : ["inv0"]
+                    "targets" : ["upstairsChest"]
                     },
                     
          { "type" : "LootTableInventory",
                     "category" : "esTestCat2",                      
-                    "targets" : [ "inv1", "inv2", "inv3"]                    
+                    "targets" : [ "lowerChest1", "lowerChest2"]                    
+                    },  
+                    
+          { "type" : "LootTableInventory",
+                    "category" : "dungeonChest",                      
+                    "targets" : [ "doubleChest1" ]                    
                     }               
         
         ],
@@ -80,7 +85,8 @@
                      "spawnRange" : 4,
                      "respawnRate" : 2500,
                      "homeRadius" : 64,
-                     "position" : [2, 8, 2],
+                     "_position" : [2, 8, 2],
+                     "taggedPosition" : "resSpawner",
                      "preCondition" : {"type" : "PlayerInRange", "range" : 32, "position" : [2,8,2]  },
                      "onSpawnAction" : {"type" : "ExecuteCommand", 
                                                  "commands" : [
