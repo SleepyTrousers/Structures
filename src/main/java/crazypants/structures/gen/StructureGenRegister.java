@@ -135,6 +135,7 @@ public class StructureGenRegister {
       sd = resourceManager.loadTemplate(uid);
     } catch (Exception e) {
       Log.error("StructureGenRegister: Could not load structure template: " + uid + " Ex: " + e);
+      e.printStackTrace();
     } finally {
       templates.put(uid, sd);
     }
@@ -148,6 +149,7 @@ public class StructureGenRegister {
       try {
         registerGenerator(resourceManager.loadGenerator(uid));
       } catch (Exception e) {
+        e.printStackTrace();
         Log.warn("StructureGenRegister.loadAndRegisterAllResources: Error loading component " + uid + " Exception: " + e);
       }
     }
@@ -160,6 +162,7 @@ public class StructureGenRegister {
           registerVillagerGenerator(gen);
         }
       } catch (Exception e) {
+        e.printStackTrace();
         Log.warn("StructureGenRegister.loadAndRegisterAllResources: Error loading component " + uid + " Exception: " + e);
       }
     }
@@ -169,6 +172,7 @@ public class StructureGenRegister {
       try {
         resourceManager.loadLootTableDefination(uid);
       } catch (Exception e) {
+        e.printStackTrace();
         Log.warn("StructureGenRegister.loadAndRegisterAllResources: Could not load loot table categories from: " + uid + " error: " + e);
       }
     }
@@ -180,6 +184,7 @@ public class StructureGenRegister {
           IStructureTemplate tmp = resourceManager.loadTemplate(uid);
           registerTemplate(tmp);
         } catch (Exception e) {
+          e.printStackTrace();
           Log.warn("StructureGenRegister.loadAndRegisterAllResources: Error loading template " + uid + " Exception: " + e);
         }
       }
@@ -190,6 +195,7 @@ public class StructureGenRegister {
           StructureComponentNBT sc = resourceManager.loadStructureComponent(uid);
           registerStructureComponent(sc);
         } catch (Exception e) {
+          e.printStackTrace();
           Log.warn("StructureGenRegister.loadAndRegisterAllResources: Error loading component " + uid + " Exception: " + e);
         }
       }

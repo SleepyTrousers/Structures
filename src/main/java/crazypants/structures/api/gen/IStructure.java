@@ -66,7 +66,11 @@ public interface IStructure {
 
   void writeToNBT(NBTTagCompound root);
   
-  Point3i transformLocalToWorld(Point3i local);
+  //the point is rotated then translated to world coords
+  Point3i transformTemplateLocalToWorld(Point3i local);
+  
+  //the point is translated to world coords
+  Point3i transformStructureLocalToWorld(Point3i local);
 
   //-- Runtime stuff
   NBTTagCompound getState();

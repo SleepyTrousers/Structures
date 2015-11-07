@@ -225,7 +225,7 @@ public class StructureComponentNBT implements IStructureComponent {
 
   private void fillBlocks(World world, int x, int y, int z, Rotation rot, StructureBoundingBox genBounds, List<Point3i> coords, Block filler) {
     for (Point3i coord : coords) {
-      Point3i bc = VecUtil.transformStructureCoodToWorld(x, y, z, rot, size, coord);
+      Point3i bc = VecUtil.transformLocationToWorld(x, y, z, rot, size, coord);
       if((genBounds == null || genBounds.isVecInside(bc.x, bc.y, bc.z))
           && StructureUtil.isIgnoredAsSurface(world, x, z, y, world.getBlock(x, y, z), true, false)) {
         world.setBlock(bc.x, bc.y, bc.z, filler, 0, 2);
@@ -242,7 +242,7 @@ public class StructureComponentNBT implements IStructureComponent {
     } else {
 
       for (Point3i coord : coords) {
-        Point3i bc = VecUtil.transformStructureCoodToWorld(x, y, z, rot, size, coord);
+        Point3i bc = VecUtil.transformLocationToWorld(x, y, z, rot, size, coord);
 
         if(genBounds == null || genBounds.isVecInside(bc.x, bc.y, bc.z)) {
 

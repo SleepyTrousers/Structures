@@ -3,14 +3,12 @@ package crazypants.structures.runtime.behaviour.vspawner;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.IBehaviour;
 import crazypants.structures.api.runtime.ICondition;
-import crazypants.structures.api.util.Point3i;
+import crazypants.structures.runtime.behaviour.Positioned;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
-public class VirtualSpawnerBehaviour implements IBehaviour {
+public class VirtualSpawnerBehaviour extends Positioned implements IBehaviour {
  
-  private Point3i localPosition = new Point3i();
-
 //TODO: Allow for a list of entities
   private String entityTypeName = "Pig";  
   
@@ -35,10 +33,11 @@ public class VirtualSpawnerBehaviour implements IBehaviour {
   private final VirtualSpawnerInstance instance;
  
   public VirtualSpawnerBehaviour() {   
-    this(null);
+    this(null, null);
   }
   
-  public VirtualSpawnerBehaviour(VirtualSpawnerInstance instance) {
+  public VirtualSpawnerBehaviour(VirtualSpawnerBehaviour template, VirtualSpawnerInstance instance) {
+    super(template);
     this.instance = instance;
   }
 
@@ -52,10 +51,8 @@ public class VirtualSpawnerBehaviour implements IBehaviour {
   }
 
   @Override
-  public IBehaviour createInstance(World world, IStructure structure, NBTTagCompound state) {      
-    Point3i worldPos = structure.transformLocalToWorld(localPosition);
-    VirtualSpawnerInstance ins = new VirtualSpawnerInstance(structure, this, world, worldPos, state);
-    return new VirtualSpawnerBehaviour(ins);
+  public IBehaviour createInstance(World world, IStructure structure, NBTTagCompound state) {   
+    return new VirtualSpawnerBehaviour(this, new VirtualSpawnerInstance(structure, this, world, getWorldPosition(structure), state));
   }
 
 
@@ -93,14 +90,6 @@ public class VirtualSpawnerBehaviour implements IBehaviour {
 
   public void setSpawnCondition(ICondition spawnCondition) {
     this.spawnCondition = spawnCondition;
-  }
-
-  public Point3i getStructureLocalPosition() {
-    return localPosition;
-  }
-
-  public void setStructureLocalPosition(Point3i structureLocalPosition) {
-    this.localPosition = structureLocalPosition;
   }
 
   public String getEntityTypeName() {
@@ -166,5 +155,5 @@ public class VirtualSpawnerBehaviour implements IBehaviour {
   public void setPersistEntities(boolean persistEntities) {
     this.persistEntities = persistEntities;
   }
-
+  
 }

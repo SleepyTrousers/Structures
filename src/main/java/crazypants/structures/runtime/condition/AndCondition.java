@@ -6,6 +6,7 @@ import java.util.List;
 
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.ICondition;
+import crazypants.structures.api.util.Point3i;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
@@ -74,9 +75,9 @@ public class AndCondition implements ICondition {
   }
 
   @Override
-  public boolean isConditionMet(World world, IStructure structure) {
+  public boolean isConditionMet(World world, IStructure structure, Point3i refPos) {
     for(ICondition con : conditions) {
-      if(!con.isConditionMet(world, structure)) {
+      if(!con.isConditionMet(world, structure, refPos)) {
         return false;
       }
     }

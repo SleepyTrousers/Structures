@@ -119,7 +119,7 @@ public class TemplateParser {
 
       reg.getResourceManager().getLootTableParser().parseLootTableCategories(to);      
 
-    } catch (Exception e) {
+    } catch (Exception e) {      
       throw new Exception("TemplateParser: Could not parse generator template " + uid + ". " + e.getMessage(), e);
     }
 

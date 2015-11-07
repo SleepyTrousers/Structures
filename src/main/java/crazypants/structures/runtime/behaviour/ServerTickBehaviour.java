@@ -15,8 +15,7 @@ public class ServerTickBehaviour extends AbstractEventBehaviour  {
   //Template variables
   private int executionInterval;
   private ICondition condition;
-  private IAction action;
-  private Point3i position;
+  private IAction action;  
   
   //Runtime state
   private World world;
@@ -27,12 +26,12 @@ public class ServerTickBehaviour extends AbstractEventBehaviour  {
   }
   
   public ServerTickBehaviour(ServerTickBehaviour template, World world, IStructure strcuture, NBTTagCompound state) {
+    super(template);
     this.world = world;
     this.structure = strcuture;
-    this.position = template.getPosition();    
-    if(position != null) {
-      worldPosition = structure.transformLocalToWorld(position);
-    }         
+    
+    worldPosition = getWorldPosition(strcuture);
+             
     if(template.getCondition() != null) {      
       condition = template.getCondition().createInstance(world, strcuture, getSubState(state, "condition"));
     }
@@ -52,7 +51,7 @@ public class ServerTickBehaviour extends AbstractEventBehaviour  {
     if(executionInterval > 0 && curTime % executionInterval != 0) {
       return;
     }
-    if(condition != null && !condition.isConditionMet(world, structure)) {
+    if(condition != null && !condition.isConditionMet(world, structure, worldPosition)) {
       return;
     }
     if(action != null) {      
@@ -91,15 +90,6 @@ public class ServerTickBehaviour extends AbstractEventBehaviour  {
 
   public void setAction(IAction action) {
     this.action = action;
-  }
-  
-  public Point3i getPosition() {
-    return position;
-  }
-
-  public void setPosition(Point3i position) {
-    this.position = position;    
-  }
-
+  } 
 
 }

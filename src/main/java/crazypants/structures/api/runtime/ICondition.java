@@ -1,6 +1,7 @@
 package crazypants.structures.api.runtime;
 
 import crazypants.structures.api.gen.IStructure;
+import crazypants.structures.api.util.Point3i;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
@@ -14,8 +15,7 @@ public interface ICondition extends IStateful {
    */
   ICondition createInstance(World world, IStructure structure, NBTTagCompound state);
   
-  
-  
-  boolean isConditionMet(World world, IStructure structure);
+    
+  boolean isConditionMet(World world, IStructure structure, Point3i worldPos);
   
 }

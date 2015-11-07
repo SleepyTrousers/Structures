@@ -5,8 +5,8 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.WorldTickEvent;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
-import crazypants.structures.StructureUtils;
 import crazypants.structures.PacketHandler;
+import crazypants.structures.StructureUtils;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.ICondition;
 import crazypants.structures.api.util.Point3i;
@@ -22,10 +22,10 @@ public class VirtualSpawnerInstance {
     PacketHandler.INSTANCE.registerMessage(PacketSpawnParticles.class, PacketSpawnParticles.class, PacketHandler.nextID(), Side.CLIENT);
   }
 
-  private IStructure structure;
-  private VirtualSpawnerBehaviour behaviour;
-  private Point3i worldPos;
-  private World world;
+  private final IStructure structure;
+  private final VirtualSpawnerBehaviour behaviour;
+  private final Point3i worldPos;
+  private final World world;
 
   private int remainingSpawnTries;
 
@@ -39,8 +39,8 @@ public class VirtualSpawnerInstance {
   public VirtualSpawnerInstance(IStructure structure, VirtualSpawnerBehaviour behaviour, World world, Point3i worldPos, NBTTagCompound state) {
     this.structure = structure;
     this.behaviour = behaviour;
-    this.world = world;    
-    this.worldPos = worldPos;   
+    this.world = world;                    
+    this.worldPos = worldPos;
     
     entityNBT = StructureUtils.createEntityNBT(behaviour.getEntityTypeName(), behaviour.getEntityNbtText()); 
 
@@ -73,13 +73,13 @@ public class VirtualSpawnerInstance {
     if(evt.world != world) {
       return;
     }
-    if(activeCondition != null && !activeCondition.isConditionMet(world, structure)) {
+    if(activeCondition != null && !activeCondition.isConditionMet(world, structure, worldPos)) {
       return;
     }
 
     spawnActiveParticles();
 
-    if(spawnCondition != null && !spawnCondition.isConditionMet(world, structure)) {
+    if(spawnCondition != null && !spawnCondition.isConditionMet(world, structure, worldPos)) {
       return;
     }
     remainingSpawnTries = behaviour.getNumberSpawned() + behaviour.getMaxSpawnRetries();

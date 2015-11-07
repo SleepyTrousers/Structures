@@ -228,17 +228,25 @@ public class Structure implements IStructure {
 
   @Override
   public Collection<Point3i> getTaggedLocationsInLocalCoords(String tag) {
-    return VecUtil.getTaggedLocationsInLocalCoords(template, tag, origin.x, origin.y, origin.z, rotation);
+    return VecUtil.rotateTaggedLocations(template, tag, rotation);
   }
 
   @Override
-  public Point3i getRotatedLocation(Point3i localPos) {    
-    return VecUtil.getRotatedLocation(localPos, this);
+  public Point3i getRotatedLocation(Point3i templateLocalPos) {    
+    return VecUtil.rotatePosition(templateLocalPos, this);
   }
 
   @Override
-  public Point3i transformLocalToWorld(Point3i local) {
-    return VecUtil.transformStructureCoodToWorld(this, local);
+  public Point3i transformTemplateLocalToWorld(Point3i local) {
+    return VecUtil.transformTemplateCoodToWorld(this, local);
   }
+
+  @Override
+  public Point3i transformStructureLocalToWorld(Point3i local) {
+    Point3i res = new Point3i(local);
+    res.add(origin);
+    return res;
+  }
+  
 
 }

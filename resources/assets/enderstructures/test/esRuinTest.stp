@@ -53,7 +53,7 @@
                     "targets" : [ "lowerChest1", "lowerChest2"]                    
                     },  
                     
-          { "type" : "LootTableInventory",
+         { "type" : "LootTableInventory",
                     "category" : "dungeonChest",                      
                     "targets" : [ "doubleChest1" ]                    
                     }               
@@ -87,7 +87,7 @@
                      "homeRadius" : 64,
                      "_position" : [2, 8, 2],
                      "taggedPosition" : "resSpawner",
-                     "preCondition" : {"type" : "PlayerInRange", "range" : 32, "position" : [2,8,2]  },
+                     "preCondition" : {"type" : "PlayerInRange", "range" : 32 },
                      "onSpawnAction" : {"type" : "ExecuteCommand", 
                                                  "commands" : [
                                                       "summon PigZombie ~ ~ ~ {powered:1,CustomName:John}",

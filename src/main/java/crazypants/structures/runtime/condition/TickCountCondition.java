@@ -2,6 +2,7 @@ package crazypants.structures.runtime.condition;
 
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.ICondition;
+import crazypants.structures.api.util.Point3i;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
@@ -56,7 +57,7 @@ public class TickCountCondition implements ICondition {
   }
 
   @Override
-  public boolean isConditionMet(World world, IStructure structure) {
+  public boolean isConditionMet(World world, IStructure structure, Point3i refPoint) {
     --ticksUntilConditionMet;
     if(ticksUntilConditionMet <= 0) {
       updateRemainingTicks(world);

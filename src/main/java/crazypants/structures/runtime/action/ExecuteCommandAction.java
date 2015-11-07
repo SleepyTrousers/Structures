@@ -7,6 +7,7 @@ import java.util.List;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.IAction;
 import crazypants.structures.api.util.Point3i;
+import crazypants.structures.runtime.behaviour.Positioned;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.command.ICommandManager;
 import net.minecraft.command.server.CommandBlockLogic;
@@ -17,10 +18,9 @@ import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.world.World;
 
-public class ExecuteCommandAction implements IAction {
+public class ExecuteCommandAction extends Positioned implements IAction {
 
-  private List<String> commands = new ArrayList<String>();
-  private Point3i position = new Point3i();
+  private List<String> commands = new ArrayList<String>();  
   private String chat = "What is this for?";
   
   public ExecuteCommandAction() {   
@@ -38,13 +38,10 @@ public class ExecuteCommandAction implements IAction {
     }
     MinecraftServer minecraftserver = MinecraftServer.getServer();
     if(minecraftserver != null) {
+      System.out.println("ExecuteCommandAction.doAction: " + worldPos);
       
-      Point3i wp = worldPos;
-      if(wp == null) {
-        wp = structure.transformLocalToWorld(position == null ? new Point3i() : position);
-      }      
-      InnerSender sender = new InnerSender(world, structure, wp);
-      
+      Point3i wp = getWorldPosition(structure, worldPos);            
+      InnerSender sender = new InnerSender(world, structure, wp);      
       ICommandManager icommandmanager = minecraftserver.getCommandManager();
       
       boolean origValue = minecraftserver.worldServers[0].getGameRules().getGameRuleBooleanValue("commandBlockOutput");      
@@ -82,14 +79,6 @@ public class ExecuteCommandAction implements IAction {
     for(String command : commandsToAdd) {
       commands.add(command);
     }    
-  }
-
-  public Point3i getPosition() {
-    return position;
-  }
-
-  public void setPosition(Point3i position) {
-    this.position = position;
   }
 
   public String getChat() {

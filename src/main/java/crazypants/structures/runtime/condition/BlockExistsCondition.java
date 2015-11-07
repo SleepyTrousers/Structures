@@ -5,40 +5,22 @@ import crazypants.structures.api.util.Point3i;
 import net.minecraft.block.Block;
 import net.minecraft.world.World;
 
-public class BlockExistsCondition extends StatelessCondition {
+public class BlockExistsCondition extends PositionedCondition {
 
-  private Block block;
-  private Point3i localCoord;
+  private Block block;  
   private int meta = -1;
 
   public BlockExistsCondition() {    
   }
   
-  public BlockExistsCondition(Block block, Point3i localCoord) {  
-   this(block, -1, localCoord);
-  }  
-  
-  public BlockExistsCondition(Block block, int meta, Point3i localCoord) {  
-    this.block = block;
-    this.localCoord = localCoord;
-    this.meta = meta;
-  }
-  
   @Override
-  public boolean isConditionMet(World world, IStructure structure) {
-    if(block == null || localCoord == null) {
-      return false;
-    }
-
-    Point3i coord = structure.transformLocalToWorld(localCoord);
-
-    Block blk = world.getBlock(coord.x, coord.y, coord.z);
+  protected boolean doIsConditonMet(World world, IStructure structure, Point3i worldPos) {    
+    Block blk = world.getBlock(worldPos.x, worldPos.y, worldPos.z);
     if(blk != block) {
       return false;
     }
-
     if(meta > 0) {
-      int m = world.getBlockMetadata(coord.x, coord.y, coord.z);
+      int m = world.getBlockMetadata(worldPos.x, worldPos.y, worldPos.z);
       if(meta != m) {
         return false;
       }
@@ -52,14 +34,6 @@ public class BlockExistsCondition extends StatelessCondition {
 
   public void setBlock(Block block) {
     this.block = block;
-  }
-
-  public Point3i getLocalCoord() {
-    return localCoord;
-  }
-
-  public void setLocalCoord(Point3i localCoord) {
-    this.localCoord = localCoord;
   }
 
   public int getMeta() {

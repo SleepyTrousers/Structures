@@ -12,22 +12,19 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
-public class MaxEntitiesInRangeCondition extends StatelessCondition {
+public class MaxEntitiesInRangeCondition extends PositionedCondition {
 
   private int maxEntities = 10;
-  private int range = 32;
-  private Point3i localPos = new Point3i();
+  private int range = 32;  
   private Selector selector = new Selector();
 
   private List<String> ents = new ArrayList<String>();
 
   @Override
-  public boolean isConditionMet(World world, IStructure structure) {
+  protected boolean doIsConditonMet(World world, IStructure structure, Point3i worldPos) {  
     if(range <= 0) {
       return true;
-    }
-
-    Point3i worldPos = structure.transformLocalToWorld(localPos);
+    }            
     int nearbyEntities = world.selectEntitiesWithinAABB(EntityLiving.class,
         AxisAlignedBB.getBoundingBox(
             worldPos.x - range, worldPos.y - range, worldPos.z - range,
@@ -52,14 +49,6 @@ public class MaxEntitiesInRangeCondition extends StatelessCondition {
 
   public void setRange(int range) {
     this.range = range;
-  }
-
-  public Point3i getLocalPos() {
-    return localPos;
-  }
-
-  public void setLocalPos(Point3i localPos) {
-    this.localPos = localPos;
   }
 
   public List<String> getEntities() {

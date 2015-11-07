@@ -43,12 +43,12 @@ public class VecUtil {
     return bb.isVecInside(Vec3.createVectorHelper(bc.x, bc.y, bc.z));
   }
 
-  public static Point3i transformStructureCoodToWorld(IStructure structure, Point3i structureCoord) {
+  public static Point3i transformTemplateCoodToWorld(IStructure structure, Point3i templateCoord) {
     Point3i origin = structure.getOrigin();
-    return transformStructureCoodToWorld(origin.x, origin.y, origin.z, structure.getRotation(), structure.getSize(), structureCoord);
+    return transformLocationToWorld(origin.x, origin.y, origin.z, structure.getRotation(), structure.getSize(), templateCoord);
   }
   
-  public static Point3i transformStructureCoodToWorld(int worldOriginX, int worldOriginY, int worldOriginZ, Rotation componentRotation, Point3i componentSize,
+  public static Point3i transformLocationToWorld(int worldOriginX, int worldOriginY, int worldOriginZ, Rotation componentRotation, Point3i componentSize,
       Point3i localCoord) {
     Point3i bc = new Point3i(localCoord);
     componentRotation.rotate(bc, componentSize.x - 1, componentSize.z - 1);
@@ -63,37 +63,37 @@ public class VecUtil {
     Collection<Point3i> locs = template.getTaggedLocations(target);
     for (Point3i p : locs) {
       Point3i xFormed = new Point3i(p);
-      xFormed = VecUtil.transformStructureCoodToWorld(originX, originY, originZ, rotation, template.getSize(), xFormed);
+      xFormed = VecUtil.transformLocationToWorld(originX, originY, originZ, rotation, template.getSize(), xFormed);
       res.add(xFormed);
     }
     return res;
   }
   
-  public static Collection<Point3i> getTaggedLocationsInLocalCoords(IStructureTemplate template, String tag, int x, int y, int z, Rotation rotation) {
+  public static Collection<Point3i> rotateTaggedLocations(IStructureTemplate template, String tag, Rotation rotation) {
     List<Point3i> res = new ArrayList<Point3i>();
 
     Collection<Point3i> locs = template.getTaggedLocations(tag);
     for (Point3i p : locs) {
       Point3i xFormed = new Point3i(p);
-      xFormed = VecUtil.transformStructureCoodToWorld(0, 0, 0, rotation, template.getSize(), xFormed);
+      xFormed = VecUtil.transformLocationToWorld(0, 0, 0, rotation, template.getSize(), xFormed);
       res.add(xFormed);
     }
     return res;
 
   }
   
-  public static Point3i getRotatedLocation(Point3i localPos, IStructure structure) {
+  public static Point3i rotatePosition(Point3i localPos, IStructure structure) {
     Point3i res = localPos;
     if(localPos != null && structure != null) {
-      res = VecUtil.transformStructureCoodToWorld(0, 0, 0, structure.getRotation(), structure.getTemplate().getSize(), localPos);
+      res = VecUtil.transformLocationToWorld(0, 0, 0, structure.getRotation(), structure.getTemplate().getSize(), localPos);
     }
     return res;
   }
   
-  public static Point3i getRotatedLocation(Point3i localPos, IStructureComponent structure, Rotation rotation) {
+  public static Point3i rotatePosition(Point3i localPos, IStructureComponent structure, Rotation rotation) {
     Point3i res = localPos;
     if(localPos != null && structure != null) {
-      res = VecUtil.transformStructureCoodToWorld(0, 0, 0, rotation, structure.getSize(), localPos);
+      res = VecUtil.transformLocationToWorld(0, 0, 0, rotation, structure.getSize(), localPos);
     }
     return res;
   }

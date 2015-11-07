@@ -5,14 +5,8 @@
         
         "rotations" : [0,90,180,270],
         
-        "_components" : [
-          {"uid" : "test"},
-          {"uid" : "villageHouseDesert",
-           "offset" : [10, 10, 10] }
-        ],
-        
         "components" : [
-          {"uid" : "esSmallHouseTest"}
+          {"uid" : "esSpawnHouseTest"}
         ],
         
         "siteValidators" : [
@@ -56,15 +50,51 @@
                         
         ],
        
-       "behaviours" : [                     
+       "behaviours" : [
+           
+           { "type": "VirtualSpawner",
+                     "entity" : "Wolf",
+                     "numSpawned" : 4,                    
+                     "spawnRange" : 6,
+                     "persistEntities" : "false",
+                     "useVanillaSpawnChecks" : "true",
+                     "renderParticles" : true,
+                     "_position" : [2, 2, 2],
+                     "taggedPosition" : "vspawner",
+                     "activeCondition" : { "type" : "AndCondition",
+                                           "conditions" : [
+                                             {"type" : "PlayerInRange", "range" : 32 },
+                                             {"type" : "BlockExists", "block" : "minecraft:obsidian", "meta" : 0, "taggedPosition" : "vspawnerBase" }
+                                            ]
+                                         },
+                     "spawnCondition" : { "type" : "AndCondition",
+                                           "conditions" : [
+                                             {"type" : "TickCountCondition", 
+                                                       "initialCount" : 10, 
+                                                       "minCount" : 100, 
+                                                       "maxCount" : 200,
+                                                       "persisted" : true },
+                                                       
+                                             {"type" : "MaxEntitiesInRange", 
+                                                       "maxEntities" : 8, 
+                                                       "range" : 32, 
+                                                       "entities" : [ "Wolf"]  },
+                                                       
+                                             {"type" : "MaxEntitiesInRange", 
+                                                       "maxEntities" : 16, 
+                                                       "range" : 32}
+                                            ]
+                                         }
+                      
+           },
              
            { "type": "ServerTickBehaviour",
                      "executionInterval" : 20,
+                     "position" : [2,1,2],
                      "condition" : { "type" : "AndCondition",
                                               "conditions" : [
                                                {"type" : "PlayerInRange", 
-                                                         "range" : 32, 
-                                                         "position" : [2,1,2]  },
+                                                         "range" : 32 },
                                                {"type" : "ElapasedTimeCondition", 
                                                          "initialTime" : 10, 
                                                          "minTime" : 200, 
@@ -76,7 +106,8 @@
                       "action" : {"type" : "ExecuteCommand", 
                                            "position" : [2,10,2],
                                            "commands" : [
-                                               "effect @a[r=32] 1 5"                       
+                                               "effect @a[r=32] 1 5",
+                                               "summon Fireball ~ ~ ~ {direction:[0.0,-4.0,0.0]}"
                                            ]                                 
                                  }          
           }                            

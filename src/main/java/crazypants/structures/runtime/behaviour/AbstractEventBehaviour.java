@@ -7,10 +7,17 @@ import crazypants.structures.api.runtime.IStateful;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
-public abstract class AbstractEventBehaviour implements IBehaviour {
+public abstract class AbstractEventBehaviour extends Positioned implements IBehaviour {
 
   private boolean registered = false;
 
+  public AbstractEventBehaviour() {    
+  }
+  
+  public AbstractEventBehaviour(AbstractEventBehaviour other) {
+    super(other);
+  }
+  
   @Override
   public void onStructureGenerated(World world, IStructure structure) {   
     register();

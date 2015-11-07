@@ -15,7 +15,6 @@ import crazypants.structures.api.gen.ISiteValidator;
 import crazypants.structures.api.runtime.IAction;
 import crazypants.structures.api.runtime.IBehaviour;
 import crazypants.structures.api.runtime.ICondition;
-import crazypants.structures.api.util.Point3i;
 import crazypants.structures.gen.io.JsonUtil.TypedObject;
 import crazypants.structures.gen.structure.decorator.LootTableDecorator;
 import crazypants.structures.gen.structure.preperation.ClearPreperation;
@@ -31,6 +30,7 @@ import crazypants.structures.gen.structure.validator.biome.BiomeFilterAll;
 import crazypants.structures.gen.structure.validator.biome.BiomeFilterAny;
 import crazypants.structures.gen.structure.validator.biome.IBiomeFilter;
 import crazypants.structures.runtime.action.ExecuteCommandAction;
+import crazypants.structures.runtime.behaviour.Positioned;
 import crazypants.structures.runtime.behaviour.ResidentSpawner;
 import crazypants.structures.runtime.behaviour.ServerTickBehaviour;
 import crazypants.structures.runtime.behaviour.vspawner.VirtualSpawnerBehaviour;
@@ -86,6 +86,11 @@ public class DefaultParsers {
 
   private static void add(ParserAdapater fact) {
     ParserRegister.instance.register(fact);
+  }
+  
+  private static void readPositioned(Positioned positioned, JsonObject json) {
+    positioned.setPosition(JsonUtil.getPoint3iField(json, "position", positioned.getPosition()));
+    positioned.setTaggedPosition(JsonUtil.getStringField(json, "taggedPosition", positioned.getTaggedPosition()));
   }
 
   //-----------------------------------------------------------------
@@ -313,14 +318,14 @@ public class DefaultParsers {
     @Override
     public IBehaviour createBehaviour(String uid, JsonObject json) {
       VirtualSpawnerBehaviour res = new VirtualSpawnerBehaviour(); 
+      readPositioned(res, json);      
       res.setEntityTypeName(JsonUtil.getStringField(json, "entity", res.getEntityTypeName()));
       res.setEntityNbtText(JsonUtil.getStringField(json, "entityNbt", res.getEntityNbtText()));
       res.setNumberSpawned(JsonUtil.getIntField(json, "numSpawned", res.getNumberSpawned()));
       res.setSpawnRange(JsonUtil.getIntField(json, "spawnRange", res.getSpawnRange()));
       res.setPersistEntities(JsonUtil.getBooleanField(json, "persistEntities", res.isPersistEntities()));
       res.setUseVanillaSpawnChecks(JsonUtil.getBooleanField(json, "useVanillaSpawnChecks", res.isUseVanillaSpawnChecks()));
-      res.setRenderParticles(JsonUtil.getBooleanField(json, "renderParticles", res.isRenderParticles()));
-      res.setStructureLocalPosition(JsonUtil.getPoint3iField(json, "position", res.getStructureLocalPosition()));
+      res.setRenderParticles(JsonUtil.getBooleanField(json, "renderParticles", res.isRenderParticles()));      
       res.setActiveCondition(parseCondition(json, "activeCondition"));
       res.setSpawnCondition(parseCondition(json, "spawnCondition"));
       return res;
@@ -339,13 +344,12 @@ public class DefaultParsers {
     @Override
     public IBehaviour createBehaviour(String uid, JsonObject json) {
       ResidentSpawner res = new ResidentSpawner();
+      readPositioned(res, json);
       res.setEntity(JsonUtil.getStringField(json, "entity", res.getEntity()));
       res.setEntityNbtText(JsonUtil.getStringField(json, "entityNbt", res.getEntityNbtText()));
       res.setNumSpawned(JsonUtil.getIntField(json, "numSpawned", res.getNumSpawned()));
       res.setRespawnRate(JsonUtil.getIntField(json, "respawnRate", res.getNumSpawned()));
-      res.setRespawnRate(JsonUtil.getIntField(json, "homeRadius", res.getHomeRadius()));
-      res.setLocalPos(JsonUtil.getPoint3iField(json, "position", res.getLocalPos()));
-      res.setTaggedPos(JsonUtil.getStringField(json, "taggedPosition", res.getTaggedPos()));
+      res.setRespawnRate(JsonUtil.getIntField(json, "homeRadius", res.getHomeRadius()));           
       res.setPreCondition(parseCondition(json, "preCondition"));      
       res.setOnSpawnAction(parseAction(json, "onSpawnAction"));       
       return res;      
@@ -366,7 +370,7 @@ public class DefaultParsers {
     @Override
     public IBehaviour createBehaviour(String uid, JsonObject json) {
       ServerTickBehaviour res = new ServerTickBehaviour();      
-      res.setPosition(JsonUtil.getPoint3iField(json, "position", res.getPosition()));
+      readPositioned(res, json);
       res.setExecutionInterval(JsonUtil.getIntField(json, "executionInterval", res.getExecutionInterval()));            
       res.setCondition(parseCondition(json, "condition"));      
       res.setAction(parseAction(json, "action"));         
@@ -436,13 +440,12 @@ public class DefaultParsers {
       if(blk == null) {
         return null;
       }
-      int meta = JsonUtil.getIntField(json, "meta", -1);
 
-      Point3i pos = JsonUtil.getPoint3iField(json, "position", null);
-      if(pos == null) {
-        return null;
-      }
-      return new BlockExistsCondition(blk, meta, pos);
+      BlockExistsCondition res = new BlockExistsCondition();
+      readPositioned(res, json);
+      res.setBlock(blk);
+      res.setMeta(JsonUtil.getIntField(json, "meta", -1));           
+      return res;
     }
   }
 
@@ -456,11 +459,8 @@ public class DefaultParsers {
     @Override
     public ICondition createCondition(String uid, JsonObject json) {
       PlayerInRangeCondition con = new PlayerInRangeCondition();
-      con.setRange(JsonUtil.getIntField(json, "range", con.getRange()));
-      Point3i pos = JsonUtil.getPoint3iField(json, "position", null);
-      if(pos != null) {
-        con.setLocalPos(pos);
-      }
+      readPositioned(con, json);
+      con.setRange(JsonUtil.getIntField(json, "range", con.getRange()));           
       return con;
     }
   }
@@ -475,12 +475,9 @@ public class DefaultParsers {
     @Override
     public ICondition createCondition(String uid, JsonObject json) {
       MaxEntitiesInRangeCondition con = new MaxEntitiesInRangeCondition();
+      readPositioned(con, json);
       con.setMaxEntities(JsonUtil.getIntField(json, "maxEntities", con.getMaxEntities()));
-      con.setRange(JsonUtil.getIntField(json, "range", con.getRange()));
-      Point3i pos = JsonUtil.getPoint3iField(json, "position", null);
-      if(pos != null) {
-        con.setLocalPos(pos);
-      }
+      con.setRange(JsonUtil.getIntField(json, "range", con.getRange()));      
       List<String> ents = JsonUtil.getStringArrayField(json, "entities");
       if(ents != null) {
         con.setEntities(ents);
@@ -537,7 +534,7 @@ public class DefaultParsers {
     @Override
     public IAction createAction(String uid, JsonObject json) {
       ExecuteCommandAction res = new ExecuteCommandAction();
-      res.setPosition(JsonUtil.getPoint3iField(json, "position", res.getPosition()));
+      readPositioned(res, json);
       res.setCommands(JsonUtil.getStringArrayField(json, "commands"));
       return res;
     }

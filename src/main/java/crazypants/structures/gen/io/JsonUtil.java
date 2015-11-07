@@ -190,7 +190,6 @@ public class JsonUtil {
     res.setItemDamage(getIntField(obj, "meta", res.getItemDamage()));
     
     String nbtStr = getStringField(obj, "nbt", null);
-    System.out.println("JsonUtil.getItemStack: uid=" + uid + " nbt=" + nbtStr);
     if(nbtStr != null) {
       NBTTagCompound nbt = parseNBT(nbtStr);
       if(nbt != null) {

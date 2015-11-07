@@ -147,9 +147,9 @@ public class VillageHouse extends StructureVillagePieces.House1 {
       NBTTagCompound strRoot = nbt.getCompoundTag("structure");
       structure = new Structure(strRoot);
       if(!structure.isValid()) {
-        structure = null;
-        template = null;
         Log.warn("VillageHouse: Could not load template for previously generated house: " + structure.getUid());
+        structure = null;
+        template = null;        
       }
     }
   }

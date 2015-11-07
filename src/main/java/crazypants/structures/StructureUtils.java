@@ -67,23 +67,26 @@ public class StructureUtils {
     return entityNBT;
   }
 
-  public static Point3i getTaggedLocation(String tag, IStructure structure, Point3i def) {
+  public static Point3i getTaggedLocationInStructureCoords(String tag, IStructure structure, Point3i fallback) {
     if(structure == null) {
-      return def;
+      return fallback;
     }
 
     if(tag != null) {
       Collection<Point3i> locs = structure.getTaggedLocationsInLocalCoords(tag);
       if(locs != null && !locs.isEmpty()) {
         if(locs.size() > 1) {
-          Log.warn("StructureUtils: Found mroe than one position for tag [" + tag + "] Using first only");
+//          Log.warn("StructureUtils: Found mroe than one position for tag [" + tag + "] Using first only");
         }
         return locs.iterator().next();
       }
+      Log.warn("StructureUtils: Could not find position for tag  [" + tag + "] Using structure fallback position");
     }
 
-    Log.warn("StructureUtils: Could not find position for tag  [" + tag + "] Using structure fallback position");    
-    return structure.getRotatedLocation(def);
+    if(fallback == null) {
+      return null;
+    }    
+    return structure.getRotatedLocation(fallback);
 
   }
 
