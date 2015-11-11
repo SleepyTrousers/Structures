@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.google.gson.annotations.Expose;
+
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.IAction;
 import crazypants.structures.api.util.Point3i;
@@ -20,7 +22,10 @@ import net.minecraft.world.World;
 
 public class ExecuteCommandAction extends Positioned implements IAction {
 
-  private List<String> commands = new ArrayList<String>();  
+  @Expose
+  private List<String> commands = new ArrayList<String>();
+  
+  @Expose
   private String chat = "What is this for?";
   
   public ExecuteCommandAction() {   

@@ -3,6 +3,8 @@ package crazypants.structures.runtime.condition;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.annotations.Expose;
+
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.util.Point3i;
 import net.minecraft.command.IEntitySelector;
@@ -14,11 +16,16 @@ import net.minecraft.world.World;
 
 public class MaxEntitiesInRangeCondition extends PositionedCondition {
 
+  @Expose
   private int maxEntities = 10;
-  private int range = 32;  
-  private Selector selector = new Selector();
-
-  private List<String> ents = new ArrayList<String>();
+  
+  @Expose
+  private int range = 32;
+  
+  @Expose
+  private List<String> entities = new ArrayList<String>();
+  
+  private transient Selector selector = new Selector();
 
   @Override
   protected boolean doIsConditonMet(World world, IStructure structure, Point3i worldPos) {  
@@ -52,22 +59,22 @@ public class MaxEntitiesInRangeCondition extends PositionedCondition {
   }
 
   public List<String> getEntities() {
-    return ents;
+    return entities;
   }
 
   public void setEntities(List<String> ents) {
-    this.ents = ents;
+    this.entities = ents;
   }
 
   private class Selector implements IEntitySelector {
 
     @Override
     public boolean isEntityApplicable(Entity ent) {
-      if(ents.isEmpty()) {
+      if(entities.isEmpty()) {
         return true;
       }
       String entityId = EntityList.getEntityString(ent);
-      return ents.contains(entityId);
+      return entities.contains(entityId);
     }
 
   }

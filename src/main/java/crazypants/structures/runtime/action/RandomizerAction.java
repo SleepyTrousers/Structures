@@ -2,6 +2,8 @@ package crazypants.structures.runtime.action;
 
 import java.util.Random;
 
+import com.google.gson.annotations.Expose;
+
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.IAction;
 import crazypants.structures.api.util.Point3i;
@@ -11,13 +13,19 @@ public class RandomizerAction extends CompositeAction {
 
   private static final Random RND = new Random();
 
+  @Expose
   private final Point3i minOffset = new Point3i();
+  @Expose
   private final Point3i maxOffset = new Point3i();
-
+  
+  @Expose
   private int minDelay = 0;
+  @Expose
   private int maxDelay = 0;
 
+  @Expose
   private int minRepeats = 1;
+  @Expose
   private int maxRepeats = 1;
 
   public RandomizerAction() {
@@ -96,7 +104,7 @@ public class RandomizerAction extends CompositeAction {
 
   public void setMinOffset(Point3i offset) {
     if(offset == null) {
-      minOffset.set(0,0,0);
+      minOffset.set(0, 0, 0);
     } else {
       minOffset.set(offset);
     }
@@ -104,7 +112,7 @@ public class RandomizerAction extends CompositeAction {
 
   public void setMaxOffset(Point3i offset) {
     if(offset == null) {
-      maxOffset.set(0,0,0);
+      maxOffset.set(0, 0, 0);
     } else {
       maxOffset.set(offset);
     }

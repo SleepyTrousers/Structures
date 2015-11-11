@@ -1,12 +1,17 @@
 package crazypants.structures.runtime.behaviour;
 
+import com.google.gson.annotations.Expose;
+
 import crazypants.structures.StructureUtils;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.util.Point3i;
 
 public class Positioned {
 
+  @Expose
   private Point3i position;
+  
+  @Expose
   private String taggedPosition;
   
   public Positioned() {    

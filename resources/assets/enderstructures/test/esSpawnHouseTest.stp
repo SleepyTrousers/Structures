@@ -59,7 +59,6 @@
                      "persistEntities" : "false",
                      "useVanillaSpawnChecks" : "true",
                      "renderParticles" : true,
-                     "_position" : [2, 2, 2],
                      "taggedPosition" : "vspawner",
                      "activeCondition" : { "type" : "AndCondition",
                                            "conditions" : [

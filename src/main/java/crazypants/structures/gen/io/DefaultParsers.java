@@ -1,11 +1,11 @@
 package crazypants.structures.gen.io;
 
+import static crazypants.structures.gen.io.GsonIO.GSON;
+
 import java.util.List;
 
 import com.google.gson.JsonObject;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
 import crazypants.structures.Log;
 import crazypants.structures.api.gen.IChunkValidator;
 import crazypants.structures.api.gen.IDecorator;
@@ -43,55 +43,54 @@ import crazypants.structures.runtime.condition.MaxEntitiesInRangeCondition;
 import crazypants.structures.runtime.condition.OrCondition;
 import crazypants.structures.runtime.condition.PlayerInRangeCondition;
 import crazypants.structures.runtime.condition.TickCountCondition;
-import net.minecraft.block.Block;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.BiomeDictionary.Type;
 
 public class DefaultParsers {
 
   public static void register() {
-  
+
     //Location samplers
     add(new SurfaceSamplerParser());
-    
+
     //validators
     add(new RandomValParser());
     add(new DimValParser());
-    add(new SpacingValParser());    
+    add(new SpacingValParser());
     add(new LevGrnValdParser());
     add(new BiomeValParser());
-    
+
     //site preps
     add(new FillPrepParser());
     add(new ClearPrepParser());
-    
+
     //Decorators
     add(new LootTableDecFact());
-    
+
     //behaviours
     add(new ResidentSpawnerParser());
     add(new VirtualSpawnerParser());
     add(new ServerTickBehaviourParser());
-    
-    //conditions
-    add(new AndConditionParser());
-    add(new OrConditionParser());
-    add(new BlockExistsConditionParser());
-    add(new PlayerInRangeConditionParser());
-    add(new MaxEntitiesInRangeParser());
-    add(new ElapasedTimeConditionParser());
-    add(new TickCountConditionParser());
+
+    //conditions    
+    add(new GsonParserAdapter("AndCondition",  AndCondition.class));
+    add(new GsonParserAdapter("OrCondition", OrCondition.class));
+    add(new GsonParserAdapter("BlockExists", BlockExistsCondition.class));
+    add(new GsonParserAdapter("PlayerInRange", PlayerInRangeCondition.class));
+    add(new GsonParserAdapter("MaxEntitiesInRange", MaxEntitiesInRangeCondition.class));
+    add(new GsonParserAdapter("ElapasedTimeCondition", ElapasedTimeCondition.class));
+    add(new GsonParserAdapter("TickCountCondition", TickCountCondition.class));
     
     //actions
-    add(new ExecuteCommandParser());
-    add(new CompositeActionParser());
-    add(new RandomizerActionParser());
+    add(new GsonParserAdapter("ExecuteCommand", ExecuteCommandAction.class));
+    add(new GsonParserAdapter("CompositeAction", CompositeAction.class));
+    add(new GsonParserAdapter("RandomizerAction", RandomizerAction.class));
   }
 
   private static void add(ParserAdapater fact) {
     ParserRegister.instance.register(fact);
   }
-  
+
   private static void readPositioned(Positioned positioned, JsonObject json) {
     positioned.setPosition(JsonUtil.getPoint3iField(json, "position", positioned.getPosition()));
     positioned.setTaggedPosition(JsonUtil.getStringField(json, "taggedPosition", positioned.getTaggedPosition()));
@@ -122,9 +121,7 @@ public class DefaultParsers {
 
     @Override
     public IChunkValidator createChunkValidator(String uid, JsonObject json) {
-      RandomValidator res = new RandomValidator();
-      res.setChancePerChunk(JsonUtil.getFloatField(json, "chancePerChunk", res.getChancePerChunk()));
-      return res;
+      return GSON.fromJson(json, RandomValidator.class);
     }
 
   }
@@ -287,13 +284,12 @@ public class DefaultParsers {
     }
   }
 
-  
   static class AbstractBehaviourParser extends ParserAdapater {
 
     public AbstractBehaviourParser(String uid) {
-      super(uid);    
+      super(uid);
     }
-    
+
     protected ICondition parseCondition(JsonObject json, String f) {
       TypedObject obj = JsonUtil.getTypedObjectField(json, f);
       if(obj != null) {
@@ -301,7 +297,7 @@ public class DefaultParsers {
       }
       return null;
     }
-    
+
     protected IAction parseAction(JsonObject json, String f) {
       TypedObject obj = JsonUtil.getTypedObjectField(json, f);
       if(obj != null) {
@@ -309,9 +305,9 @@ public class DefaultParsers {
       }
       return null;
     }
-    
+
   }
-  
+
   //-----------------------------------------------------------------
   static class VirtualSpawnerParser extends AbstractBehaviourParser {
 
@@ -321,22 +317,22 @@ public class DefaultParsers {
 
     @Override
     public IBehaviour createBehaviour(String uid, JsonObject json) {
-      VirtualSpawnerBehaviour res = new VirtualSpawnerBehaviour(); 
-      readPositioned(res, json);      
+      VirtualSpawnerBehaviour res = new VirtualSpawnerBehaviour();
+      readPositioned(res, json);
       res.setEntityTypeName(JsonUtil.getStringField(json, "entity", res.getEntityTypeName()));
       res.setEntityNbtText(JsonUtil.getStringField(json, "entityNbt", res.getEntityNbtText()));
       res.setNumberSpawned(JsonUtil.getIntField(json, "numSpawned", res.getNumberSpawned()));
       res.setSpawnRange(JsonUtil.getIntField(json, "spawnRange", res.getSpawnRange()));
       res.setPersistEntities(JsonUtil.getBooleanField(json, "persistEntities", res.isPersistEntities()));
       res.setUseVanillaSpawnChecks(JsonUtil.getBooleanField(json, "useVanillaSpawnChecks", res.isUseVanillaSpawnChecks()));
-      res.setRenderParticles(JsonUtil.getBooleanField(json, "renderParticles", res.isRenderParticles()));      
+      res.setRenderParticles(JsonUtil.getBooleanField(json, "renderParticles", res.isRenderParticles()));
       res.setActiveCondition(parseCondition(json, "activeCondition"));
       res.setSpawnCondition(parseCondition(json, "spawnCondition"));
       return res;
     }
 
   }
-  
+
   //ResidentSpawnerParser
   //-----------------------------------------------------------------
   static class ResidentSpawnerParser extends AbstractBehaviourParser {
@@ -353,17 +349,15 @@ public class DefaultParsers {
       res.setEntityNbtText(JsonUtil.getStringField(json, "entityNbt", res.getEntityNbtText()));
       res.setNumSpawned(JsonUtil.getIntField(json, "numSpawned", res.getNumSpawned()));
       res.setRespawnRate(JsonUtil.getIntField(json, "respawnRate", res.getNumSpawned()));
-      res.setRespawnRate(JsonUtil.getIntField(json, "homeRadius", res.getHomeRadius()));           
-      res.setPreCondition(parseCondition(json, "preCondition"));      
-      res.setOnSpawnAction(parseAction(json, "onSpawnAction"));       
-      return res;      
+      res.setRespawnRate(JsonUtil.getIntField(json, "homeRadius", res.getHomeRadius()));
+      res.setPreCondition(parseCondition(json, "preCondition"));
+      res.setOnSpawnAction(parseAction(json, "onSpawnAction"));
+      return res;
     }
 
-   
-
   }
-  
-//ServerTickBehaviourParser
+
+  //ServerTickBehaviourParser
   //-----------------------------------------------------------------
   static class ServerTickBehaviourParser extends AbstractBehaviourParser {
 
@@ -373,221 +367,14 @@ public class DefaultParsers {
 
     @Override
     public IBehaviour createBehaviour(String uid, JsonObject json) {
-      ServerTickBehaviour res = new ServerTickBehaviour();      
+      ServerTickBehaviour res = new ServerTickBehaviour();
       readPositioned(res, json);
-      res.setExecutionInterval(JsonUtil.getIntField(json, "executionInterval", res.getExecutionInterval()));            
-      res.setCondition(parseCondition(json, "condition"));      
-      res.setAction(parseAction(json, "action"));         
-      return res;      
-    }   
-
-  }
-  //-----------------------------------------------------------------
-  static class AndConditionParser extends ParserAdapater {
-
-    AndConditionParser() {
-      super("AndCondition");
-    }
-
-    @Override
-    public ICondition createCondition(String uid, JsonObject json) {
-
-      AndCondition res = new AndCondition();
-      List<TypedObject> arrayContents = JsonUtil.getTypedObjectArray(json, "conditions");
-      for (TypedObject o : arrayContents) {
-        ICondition con = ParserRegister.instance.createCondition(o.type, o.obj);
-        if(con != null) {
-          res.addCondition(con);
-        }
-      }
+      res.setExecutionInterval(JsonUtil.getIntField(json, "executionInterval", res.getExecutionInterval()));
+      res.setCondition(parseCondition(json, "condition"));
+      res.setAction(parseAction(json, "action"));
       return res;
     }
-  }
 
-  //-----------------------------------------------------------------
-  static class OrConditionParser extends ParserAdapater {
-
-    OrConditionParser() {
-      super("AndCondition");
-    }
-
-    @Override
-    public ICondition createCondition(String uid, JsonObject json) {
-      OrCondition res = new OrCondition();
-      List<TypedObject> arrayContents = JsonUtil.getTypedObjectArray(json, "conditions");
-      for (TypedObject o : arrayContents) {
-        ICondition con = ParserRegister.instance.createCondition(o.type, o.obj);
-        if(con != null) {
-          res.addCondition(con);
-        }
-      }
-      return res;
-    }
-  }
-
-  //-----------------------------------------------------------------
-  static class BlockExistsConditionParser extends ParserAdapater {
-
-    BlockExistsConditionParser() {
-      super("BlockExists");
-    }
-
-    @Override
-    public ICondition createCondition(String uid, JsonObject json) {
-
-      String blkStr = JsonUtil.getStringField(json, "block", null);
-      if(blkStr == null) {
-        return null;
-      }
-      UniqueIdentifier blkId = new UniqueIdentifier(blkStr);
-      Block blk = GameRegistry.findBlock(blkId.modId, blkId.name);
-      if(blk == null) {
-        return null;
-      }
-
-      BlockExistsCondition res = new BlockExistsCondition();
-      readPositioned(res, json);
-      res.setBlock(blk);
-      res.setMeta(JsonUtil.getIntField(json, "meta", -1));           
-      return res;
-    }
-  }
-
-  //-----------------------------------------------------------------
-  static class PlayerInRangeConditionParser extends ParserAdapater {
-
-    PlayerInRangeConditionParser() {
-      super("PlayerInRange");
-    }
-
-    @Override
-    public ICondition createCondition(String uid, JsonObject json) {
-      PlayerInRangeCondition con = new PlayerInRangeCondition();
-      readPositioned(con, json);
-      con.setRange(JsonUtil.getIntField(json, "range", con.getRange()));           
-      return con;
-    }
-  }
-
-  //-----------------------------------------------------------------
-  static class MaxEntitiesInRangeParser extends ParserAdapater {
-
-    MaxEntitiesInRangeParser() {
-      super("MaxEntitiesInRange");
-    }
-
-    @Override
-    public ICondition createCondition(String uid, JsonObject json) {
-      MaxEntitiesInRangeCondition con = new MaxEntitiesInRangeCondition();
-      readPositioned(con, json);
-      con.setMaxEntities(JsonUtil.getIntField(json, "maxEntities", con.getMaxEntities()));
-      con.setRange(JsonUtil.getIntField(json, "range", con.getRange()));      
-      List<String> ents = JsonUtil.getStringArrayField(json, "entities");
-      if(ents != null) {
-        con.setEntities(ents);
-      }
-      return con;
-    }
-  }
-
-  //-----------------------------------------------------------------
-  static class ElapasedTimeConditionParser extends ParserAdapater {
-
-    ElapasedTimeConditionParser() {
-      super("ElapasedTimeCondition");
-    }
-
-    @Override
-    public ICondition createCondition(String uid, JsonObject json) {
-      ElapasedTimeCondition con = new ElapasedTimeCondition();
-      con.setInitialTime(JsonUtil.getIntField(json, "initialTime", con.getInitialTime()));
-      con.setMinTime(JsonUtil.getIntField(json, "minTime", con.getMinTime()));
-      con.setMaxTime(JsonUtil.getIntField(json, "maxTime", con.getMaxTime()));
-      con.setPersisted(JsonUtil.getBooleanField(json, "persisted", con.isPersisted()));
-      return con;
-    }
-  }
-
-  //TickCountCondition
-  //-----------------------------------------------------------------
-  static class TickCountConditionParser extends ParserAdapater {
-
-    TickCountConditionParser() {
-      super("TickCountCondition");
-    }
-
-    @Override
-    public ICondition createCondition(String uid, JsonObject json) {
-      TickCountCondition con = new TickCountCondition();
-      con.setInitialCount(JsonUtil.getIntField(json, "initialCount", con.getInitialCount()));
-      con.setMinCount(JsonUtil.getIntField(json, "minCount", con.getMinCount()));
-      con.setMaxCount(JsonUtil.getIntField(json, "maxCount", con.getMaxCount()));
-      con.setPersisted(JsonUtil.getBooleanField(json, "persisted", con.isPersisted()));
-      return con;
-    }
   }
  
-  //ExecuteCommandFact
-  //-----------------------------------------------------------------
-  static class ExecuteCommandParser extends ParserAdapater {
-
-    ExecuteCommandParser() {
-      super("ExecuteCommand");
-    }
-
-    @Override
-    public IAction createAction(String uid, JsonObject json) {
-      ExecuteCommandAction res = new ExecuteCommandAction();
-      readPositioned(res, json);
-      res.setCommands(JsonUtil.getStringArrayField(json, "commands"));
-      return res;
-    }
-  }
-  
-  //-----------------------------------------------------------------
-  static class CompositeActionParser extends ParserAdapater {
-
-    CompositeActionParser() {             
-      super("CompositeAction");
-    }
-
-    @Override
-    public IAction createAction(String uid, JsonObject json) {
-      CompositeAction res = new CompositeAction();
-      List<TypedObject> actions = JsonUtil.getTypedObjectArray(json, "actions");
-      for(TypedObject obj : actions) {        
-        IAction action = ParserRegister.instance.createAction(obj.type, obj.obj);
-        if(action != null) {
-          res.addAction(action);
-        }
-      }
-      return res;
-    }           
-  }
-  
-  static class RandomizerActionParser extends ParserAdapater {
-
-    RandomizerActionParser() {             
-      super("RandomizerAction");
-    }
-
-    @Override
-    public IAction createAction(String uid, JsonObject json) {
-      RandomizerAction res = new RandomizerAction();
-      List<TypedObject> actions = JsonUtil.getTypedObjectArray(json, "actions");
-      for(TypedObject obj : actions) {        
-        IAction action = ParserRegister.instance.createAction(obj.type, obj.obj);
-        if(action != null) {
-          res.addAction(action);
-        }
-      }
-      res.setMinDelay(JsonUtil.getIntField(json, "minDelay", res.getMinDelay()));
-      res.setMaxDelay(JsonUtil.getIntField(json, "maxDelay", res.getMaxDelay()));
-      res.setMinRepeats(JsonUtil.getIntField(json, "minRepeats", res.getMinRepeats()));
-      res.setMaxRepeats(JsonUtil.getIntField(json, "maxRepeats", res.getMaxRepeats()));
-      res.setMinOffset(JsonUtil.getPoint3iField(json, "minOffset", res.getMinOffset()));
-      res.setMaxOffset(JsonUtil.getPoint3iField(json, "maxOffset", res.getMaxOffset()));
-      return res;
-    }           
-  }
 }

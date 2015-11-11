@@ -1,5 +1,7 @@
 package crazypants.structures.runtime.condition;
 
+import com.google.gson.annotations.Expose;
+
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.ICondition;
 import crazypants.structures.api.util.Point3i;
@@ -8,10 +10,18 @@ import net.minecraft.world.World;
 
 public class TickCountCondition implements ICondition {
 
+  @Expose
   private int initialCount = 40;
+  
+  @Expose
   private int minCount = 100;
+  
+  @Expose
   private int maxCount = 200;
+  
+  @Expose
   private boolean persisted = false;
+  
   private int ticksUntilConditionMet = 0;
 
   public TickCountCondition() {

@@ -1,5 +1,7 @@
 package crazypants.structures.runtime.condition;
 
+import com.google.gson.annotations.Expose;
+
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.util.Point3i;
 import net.minecraft.block.Block;
@@ -7,7 +9,10 @@ import net.minecraft.world.World;
 
 public class BlockExistsCondition extends PositionedCondition {
 
-  private Block block;  
+  @Expose
+  private Block block;
+  
+  @Expose
   private int meta = -1;
 
   public BlockExistsCondition() {    

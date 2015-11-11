@@ -1,5 +1,7 @@
 package crazypants.structures.runtime.condition;
 
+import com.google.gson.annotations.Expose;
+
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.ICondition;
 import crazypants.structures.api.util.Point3i;
@@ -8,12 +10,19 @@ import net.minecraft.world.World;
 
 public class ElapasedTimeCondition implements ICondition {
 
+  @Expose
   private int initialTime = 40;
+  
+  @Expose
   private int minTime = 100;
+  
+  @Expose
   private int maxTime = 200;
+  
+  @Expose
   private boolean persisted = false;
 
-  private long conditionMetAtTime = -1;
+  private transient long conditionMetAtTime = -1;
 
   public ElapasedTimeCondition() {    
   }
