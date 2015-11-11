@@ -29,7 +29,9 @@ import crazypants.structures.gen.structure.validator.biome.BiomeDescriptor;
 import crazypants.structures.gen.structure.validator.biome.BiomeFilterAll;
 import crazypants.structures.gen.structure.validator.biome.BiomeFilterAny;
 import crazypants.structures.gen.structure.validator.biome.IBiomeFilter;
+import crazypants.structures.runtime.action.CompositeAction;
 import crazypants.structures.runtime.action.ExecuteCommandAction;
+import crazypants.structures.runtime.action.RandomizerAction;
 import crazypants.structures.runtime.behaviour.Positioned;
 import crazypants.structures.runtime.behaviour.ResidentSpawner;
 import crazypants.structures.runtime.behaviour.ServerTickBehaviour;
@@ -82,6 +84,8 @@ public class DefaultParsers {
     
     //actions
     add(new ExecuteCommandParser());
+    add(new CompositeActionParser());
+    add(new RandomizerActionParser());
   }
 
   private static void add(ParserAdapater fact) {
@@ -538,5 +542,52 @@ public class DefaultParsers {
       res.setCommands(JsonUtil.getStringArrayField(json, "commands"));
       return res;
     }
+  }
+  
+  //-----------------------------------------------------------------
+  static class CompositeActionParser extends ParserAdapater {
+
+    CompositeActionParser() {             
+      super("CompositeAction");
+    }
+
+    @Override
+    public IAction createAction(String uid, JsonObject json) {
+      CompositeAction res = new CompositeAction();
+      List<TypedObject> actions = JsonUtil.getTypedObjectArray(json, "actions");
+      for(TypedObject obj : actions) {        
+        IAction action = ParserRegister.instance.createAction(obj.type, obj.obj);
+        if(action != null) {
+          res.addAction(action);
+        }
+      }
+      return res;
+    }           
+  }
+  
+  static class RandomizerActionParser extends ParserAdapater {
+
+    RandomizerActionParser() {             
+      super("RandomizerAction");
+    }
+
+    @Override
+    public IAction createAction(String uid, JsonObject json) {
+      RandomizerAction res = new RandomizerAction();
+      List<TypedObject> actions = JsonUtil.getTypedObjectArray(json, "actions");
+      for(TypedObject obj : actions) {        
+        IAction action = ParserRegister.instance.createAction(obj.type, obj.obj);
+        if(action != null) {
+          res.addAction(action);
+        }
+      }
+      res.setMinDelay(JsonUtil.getIntField(json, "minDelay", res.getMinDelay()));
+      res.setMaxDelay(JsonUtil.getIntField(json, "maxDelay", res.getMaxDelay()));
+      res.setMinRepeats(JsonUtil.getIntField(json, "minRepeats", res.getMinRepeats()));
+      res.setMaxRepeats(JsonUtil.getIntField(json, "maxRepeats", res.getMaxRepeats()));
+      res.setMinOffset(JsonUtil.getPoint3iField(json, "minOffset", res.getMinOffset()));
+      res.setMaxOffset(JsonUtil.getPoint3iField(json, "maxOffset", res.getMaxOffset()));
+      return res;
+    }           
   }
 }

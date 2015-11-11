@@ -73,12 +73,21 @@
                                               ]
                                  },
                                    
-                      "action" : {"type" : "ExecuteCommand", 
-                                           "position" : [2,10,2],
-                                           "commands" : [
-                                               "effect @a[r=32] 1 5"                       
+                      "_action" : {"type" : "ExecuteCommand", 
+                                            "position" : [2,10,2],
+                                            "commands" : [
+                                                "effect @a[r=32] 1 5",
+                                                "say \"nice place..\""                       
+                                            ]                                 
+                                 },
+                     
+                     "action" : {"type" : "CompositeAction", 
+                                           "actions" : [                                 
+                                            {"type" : "ExecuteCommand", "position" : [2,10,2], "commands" : [ "effect @a[r=32] 1 5", "say \"nice place..\""]}                                                                                                                   
                                            ]                                 
                                  }          
+                                 
+                              
           }                            
        ]
        

@@ -18,25 +18,8 @@ public class Positioned {
     }
     this.position = other.position == null ? null : new Point3i(other.position);
     this.taggedPosition = other.taggedPosition;
-  }
+  }  
   
-
-  public Point3i getPosition() {
-    return position;
-  }
-
-  public void setPosition(Point3i position) {
-    this.position = position;
-  }
-
-  public String getTaggedPosition() {
-    return taggedPosition;
-  }
-
-  public void setTaggedPosition(String taggedPosition) {
-    this.taggedPosition = taggedPosition;
-  }
-
   public Point3i getWorldPosition(IStructure structure) {
     if(structure == null) {
       return null;
@@ -59,6 +42,22 @@ public class Positioned {
       return res;
     }
     return def;
+  }  
+
+  public Point3i getPosition() {
+    return position;
+  }
+
+  public void setPosition(Point3i position) {
+    this.position = position;
+  }
+
+  public String getTaggedPosition() {
+    return taggedPosition;
+  }
+
+  public void setTaggedPosition(String taggedPosition) {
+    this.taggedPosition = taggedPosition;
   }
 
 }

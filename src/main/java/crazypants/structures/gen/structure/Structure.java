@@ -59,7 +59,7 @@ public class Structure implements IStructure {
       return;
     }
     runtimeBehaviour = getTemplate().getBehaviour().createInstance(world, this, null);
-    runtimeBehaviour.onStructureGenerated(world, this);
+    runtimeBehaviour.onStructureGenerated(world, this);   
   }
 
   @Override

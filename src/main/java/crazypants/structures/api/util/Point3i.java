@@ -23,7 +23,10 @@ public class Point3i {
     this.x = x;
     this.y = y;
     this.z = z;
-
+  }
+  
+  public void set(Point3i minOffset) {
+    set(minOffset.x, minOffset.y, minOffset.z);       
   }
 
   public Point3i(Point3i other) {
@@ -101,6 +104,5 @@ public class Point3i {
     z *= scale;    
   }
 
-  
 
 }

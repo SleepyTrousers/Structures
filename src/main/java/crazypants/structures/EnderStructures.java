@@ -47,6 +47,15 @@ public class EnderStructures {
 
   public static StructureRegister structureRegister;
 
+  
+  //TODO:
+  /*
+   * PotentialSpawns extends WorldEvent
+   * BiomeColor extends BiomeEvent
+   * EntityStruckByLightningEvent
+   */
+  
+  
   @EventHandler
   public void preInit(FMLPreInitializationEvent event) {
     Config.load(event);

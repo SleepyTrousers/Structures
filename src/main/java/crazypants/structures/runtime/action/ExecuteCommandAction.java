@@ -37,9 +37,7 @@ public class ExecuteCommandAction extends Positioned implements IAction {
       return;
     }
     MinecraftServer minecraftserver = MinecraftServer.getServer();
-    if(minecraftserver != null) {
-      System.out.println("ExecuteCommandAction.doAction: " + worldPos);
-      
+    if(minecraftserver != null) {           
       Point3i wp = getWorldPosition(structure, worldPos);            
       InnerSender sender = new InnerSender(world, structure, wp);      
       ICommandManager icommandmanager = minecraftserver.getCommandManager();

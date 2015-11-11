@@ -60,7 +60,7 @@ public class AndCondition implements ICondition {
       childStates = new NBTTagList();
     }
     
-    AndCondition res = new AndCondition();
+    AndCondition res = doCreateInstance();
     int index = 0;
     for(ICondition con : conditions) {
       NBTTagCompound childState = null;
@@ -82,6 +82,10 @@ public class AndCondition implements ICondition {
       }
     }
     return true;
+  }
+  
+  protected AndCondition doCreateInstance() {
+    return new AndCondition();
   }
 
   

@@ -85,15 +85,25 @@
                      "spawnRange" : 4,
                      "respawnRate" : 2500,
                      "homeRadius" : 64,
-                     "_position" : [2, 8, 2],
                      "taggedPosition" : "resSpawner",
                      "preCondition" : {"type" : "PlayerInRange", "range" : 32 },
-                     "onSpawnAction" : {"type" : "ExecuteCommand", 
-                                                 "commands" : [
-                                                      "summon PigZombie ~ ~ ~ {powered:1,CustomName:John}",
-                                                      "summon Fireball ~ ~ ~ {direction:[0.0,-4.0,0.0]}"
-                                                    ]
-                                                 }
+                     "onSpawnAction" : {"type" : "CompositeAction", 
+                                                "actions" : [                                 
+                                                    {"type" : "RandomizerAction", "minOffset" : [-2,0,-2], "maxOffset" : [2,0,2],
+                                                              "actions" : [
+                                                                {"type" : "ExecuteCommand",  "commands" : ["summon PigZombie ~ ~ ~ {powered:1,CustomName:John}"]}  
+                                                              ]                                                    
+                                                    },
+                                                    {"type" : "RandomizerAction", 
+                                                              "minOffset" : [-12,10,-12], "maxOffset" : [12,15,12], 
+                                                              "minRepeats" : 2, "maxRepeats" : 6,
+                                                              "minDelay" : 0, "maxDelay" : 60,
+                                                              "actions" : [
+                                                                {"type" : "ExecuteCommand",  "commands" : ["summon Fireball ~ ~ ~ {direction:[0.0,-4.0,0.0]}"]}  
+                                                              ]                                                    
+                                                    }                                                                                                                   
+                                                  ]                                 
+                                                }  
                                                     
            }
          ]

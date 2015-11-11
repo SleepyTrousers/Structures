@@ -17,4 +17,9 @@ public class OrCondition extends AndCondition {
     return false;
   }
   
+  @Override
+  protected AndCondition doCreateInstance() {
+    return new OrCondition();
+  }
+  
 }
