@@ -21,19 +21,19 @@ import crazypants.structures.api.runtime.ICondition;
 
 public abstract class ParserAdapater implements ISiteValidatorParser, IChunkValidatorParser, ILocationSamplerParser, ISitePreperationParser, IDecoratorParser, IBehaviourParser, IConditionParser, IActionParser  {
 
-  private final String uid;
+  private final String type;
 
   protected ParserAdapater(String uid) {    
-    this.uid = uid;
+    this.type = uid;
   }
 
   public String getUid() {
-    return uid;
+    return type;
   }
 
   @Override
   public boolean canParse(String uid) {    
-    return uid != null && uid.equals(this.uid);
+    return uid != null && uid.equals(this.type);
   }
 
   @Override

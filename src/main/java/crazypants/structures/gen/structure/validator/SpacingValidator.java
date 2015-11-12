@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Random;
 
+import com.google.gson.annotations.Expose;
+
+import crazypants.structures.AbstractTyped;
 import crazypants.structures.api.gen.IChunkValidator;
 import crazypants.structures.api.gen.ISiteValidator;
 import crazypants.structures.api.gen.IStructure;
@@ -17,13 +20,18 @@ import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 
-public class SpacingValidator implements IChunkValidator, ISiteValidator {
+public class SpacingValidator extends AbstractTyped implements IChunkValidator, ISiteValidator {
 
   private static final double CHUNK_RADIUS = new Vector2d().distance(new Vector2d(8, 8));
 
+  @Expose
   private int minSpacing;
-  private final List<String> templateFilter = new ArrayList<String>();
+  
+  @Expose
+  private List<String> templateFilter = new ArrayList<String>();
+  
   private boolean validateChunk = false;
+    
   private boolean validateLocation = true;
 
   
@@ -39,6 +47,7 @@ public class SpacingValidator implements IChunkValidator, ISiteValidator {
   }
 
   public SpacingValidator(int minSpacing, boolean checkChunkDistance, boolean checkPointDistance, String... matchTypes) {
+    super("SpacingValidator");
     this.minSpacing = minSpacing;
     this.validateChunk = checkChunkDistance;
     this.validateLocation = checkPointDistance;

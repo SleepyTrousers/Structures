@@ -3,6 +3,7 @@ package crazypants.structures.runtime.behaviour;
 import java.util.ArrayList;
 import java.util.List;
 
+import crazypants.structures.AbstractTyped;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.IBehaviour;
 import crazypants.structures.api.runtime.IStateful;
@@ -10,14 +11,17 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 
-public class CompositeBehaviour implements IBehaviour {
+public class CompositeBehaviour extends AbstractTyped implements IBehaviour {
 
   private final List<IBehaviour> behaviours = new ArrayList<IBehaviour>();
   
   public CompositeBehaviour() {
-    
+    this("CompositeBehaviour");
   }
-    
+  
+  public CompositeBehaviour(String type) {
+    super(type);  
+  }
 
   public void add(IBehaviour be) {
     if(be != null) {

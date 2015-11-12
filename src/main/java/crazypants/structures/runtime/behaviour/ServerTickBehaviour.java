@@ -1,5 +1,7 @@
 package crazypants.structures.runtime.behaviour;
 
+import com.google.gson.annotations.Expose;
+
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
 import crazypants.structures.api.gen.IStructure;
@@ -12,9 +14,14 @@ import net.minecraft.world.World;
 
 public class ServerTickBehaviour extends AbstractEventBehaviour  {
 
-  //Template variables
+  //Template variables  
+  @Expose
   private int executionInterval;
+  
+  @Expose
   private ICondition condition;
+  
+  @Expose
   private IAction action;  
   
   //Runtime state
@@ -23,6 +30,7 @@ public class ServerTickBehaviour extends AbstractEventBehaviour  {
   private Point3i worldPosition;
   
   public ServerTickBehaviour() {    
+    super("ServerTickBehaviour");
   }
   
   public ServerTickBehaviour(ServerTickBehaviour template, World world, IStructure strcuture, NBTTagCompound state) {

@@ -3,16 +3,29 @@ package crazypants.structures.gen.structure.validator.biome;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.annotations.Expose;
+
+import crazypants.structures.AbstractTyped;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.BiomeDictionary;
 
-public abstract class AbstractBiomeFilter implements IBiomeFilter {
+public abstract class AbstractBiomeFilter extends AbstractTyped implements IBiomeFilter {
 
-  protected final List<BiomeDictionary.Type> types = new ArrayList<BiomeDictionary.Type>();
-  protected final List<BiomeDictionary.Type> typeExcludes = new ArrayList<BiomeDictionary.Type>();
+  protected AbstractBiomeFilter(String type) {
+    super(type);
+  }
 
-  protected final List<String> names = new ArrayList<String>();
-  protected final List<String> nameExcludes = new ArrayList<String>();
+  @Expose
+  protected List<BiomeDictionary.Type> types = new ArrayList<BiomeDictionary.Type>();
+  
+  @Expose
+  protected List<BiomeDictionary.Type> typeExcludes = new ArrayList<BiomeDictionary.Type>();
+
+  @Expose
+  protected List<String> names = new ArrayList<String>();
+  
+  @Expose
+  protected List<String> nameExcludes = new ArrayList<String>();
 
   @Override
   public void addBiomeDescriptor(IBiomeDescriptor biome) {

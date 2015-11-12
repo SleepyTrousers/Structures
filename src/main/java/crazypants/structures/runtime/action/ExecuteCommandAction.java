@@ -9,7 +9,7 @@ import com.google.gson.annotations.Expose;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.IAction;
 import crazypants.structures.api.util.Point3i;
-import crazypants.structures.runtime.behaviour.Positioned;
+import crazypants.structures.runtime.PositionedType;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.command.ICommandManager;
 import net.minecraft.command.server.CommandBlockLogic;
@@ -20,7 +20,7 @@ import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.world.World;
 
-public class ExecuteCommandAction extends Positioned implements IAction {
+public class ExecuteCommandAction extends PositionedType implements IAction {
 
   @Expose
   private List<String> commands = new ArrayList<String>();
@@ -28,7 +28,8 @@ public class ExecuteCommandAction extends Positioned implements IAction {
   @Expose
   private String chat = "What is this for?";
   
-  public ExecuteCommandAction() {   
+  public ExecuteCommandAction() { 
+    super("ExecuteCommand");
   }
 
   @Override

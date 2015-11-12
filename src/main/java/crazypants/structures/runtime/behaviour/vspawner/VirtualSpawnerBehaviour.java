@@ -1,31 +1,45 @@
 package crazypants.structures.runtime.behaviour.vspawner;
 
+import com.google.gson.annotations.Expose;
+
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.IBehaviour;
 import crazypants.structures.api.runtime.ICondition;
-import crazypants.structures.runtime.behaviour.Positioned;
+import crazypants.structures.runtime.PositionedType;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
-public class VirtualSpawnerBehaviour extends Positioned implements IBehaviour {
+public class VirtualSpawnerBehaviour extends PositionedType implements IBehaviour {
  
 //TODO: Allow for a list of entities
-  private String entityTypeName = "Pig";  
+  @Expose
+  private String entity = "Pig";  
   
-  private String entityNbtText = "";
+  @Expose
+  private String entityNbt = "";
 
+  @Expose
   private ICondition activeCondition;
   
+  @Expose
   private ICondition spawnCondition;
 
+  @Expose
   private int numSpawned = 4;
+  
+  @Expose
   private int maxSpawnRetries = 3;
+  
+  @Expose
   private int spawnRange = 4;
 
+  @Expose
   private boolean useVanillaSpawnChecks = true;
 
+  @Expose
   private boolean renderParticles = true;
 
+  @Expose
   private boolean persistEntities = false;
   
   
@@ -33,7 +47,8 @@ public class VirtualSpawnerBehaviour extends Positioned implements IBehaviour {
   private final VirtualSpawnerInstance instance;
  
   public VirtualSpawnerBehaviour() {   
-    this(null, null);
+    super("VirtualSpawner");
+    instance = null;
   }
   
   public VirtualSpawnerBehaviour(VirtualSpawnerBehaviour template, VirtualSpawnerInstance instance) {
@@ -93,19 +108,19 @@ public class VirtualSpawnerBehaviour extends Positioned implements IBehaviour {
   }
 
   public String getEntityTypeName() {
-    return entityTypeName;
+    return entity;
   }
 
   public void setEntityTypeName(String entityTypeName) {
-    this.entityTypeName = entityTypeName;
+    this.entity = entityTypeName;
   }
   
   public String getEntityNbtText() {
-    return entityNbtText;
+    return entityNbt;
   }
 
   public void setEntityNbtText(String entityNbtText) {
-    this.entityNbtText = entityNbtText;
+    this.entityNbt = entityNbtText;
   }
 
   public int getNumberSpawned() {

@@ -1,12 +1,13 @@
-package crazypants.structures.runtime.behaviour;
+package crazypants.structures.runtime;
 
 import com.google.gson.annotations.Expose;
 
+import crazypants.structures.AbstractTyped;
 import crazypants.structures.StructureUtils;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.util.Point3i;
 
-public class Positioned {
+public class PositionedType extends AbstractTyped {
 
   @Expose
   private Point3i position;
@@ -14,13 +15,12 @@ public class Positioned {
   @Expose
   private String taggedPosition;
   
-  public Positioned() {    
+  public PositionedType(String type) {
+    super(type);
   }
   
-  public Positioned(Positioned other) {
-    if(other == null) {
-      return;
-    }
+  public PositionedType(PositionedType other) {
+    super(other.getType());    
     this.position = other.position == null ? null : new Point3i(other.position);
     this.taggedPosition = other.taggedPosition;
   }  

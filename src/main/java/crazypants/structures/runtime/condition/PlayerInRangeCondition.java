@@ -8,6 +8,10 @@ import net.minecraft.world.World;
 
 public class PlayerInRangeCondition extends PositionedCondition {
 
+  public PlayerInRangeCondition() {
+    super("PlayerInRange");
+  }
+
   @Expose
   private int range = 32;  
     

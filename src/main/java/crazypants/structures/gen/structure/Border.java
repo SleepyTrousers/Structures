@@ -6,8 +6,8 @@ import java.util.Map;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class Border {
-
-  private final Map<ForgeDirection, Integer> border = new HashMap<ForgeDirection, Integer>();
+  
+  private Map<ForgeDirection, Integer> border = new HashMap<ForgeDirection, Integer>();
 
   public void setBorderXZ(int size) {
     setBorder(size, size, size, size);

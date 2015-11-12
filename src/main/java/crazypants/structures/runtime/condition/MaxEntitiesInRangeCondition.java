@@ -16,6 +16,10 @@ import net.minecraft.world.World;
 
 public class MaxEntitiesInRangeCondition extends PositionedCondition {
 
+  public MaxEntitiesInRangeCondition() {
+    super("MaxEntitiesInRange");
+  }
+
   @Expose
   private int maxEntities = 10;
   

@@ -2,6 +2,9 @@ package crazypants.structures.gen.structure.sampler;
 
 import java.util.Random;
 
+import com.google.gson.annotations.Expose;
+
+import crazypants.structures.AbstractTyped;
 import crazypants.structures.api.gen.ILocationSampler;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.gen.IWorldStructures;
@@ -10,14 +13,18 @@ import crazypants.structures.api.util.StructureUtil;
 import net.minecraft.block.Block;
 import net.minecraft.world.World;
 
-public class SurfaceLocationSampler implements ILocationSampler {
+public class SurfaceLocationSampler extends AbstractTyped implements ILocationSampler {
 
   private static final Random rnd = new Random();
 
+  @Expose
   private int distanceFromSurface = 0;
+  
+  @Expose
   private boolean canPlaceInFluid = false;
 
   public SurfaceLocationSampler() {
+    super("SurfaceSampler");
   }
 
   public int getDistanceFromSurface() {

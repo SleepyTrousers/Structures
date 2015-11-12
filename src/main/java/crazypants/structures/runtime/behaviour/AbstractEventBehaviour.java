@@ -4,14 +4,16 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.IBehaviour;
 import crazypants.structures.api.runtime.IStateful;
+import crazypants.structures.runtime.PositionedType;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
-public abstract class AbstractEventBehaviour extends Positioned implements IBehaviour {
+public abstract class AbstractEventBehaviour extends PositionedType implements IBehaviour {
 
   private boolean registered = false;
 
-  public AbstractEventBehaviour() {    
+  public AbstractEventBehaviour(String type) {
+    super(type);
   }
   
   public AbstractEventBehaviour(AbstractEventBehaviour other) {

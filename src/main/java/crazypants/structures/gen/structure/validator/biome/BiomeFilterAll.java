@@ -8,6 +8,10 @@ import net.minecraftforge.common.BiomeDictionary;
 
 public class BiomeFilterAll extends AbstractBiomeFilter {
 
+  public BiomeFilterAll(String type) {
+    super(type);
+  }
+
   @Override
   public BiomeGenBase[] getMatchedBiomes() {
 

@@ -2,6 +2,9 @@ package crazypants.structures.gen.structure.preperation;
 
 import java.util.Random;
 
+import com.google.gson.annotations.Expose;
+
+import crazypants.structures.AbstractTyped;
 import crazypants.structures.api.gen.ISitePreperation;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.util.StructureUtil;
@@ -12,15 +15,19 @@ import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class ClearPreperation implements ISitePreperation {
+public class ClearPreperation extends AbstractTyped implements ISitePreperation {
 
+  @Expose
   private Border border = new Border();
 
+  @Expose
   private boolean clearPlants = true;
 
+  @Expose
   private boolean clearBellowGround = false;  
 
   public ClearPreperation() {
+    super("ClearPreperation");
     border.setBorder(1, 1, 1, 1, 3, 0);
   }
 

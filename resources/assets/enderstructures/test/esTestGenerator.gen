@@ -32,16 +32,15 @@
             { "_type" : "RandomValidator", 
                       "chancePerChunk" : 1.0 },
                                   
-            { "type" : "BiomeValidator", 
-                      "match" : "any",                
+            { "type" : "BiomeValidatorAny",                                  
                       "types" : [ "MESA", "FOREST", "PLAINS", "MOUNTAIN", "HILLS", "SWAMP", "SANDY", "SNOWY", "WASTELAND" ],
-                      "typesExcluded" : [ "BEACH", "MUSHROOM", "OCEAN", "RIVER", "NETHER", "END"],
+                      "typeExcludes" : [ "BEACH", "MUSHROOM", "OCEAN", "RIVER", "NETHER", "END"],
                       "names" : [],
-                      "namesExcluded" : [] },                                                
+                      "nameExcludes" : [] },                                                
             
             { "type" : "DimensionValidator",                               
-                      "names" : [],
-                      "namesExcluded" : ["Twilight Forest", "Dungeon"] },
+                      "includes" : [],
+                      "excludes" : ["Twilight Forest", "Dungeon"] },
             
             
             { "type" : "SpacingValidator",

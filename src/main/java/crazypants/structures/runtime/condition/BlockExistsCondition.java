@@ -15,7 +15,8 @@ public class BlockExistsCondition extends PositionedCondition {
   @Expose
   private int meta = -1;
 
-  public BlockExistsCondition() {    
+  public BlockExistsCondition() { 
+    super("BlockExists");
   }
   
   @Override

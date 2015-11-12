@@ -2,13 +2,14 @@ package crazypants.structures.runtime.condition;
 
 import com.google.gson.annotations.Expose;
 
+import crazypants.structures.AbstractTyped;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.ICondition;
 import crazypants.structures.api.util.Point3i;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
-public class TickCountCondition implements ICondition {
+public class TickCountCondition extends AbstractTyped implements ICondition {
 
   @Expose
   private int initialCount = 40;
@@ -25,9 +26,11 @@ public class TickCountCondition implements ICondition {
   private int ticksUntilConditionMet = 0;
 
   public TickCountCondition() {
+    super("TickCountCondition");
   }
 
   public TickCountCondition(TickCountCondition template, World world, NBTTagCompound state) {
+    this();
     initialCount = template.initialCount;
     minCount = template.minCount;
     maxCount = template.maxCount;

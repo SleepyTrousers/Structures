@@ -4,13 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.google.gson.annotations.Expose;
+
+import crazypants.structures.AbstractTyped;
 import crazypants.structures.api.gen.IDecorator;
 import crazypants.structures.api.gen.IStructure;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 
-public class CompositeDecorator implements IDecorator {
+public class CompositeDecorator extends AbstractTyped implements IDecorator {
 
+  public CompositeDecorator() {
+    super("CompositeDecorator");
+  }
+
+  @Expose
   private final List<IDecorator> decorators = new ArrayList<IDecorator>(); 
   
   public void add(IDecorator dec) {

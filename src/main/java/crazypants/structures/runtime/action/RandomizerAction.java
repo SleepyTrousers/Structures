@@ -29,6 +29,7 @@ public class RandomizerAction extends CompositeAction {
   private int maxRepeats = 1;
 
   public RandomizerAction() {
+    super("RandomizerAction");
   }
 
   public RandomizerAction(RandomizerAction template) {

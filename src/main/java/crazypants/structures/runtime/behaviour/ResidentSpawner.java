@@ -2,6 +2,8 @@ package crazypants.structures.runtime.behaviour;
 
 import java.util.List;
 
+import com.google.gson.annotations.Expose;
+
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
 import crazypants.structures.StructureUtils;
@@ -22,27 +24,42 @@ import net.minecraft.world.World;
 public class ResidentSpawner extends AbstractEventBehaviour {
 
   //template variables
-  private String entityName = "";
-  private String entityNbtText = "";
-  private int numToSpawn = 1;
+  @Expose
+  private String entity = "";
+  
+  @Expose
+  private String entityNbt = "";
+  
+  @Expose
+  private int numSpawned = 1;
+  
+  @Expose
   private int spawnRange = 4;
+  
+  @Expose      
   private int respawnRate = 200;
-  private int homeRadius = 64;  
+  
+  @Expose     
+  private int homeRadius = 64;
+  
+  @Expose
+  private ICondition preCondition;
+  
+  @Expose
+  private IAction onSpawnAction;
 
-  //instance variables
+  //runtime state tracking
   private Selector selector;
   private int checkPeriod = respawnRate / 10;
   private World world;
   private IStructure structure;
   private long lastTimePresent = -1;
-  private int residentId = -1;
-  private NBTTagCompound entityNBT;
-  private Point3i worldPos;
-
-  private ICondition preCondition;
-  private IAction onSpawnAction;
+  private int residentId = -1;  
+  private Point3i worldPos;  
+  private NBTTagCompound entityNBTTag;
 
   public ResidentSpawner() {
+    super("ResidentSpawner");
   }
 
   public ResidentSpawner(ResidentSpawner template, World world, IStructure structure, NBTTagCompound state) {
@@ -50,8 +67,8 @@ public class ResidentSpawner extends AbstractEventBehaviour {
     this.world = world;
     this.structure = structure;
 
-    this.entityName = template.entityName;
-    this.entityNbtText = template.entityNbtText;
+    this.entity = template.entity;
+    this.entityNbt = template.entityNbt;
     updateEntityNBT();
     
     respawnRate = template.respawnRate;
@@ -60,7 +77,7 @@ public class ResidentSpawner extends AbstractEventBehaviour {
          
     worldPos = getWorldPosition(structure);
     
-    numToSpawn = template.numToSpawn;
+    numSpawned = template.numSpawned;
     spawnRange = template.spawnRange;
 
     if(template.getPreCondition() != null) {
@@ -106,7 +123,7 @@ public class ResidentSpawner extends AbstractEventBehaviour {
   public void onStructureGenerated(World world, IStructure structure) {
     super.onStructureGenerated(world, structure);
     residentId = world.rand.nextInt(Integer.MAX_VALUE);
-    spawnResidents(numToSpawn);
+    spawnResidents(numSpawned);
   }
 
   @SubscribeEvent
@@ -121,10 +138,10 @@ public class ResidentSpawner extends AbstractEventBehaviour {
     }
 
     int curNum = getNumResidentsInHomeBounds();
-    if(curNum >= numToSpawn) { //TODO: Optional to wait for all to be dead?
+    if(curNum >= numSpawned) { //TODO: Optional to wait for all to be dead?
       lastTimePresent = world.getTotalWorldTime();
     } else if(curTime - lastTimePresent >= respawnRate) {
-      spawnResidents(numToSpawn - curNum);
+      spawnResidents(numSpawned - curNum);
     }
   }
 
@@ -159,7 +176,7 @@ public class ResidentSpawner extends AbstractEventBehaviour {
 
   EntityLiving createEntity() {
   
-    Entity ent = EntityList.createEntityFromNBT(entityNBT, world);
+    Entity ent = EntityList.createEntityFromNBT(entityNBTTag, world);
     if(!(ent instanceof EntityLiving)) {
       return null;
     }
@@ -176,33 +193,33 @@ public class ResidentSpawner extends AbstractEventBehaviour {
   }
 
   public String getEntity() {
-    return entityName;
+    return entity;
   }
 
   public final void setEntity(String entity) {
-    this.entityName = entity;
+    this.entity = entity;
     updateEntityNBT();
   }
 
   public String getEntityNbtText() {
-    return entityNbtText;
+    return entityNbt;
   }
 
   public void setEntityNbtText(String entityNbtText) {
-    this.entityNbtText = entityNbtText;
+    this.entityNbt = entityNbtText;
     updateEntityNBT();
   }
 
   private void updateEntityNBT() {
-    entityNBT = StructureUtils.createEntityNBT(entityName, entityNbtText);    
+    entityNBTTag = StructureUtils.createEntityNBT(entity, entityNbt);    
   }
 
   public int getNumSpawned() {
-    return numToSpawn;
+    return numSpawned;
   }
 
   public void setNumSpawned(int numSpawned) {
-    this.numToSpawn = numSpawned;
+    this.numSpawned = numSpawned;
   }
 
   public int getSpawnRange() {
@@ -251,7 +268,7 @@ public class ResidentSpawner extends AbstractEventBehaviour {
     @Override
     public boolean isEntityApplicable(Entity ent) {
       String entityId = EntityList.getEntityString(ent);
-      if(!entityName.equals(entityId)) {
+      if(!entity.equals(entityId)) {
         return false;
       }
       NBTTagCompound data = ent.getEntityData();

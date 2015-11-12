@@ -109,7 +109,7 @@ public class TemplateParser {
       
       arrayContents = getTypedObjectArray(to, "behaviours");
       for(TypedObject o : arrayContents) {
-        IBehaviour behav = parsers.ceateBehaviour(o.type, o.obj);
+        IBehaviour behav = parsers.createBehaviour(o.type, o.obj);
         if(behav != null) {
           res.addBehaviour(behav);
         } else {

@@ -2,13 +2,14 @@ package crazypants.structures.runtime.condition;
 
 import com.google.gson.annotations.Expose;
 
+import crazypants.structures.AbstractTyped;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.ICondition;
 import crazypants.structures.api.util.Point3i;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
-public class ElapasedTimeCondition implements ICondition {
+public class ElapasedTimeCondition extends AbstractTyped implements ICondition {
 
   @Expose
   private int initialTime = 40;
@@ -24,10 +25,12 @@ public class ElapasedTimeCondition implements ICondition {
 
   private transient long conditionMetAtTime = -1;
 
-  public ElapasedTimeCondition() {    
+  public ElapasedTimeCondition() {  
+    super("ElapasedTimeCondition");
   }
   
   public ElapasedTimeCondition(ElapasedTimeCondition template, World world, NBTTagCompound state) {
+    this();
     initialTime = template.initialTime;
     minTime = template.minTime;
     maxTime = template.maxTime;

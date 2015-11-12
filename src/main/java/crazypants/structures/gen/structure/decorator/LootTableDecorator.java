@@ -4,6 +4,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
+import com.google.gson.annotations.Expose;
+
+import crazypants.structures.AbstractTyped;
 import crazypants.structures.api.gen.IDecorator;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.util.Point3i;
@@ -14,12 +17,16 @@ import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraftforge.common.ChestGenHooks;
 
-public class LootTableDecorator implements IDecorator {
+public class LootTableDecorator extends AbstractTyped implements IDecorator {
 
+  @Expose 
   private String category;
+  
+  @Expose
   private List<String> targets;
 
   public LootTableDecorator() {
+    super("LootTableInventory");
   }
 
   @Override

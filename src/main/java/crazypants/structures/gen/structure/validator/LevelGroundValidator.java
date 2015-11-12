@@ -2,6 +2,9 @@ package crazypants.structures.gen.structure.validator;
 
 import java.util.Random;
 
+import com.google.gson.annotations.Expose;
+
+import crazypants.structures.AbstractTyped;
 import crazypants.structures.api.gen.ISiteValidator;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.gen.IWorldStructures;
@@ -16,19 +19,25 @@ import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidRegistry;
 
-public class LevelGroundValidator implements ISiteValidator {
+public class LevelGroundValidator extends AbstractTyped implements ISiteValidator {
 
+  @Expose
   private boolean canSpawnOnWater = false;
 
-  private int maxSampleCount = 100;
+  @Expose
+  private int maxSamples = 100;
 
+  @Expose
   private int sampleSpacing = 4;
 
+  @Expose
   private int tolerance = 2;
 
+  @Expose
   private Border border = new Border();
 
   public LevelGroundValidator() {
+    super("LevelGroundValidator");
     border.setBorderXZ(1);
   }
 
@@ -47,8 +56,8 @@ public class LevelGroundValidator implements ISiteValidator {
     int numSamsZ = Math.max(1, (size.z / sampleSpacing));
 
     int totalSamples = numSamsX * numSamsZ;
-    if(totalSamples > maxSampleCount) {
-      double ratio = ((double) maxSampleCount / totalSamples);
+    if(totalSamples > maxSamples) {
+      double ratio = ((double) maxSamples / totalSamples);
       ratio = Math.sqrt(ratio);
       numSamsX = (int) (numSamsX * ratio);
       numSamsZ = (int) (numSamsZ * ratio);
@@ -128,11 +137,11 @@ public class LevelGroundValidator implements ISiteValidator {
   }
 
   public int getMaxSampleCount() {
-    return maxSampleCount;
+    return maxSamples;
   }
 
   public void setMaxSampleCount(int maxSampleCount) {
-    this.maxSampleCount = maxSampleCount;
+    this.maxSamples = maxSampleCount;
   }
 
   public int getSampleSpacing() {

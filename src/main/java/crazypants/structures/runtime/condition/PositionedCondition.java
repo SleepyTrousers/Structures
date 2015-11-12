@@ -3,14 +3,14 @@ package crazypants.structures.runtime.condition;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.ICondition;
 import crazypants.structures.api.util.Point3i;
-import crazypants.structures.runtime.behaviour.Positioned;
+import crazypants.structures.runtime.PositionedType;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
-public abstract class PositionedCondition extends Positioned implements ICondition {
+public abstract class PositionedCondition extends PositionedType implements ICondition {
 
-
-  public PositionedCondition() {
+  public PositionedCondition(String type) {
+    super(type);
   }
 
   @Override

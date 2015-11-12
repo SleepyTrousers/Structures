@@ -116,7 +116,7 @@ public class ParserRegister {
     return f.createDecorator(uid, json);
   }
   
-  public IBehaviour ceateBehaviour(String uid, JsonObject json) {
+  public IBehaviour createBehaviour(String uid, JsonObject json) {
     IBehaviourParser f = behavParsers.get(uid);
     if(f == null) {
       f = findFactory(uid, IBehaviourParser.class);

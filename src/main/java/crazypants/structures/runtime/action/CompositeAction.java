@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.google.gson.annotations.Expose;
 
+import crazypants.structures.AbstractTyped;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.IAction;
 import crazypants.structures.api.util.Point3i;
@@ -13,7 +14,15 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 
-public class CompositeAction implements IAction {
+public class CompositeAction extends AbstractTyped implements IAction {
+
+  public CompositeAction() {
+    super("CompositeAction");
+  }
+
+  public CompositeAction(String type) {
+    super(type);
+  }
 
   @Expose
   private List<IAction> actions = new ArrayList<IAction>();

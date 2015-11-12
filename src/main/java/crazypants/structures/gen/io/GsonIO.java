@@ -17,23 +17,55 @@ import com.google.gson.JsonSerializer;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
+import crazypants.structures.api.gen.IChunkValidator;
+import crazypants.structures.api.gen.IDecorator;
+import crazypants.structures.api.gen.ISitePreperation;
+import crazypants.structures.api.gen.ISiteValidator;
 import crazypants.structures.api.runtime.IAction;
+import crazypants.structures.api.runtime.IBehaviour;
 import crazypants.structures.api.runtime.ICondition;
 import crazypants.structures.api.util.Point3i;
+import crazypants.structures.gen.structure.Border;
 import net.minecraft.block.Block;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class GsonIO {
 
-  public static final Gson GSON = new GsonIO().createGson();
+  public static final GsonIO INSTANCE = new GsonIO();
 
-  private Gson createGson() {
-    GsonBuilder builder = new GsonBuilder();
+  private final GsonBuilder builder = new GsonBuilder();
+
+  private Gson gson;
+
+  private GsonIO() {
     builder.excludeFieldsWithoutExposeAnnotation();
+    //Basic types
     builder.registerTypeAdapter(Point3i.class, new Point3iIO());
+    builder.registerTypeAdapter(Block.class, new BlockIO());
+    builder.registerTypeAdapter(Border.class, new BorderIO());
+
+    //Typed parsers    
+    builder.registerTypeAdapter(IChunkValidator.class, new ChunkValIO());
+    builder.registerTypeAdapter(ISiteValidator.class, new SiteValIO());
+    builder.registerTypeAdapter(ISitePreperation.class, new SitePrepIO());
+    builder.registerTypeAdapter(IDecorator.class, new DecoratorIO());
+    
     builder.registerTypeAdapter(IAction.class, new ActionIO());
     builder.registerTypeAdapter(ICondition.class, new ConditionIO());
-    builder.registerTypeAdapter(Block.class, new BlockIO());
-    return builder.create();
+    builder.registerTypeAdapter(IBehaviour.class, new BehaviourIO());
+    
+  }
+
+  public void registerTypeAdapter(Type type, Object typeAdapter) {
+    builder.registerTypeAdapter(type, typeAdapter);
+    gson = null;
+  }
+
+  public Gson getGson() {
+    if(gson == null) {
+      gson = builder.create();
+    }
+    return gson;
   }
 
   //--------------------------------------------------
@@ -76,7 +108,7 @@ public class GsonIO {
       }
 
       UniqueIdentifier blkId = new UniqueIdentifier(je.getAsString());
-      Block blk = GameRegistry.findBlock(blkId.modId, blkId.name);      
+      Block blk = GameRegistry.findBlock(blkId.modId, blkId.name);
       return blk;
     }
 
@@ -92,7 +124,43 @@ public class GsonIO {
   }
 
   //--------------------------------------------------
-  private static class ActionIO implements JsonDeserializer<IAction> {
+  private static class BorderIO implements JsonSerializer<Border>, JsonDeserializer<Border> {
+
+    @Override
+    public Border deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+      if(!json.isJsonObject()) {
+        return null;
+      }
+
+      JsonObject obj = json.getAsJsonObject();
+
+      Border border = new Border();
+      if(obj.has("sizeXZ")) {
+        border.setBorderXZ(JsonUtil.getIntField(obj, "sizeXZ", border.get(ForgeDirection.NORTH)));
+      }
+      for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+        border.set(dir, JsonUtil.getIntField(obj, dir.name().toLowerCase(), border.get(dir)));
+      }
+      return border;
+    }
+
+    @Override
+    public JsonElement serialize(Border src, Type typeOfSrc, JsonSerializationContext context) {
+      if(src == null) {
+        return JsonNull.INSTANCE;
+      }
+      JsonObject res = new JsonObject();
+      for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+        int val = src.get(dir);
+        res.addProperty(dir.name().toLowerCase(), val);
+      }      
+      return res;
+    }
+
+  }
+
+  //--------------------------------------------------
+  private static class ActionIO implements JsonSerializer<IAction>, JsonDeserializer<IAction> {
 
     @Override
     public IAction deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
@@ -100,13 +168,21 @@ public class GsonIO {
         return null;
       }
       JsonObject obj = json.getAsJsonObject();
+      if(!obj.has("type")) {
+        return null;
+      }
       return ParserRegister.instance.createAction(obj.get("type").getAsString(), obj);
+    }
+
+    @Override
+    public JsonElement serialize(IAction src, Type typeOfSrc, JsonSerializationContext context) {
+      return INSTANCE.getGson().toJsonTree(src);
     }
 
   }
 
   //--------------------------------------------------
-  private static class ConditionIO implements JsonDeserializer<ICondition> {
+  private static class ConditionIO implements JsonSerializer<ICondition>, JsonDeserializer<ICondition> {
 
     @Override
     public ICondition deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
@@ -120,5 +196,119 @@ public class GsonIO {
       return ParserRegister.instance.createCondition(obj.get("type").getAsString(), obj);
     }
 
+    @Override
+    public JsonElement serialize(ICondition src, Type typeOfSrc, JsonSerializationContext context) {
+      return INSTANCE.getGson().toJsonTree(src);
+    }
   }
+
+  //--------------------------------------------------
+  private static class BehaviourIO implements JsonSerializer<IBehaviour>, JsonDeserializer<IBehaviour> {
+
+    @Override
+    public IBehaviour deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+      if(!json.isJsonObject() || json.isJsonNull()) {
+        return null;
+      }
+      JsonObject obj = json.getAsJsonObject();
+      if(!obj.has("type")) {
+        return null;
+      }
+      return ParserRegister.instance.createBehaviour(obj.get("type").getAsString(), obj);
+    }
+
+    @Override
+    public JsonElement serialize(IBehaviour src, Type typeOfSrc, JsonSerializationContext context) {
+      return INSTANCE.getGson().toJsonTree(src);
+    }
+
+  }
+
+  //--------------------------------------------------
+  private static class ChunkValIO implements JsonSerializer<IChunkValidator>, JsonDeserializer<IChunkValidator> {
+
+    @Override
+    public IChunkValidator deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+      if(!json.isJsonObject() || json.isJsonNull()) {
+        return null;
+      }
+      JsonObject obj = json.getAsJsonObject();
+      if(!obj.has("type")) {
+        return null;
+      }
+      return ParserRegister.instance.createChunkValidator(obj.get("type").getAsString(), obj);
+    }
+
+    @Override
+    public JsonElement serialize(IChunkValidator src, Type typeOfSrc, JsonSerializationContext context) {
+      return INSTANCE.getGson().toJsonTree(src);
+    }
+
+  }
+
+  //--------------------------------------------------
+  private static class SiteValIO implements JsonSerializer<ISiteValidator>, JsonDeserializer<ISiteValidator> {
+
+    @Override
+    public ISiteValidator deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+      if(!json.isJsonObject() || json.isJsonNull()) {
+        return null;
+      }
+      JsonObject obj = json.getAsJsonObject();
+      if(!obj.has("type")) {
+        return null;
+      }
+      return ParserRegister.instance.createSiteValidator(obj.get("type").getAsString(), obj);
+    }
+
+    @Override
+    public JsonElement serialize(ISiteValidator src, Type typeOfSrc, JsonSerializationContext context) {
+      return INSTANCE.getGson().toJsonTree(src);
+    }
+
+  }
+
+  //--------------------------------------------------
+  private static class SitePrepIO implements JsonSerializer<ISitePreperation>, JsonDeserializer<ISitePreperation> {
+
+    @Override
+    public ISitePreperation deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+      if(!json.isJsonObject()) {
+        return null;
+      }
+      JsonObject obj = json.getAsJsonObject();
+      if(!obj.has("type")) {
+        return null;
+      }
+      return ParserRegister.instance.createPreperation(obj.get("type").getAsString(), obj);
+    }
+
+    @Override
+    public JsonElement serialize(ISitePreperation src, Type typeOfSrc, JsonSerializationContext context) {
+      return INSTANCE.getGson().toJsonTree(src);
+    }
+
+  }
+  
+  private static class DecoratorIO implements JsonSerializer<IDecorator>, JsonDeserializer<IDecorator> {
+
+    @Override
+    public IDecorator deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+      if(!json.isJsonObject()) {
+        return null;
+      }
+      JsonObject obj = json.getAsJsonObject();
+      if(!obj.has("type")) {
+        return null;
+      }
+      return ParserRegister.instance.createDecorator(obj.get("type").getAsString(), obj);
+    }
+
+    @Override
+    public JsonElement serialize(IDecorator src, Type typeOfSrc, JsonSerializationContext context) {
+      return INSTANCE.getGson().toJsonTree(src);
+    }
+    
+  }
+  
 }

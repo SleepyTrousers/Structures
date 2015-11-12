@@ -2,13 +2,17 @@ package crazypants.structures.gen.structure.validator;
 
 import java.util.Random;
 
+import com.google.gson.annotations.Expose;
+
+import crazypants.structures.AbstractTyped;
 import crazypants.structures.api.gen.IChunkValidator;
 import crazypants.structures.api.gen.IStructureGenerator;
 import crazypants.structures.api.gen.IWorldStructures;
 import net.minecraft.world.World;
 
-public class RandomValidator implements IChunkValidator {
+public class RandomValidator extends AbstractTyped implements IChunkValidator {
 
+  @Expose
   private float chancePerChunk;
 
   public RandomValidator() {
@@ -16,6 +20,7 @@ public class RandomValidator implements IChunkValidator {
   }
   
   public RandomValidator(float chancePerChunk) {
+    super("RandomValidator");
     this.chancePerChunk = chancePerChunk;
   }  
 
