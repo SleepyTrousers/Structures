@@ -261,10 +261,11 @@ public class StructureGenerator implements IStructureGenerator {
     }
     
     public boolean build(IWorldStructures existingStructures, World world, Random random) {
-      if(isGenerated(existingStructures)) {
+      if(isGenerated(existingStructures) || getStructure().getTemplate() == null) {
         return false;
       }
-      if(getStructure().getTemplate() == null || !getStructure().getTemplate().getSiteValiditor().isValidBuildSite(getStructure(), existingStructures, world, random, null)) {
+      
+      if(getStructure().getTemplate().getSiteValiditor() != null && !getStructure().getTemplate().getSiteValiditor().isValidBuildSite(getStructure(), existingStructures, world, random, null)) {
         return false;
       }
       getStructure().build(world, random, null);

@@ -1,12 +1,20 @@
 package crazypants.structures.api.gen;
 
+import com.google.gson.annotations.Expose;
+
 import crazypants.structures.api.util.Point3i;
 
 public class PositionedComponent {
 
-  private final Point3i offset;
-  private final IStructureComponent component;
+  @Expose
+  private Point3i offset;
   
+  @Expose
+  private IStructureComponent component;
+  
+  public PositionedComponent() {
+    this(null);
+  }
   
   public PositionedComponent(IStructureComponent component) {
     this(component, null);
@@ -28,7 +36,5 @@ public class PositionedComponent {
   public IStructureComponent getComponent() {
     return component;
   }
-  
-  
   
 }

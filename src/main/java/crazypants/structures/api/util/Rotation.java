@@ -66,4 +66,8 @@ public enum Rotation {
     }
     return null;
   }
+  
+  public int getRotationDegrees() {
+    return val;
+  }
 }

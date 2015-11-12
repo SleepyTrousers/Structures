@@ -21,10 +21,14 @@ import crazypants.structures.api.gen.IChunkValidator;
 import crazypants.structures.api.gen.IDecorator;
 import crazypants.structures.api.gen.ISitePreperation;
 import crazypants.structures.api.gen.ISiteValidator;
+import crazypants.structures.api.gen.IStructureComponent;
+import crazypants.structures.api.gen.PositionedComponent;
 import crazypants.structures.api.runtime.IAction;
 import crazypants.structures.api.runtime.IBehaviour;
 import crazypants.structures.api.runtime.ICondition;
 import crazypants.structures.api.util.Point3i;
+import crazypants.structures.api.util.Rotation;
+import crazypants.structures.gen.StructureGenRegister;
 import crazypants.structures.gen.structure.Border;
 import net.minecraft.block.Block;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -43,7 +47,12 @@ public class GsonIO {
     builder.registerTypeAdapter(Point3i.class, new Point3iIO());
     builder.registerTypeAdapter(Block.class, new BlockIO());
     builder.registerTypeAdapter(Border.class, new BorderIO());
+    builder.registerTypeAdapter(Rotation.class, new RotationIO());
 
+    
+    //Template    
+    builder.registerTypeAdapter(PositionedComponent.class, new PositionedComponentIO());
+    
     //Typed parsers    
     builder.registerTypeAdapter(IChunkValidator.class, new ChunkValIO());
     builder.registerTypeAdapter(ISiteValidator.class, new SiteValIO());
@@ -66,6 +75,46 @@ public class GsonIO {
       gson = builder.create();
     }
     return gson;
+  }
+  
+  //--------------------------------------------------
+  private static class PositionedComponentIO implements JsonSerializer<PositionedComponent>, JsonDeserializer<PositionedComponent> {
+
+    @Override
+    public PositionedComponent deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+      if(!json.isJsonObject() || json.isJsonNull()) {
+        return null;
+      }
+      JsonObject obj = json.getAsJsonObject();
+      if(!obj.has("uid")) {
+        return null;
+      }
+      
+      String uid = obj.get("uid").getAsString();            
+      IStructureComponent st = StructureGenRegister.instance.getStructureComponent(uid, true);
+      if(st == null) {
+        return null;
+      }
+      
+      Point3i offset = JsonUtil.getPoint3iField(obj, "offset", new Point3i());            
+      return new PositionedComponent(st, offset);
+    }
+
+    @Override
+    public JsonElement serialize(PositionedComponent src, Type typeOfSrc, JsonSerializationContext context) {
+      JsonObject res = new JsonObject();
+      res.addProperty("uid", src.getComponent().getUid());      
+      Point3i offset = src.getOffset();
+      if(offset != null) {
+        JsonArray arr = new JsonArray();
+        arr.add(new JsonPrimitive(offset.x));
+        arr.add(new JsonPrimitive(offset.y));
+        arr.add(new JsonPrimitive(offset.z));
+        res.add("offset", arr);
+      }      
+      return res;
+    }
+    
   }
 
   //--------------------------------------------------
@@ -119,6 +168,31 @@ public class GsonIO {
         return null;
       }
       return new JsonPrimitive(id.toString());
+    }
+
+  }
+  
+//--------------------------------------------------
+  private static class RotationIO implements JsonSerializer<Rotation>, JsonDeserializer<Rotation> {
+
+    @Override
+    public Rotation deserialize(JsonElement je, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+      if(!je.isJsonPrimitive()) {
+        return null;
+      }
+      JsonPrimitive prim = je.getAsJsonPrimitive();
+      if(prim.isNumber()) {
+        return Rotation.get(prim.getAsInt());
+      }
+      if(prim.isString()) {
+        return Rotation.valueOf(prim.getAsString());
+      }      
+      return null;
+    }
+
+    @Override
+    public JsonElement serialize(Rotation src, Type typeOfSrc, JsonSerializationContext context) {      
+      return new JsonPrimitive(src.getRotationDegrees());
     }
 
   }

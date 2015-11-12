@@ -8,49 +8,57 @@
         "components" : [
           {"uid" : "esSpawnHouseTest"}
         ],
+                
+	"siteValidator" : {
+          "type" : "CompositeSiteValidator",
+                   "validators" : [
         
-        "siteValidators" : [
-        
-         { "type" : "SpacingValidator", 
-                    "minSpacing" : 20},
+                      { "type" : "SpacingValidator", 
+                                  "minSpacing" : 20},
                                             
-        { "type" : "LevelGroundValidator",
-                    "canSpawnOnWater" : "false",
-                    "tolerance" : 2,
-                    "sampleSpacing" : 4,
-                    "maxSamples" : 50,
-                    "Border" : { "sizeXZ" : 1 }}                    
+                      { "type" : "LevelGroundValidator",
+                                 "canSpawnOnWater" : "false",
+                                 "tolerance" : 2,
+                                 "sampleSpacing" : 4,
+                                 "maxSamples" : 50,
+                                 "Border" : { "sizeXZ" : 1 }}                    
+                    ]                    
         
-        ],
-        
-        "sitePreperations" : [
+        },
+
+        "sitePreperation" : {
                   
-            { "type": "ClearPreperation", 
-                      "clearPlants" : "true",          
-                      "Border" : {
-                          "up" : 3, "down" : 0, "north" : 1, "south" : 1, "east" : 1, "west" : 1
-                      }
-            },
+         "type" : "CompositePreperation",
+                  "preperations" : [
+                                     
+                      { "type": "ClearPreperation", 
+                                "clearPlants" : "true",   
+                                "Border" : {"up" : 3, "down" : 0, "north" : 1, "south" : 1, "east" : 1, "west" : 1}
+                      },
            
-            { "type" : "FillPreperation",
-                      "clearPlants" : "true",
-                      "Border" : {
-                          "sizeXZ" : 1
-                      }}           
-       ],
-       
-       "decorators" : [
-       
-         { "type" : "LootTableInventory",
-                    "_category" : "esTestCat1",  
-                    "category" : "esRuinTestPrivateCat",
-                    "comment_category" : "mineshaftCorridor, pyramidDesertyChest, pyramidJungleChest, pyramidJungleDispenser, strongholdCorridor, strongholdLibrary, strongholdCrossing, villageBlacksmith, bonusChest, dungeonChest",
-                    "targets" : ["chest"]
+                      { "type" : "FillPreperation",
+                                 "clearPlants" : "true",
+                                 "Border" : { "sizeXZ" : 1 }
+                      }  
+                  ]         
+       },
+              
+       "decorator" : {
+                  
+         "type" : "CompositeDecorator",
+                  "decorators" : [
+                         
+                    { "type" : "LootTableInventory",
+                               "category" : "pyramidDesertyChest",                                 
+                               "targets" : ["chest"]
                     }
-                        
-        ],
+                  ]                        
+        },
        
-       "behaviours" : [
+       "behaviour" : {                     
+          
+          "type" : "CompositeBehaviour",
+          "behaviours" : [
            
            { "type": "VirtualSpawner",
                      "entity" : "Wolf",
@@ -110,7 +118,8 @@
                                            ]                                 
                                  }          
           }                            
-       ]
+	  ]
+       }
        
     }
 }

@@ -15,19 +15,19 @@ import net.minecraft.world.gen.structure.StructureBoundingBox;
 public class CompositePreperation extends AbstractTyped implements ISitePreperation {
 
   @Expose
-  private final List<ISitePreperation> preps = new ArrayList<ISitePreperation>();
+  private final List<ISitePreperation> preperations = new ArrayList<ISitePreperation>();
 
   public CompositePreperation() {
     super("CompositePreperation");
   }
 
   public void add(ISitePreperation prep) {
-    preps.add(prep);
+    preperations.add(prep);
   }
 
   @Override
   public boolean prepareLocation(IStructure structure, World world, Random random, StructureBoundingBox bounds) {
-    for (ISitePreperation rule : preps) {
+    for (ISitePreperation rule : preperations) {
       if (!rule.prepareLocation(structure, world, random, bounds)) {
         return false;
       }

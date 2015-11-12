@@ -5,12 +5,17 @@ import com.google.gson.JsonObject;
 import crazypants.structures.api.ITyped;
 import crazypants.structures.api.gen.IChunkValidator;
 import crazypants.structures.api.gen.ISiteValidator;
+import crazypants.structures.api.io.IParser;
+import crazypants.structures.gen.structure.decorator.CompositeDecorator;
 import crazypants.structures.gen.structure.decorator.LootTableDecorator;
 import crazypants.structures.gen.structure.preperation.ClearPreperation;
+import crazypants.structures.gen.structure.preperation.CompositePreperation;
 import crazypants.structures.gen.structure.preperation.FillPreperation;
 import crazypants.structures.gen.structure.sampler.SurfaceLocationSampler;
 import crazypants.structures.gen.structure.validator.BiomeValidatorAll;
 import crazypants.structures.gen.structure.validator.BiomeValidatorAny;
+import crazypants.structures.gen.structure.validator.CompositeSiteValidator;
+import crazypants.structures.gen.structure.validator.CompositeValidator;
 import crazypants.structures.gen.structure.validator.DimensionValidator;
 import crazypants.structures.gen.structure.validator.LevelGroundValidator;
 import crazypants.structures.gen.structure.validator.RandomValidator;
@@ -18,6 +23,7 @@ import crazypants.structures.gen.structure.validator.SpacingValidator;
 import crazypants.structures.runtime.action.CompositeAction;
 import crazypants.structures.runtime.action.ExecuteCommandAction;
 import crazypants.structures.runtime.action.RandomizerAction;
+import crazypants.structures.runtime.behaviour.CompositeBehaviour;
 import crazypants.structures.runtime.behaviour.ResidentSpawner;
 import crazypants.structures.runtime.behaviour.ServerTickBehaviour;
 import crazypants.structures.runtime.behaviour.vspawner.VirtualSpawnerBehaviour;
@@ -34,49 +40,54 @@ public class DefaultParsers {
   public static void register() {
 
     //Location samplers    
-    add(new GsonParserAdapter(new SurfaceLocationSampler()));
+    register(new GsonParserAdapter(new SurfaceLocationSampler()));
 
-    //validators    
-    add(new RandomValidator());
-    add(new DimensionValidator());        
-    add(new LevelGroundValidator());
-    add(new BiomeValidatorAny());
-    add(new BiomeValidatorAll());
-    add(new SpacingValParser());    
+    //validators
+    register(new CompositeValidator());
+    register(new CompositeSiteValidator());
+    register(new RandomValidator());
+    register(new DimensionValidator());        
+    register(new LevelGroundValidator());
+    register(new BiomeValidatorAny());
+    register(new BiomeValidatorAll());
+    register(new SpacingValParser());    
 
     //site preps    
-    add(new ClearPreperation());
-    add(new FillPreperation());
+    register(new CompositePreperation());
+    register(new ClearPreperation());    
+    register(new FillPreperation());
      
     //Decorators
-    add(new LootTableDecorator());
+    register(new CompositeDecorator());
+    register(new LootTableDecorator());
     
     //behaviours
-    add(new ResidentSpawner());    
-    add(new VirtualSpawnerBehaviour());
-    add(new ServerTickBehaviour());
+    register(new CompositeBehaviour());
+    register(new ResidentSpawner());    
+    register(new VirtualSpawnerBehaviour());
+    register(new ServerTickBehaviour());
 
     //conditions    
-    add(new AndCondition());
-    add(new OrCondition());
-    add(new BlockExistsCondition());
-    add(new PlayerInRangeCondition());
-    add(new MaxEntitiesInRangeCondition());
-    add(new ElapasedTimeCondition());
-    add(new TickCountCondition());
+    register(new AndCondition());
+    register(new OrCondition());
+    register(new BlockExistsCondition());
+    register(new PlayerInRangeCondition());
+    register(new MaxEntitiesInRangeCondition());
+    register(new ElapasedTimeCondition());
+    register(new TickCountCondition());
     
     //actions
-    add(new GsonParserAdapter(new ExecuteCommandAction()));
-    add(new GsonParserAdapter(new CompositeAction()));    
-    add(new GsonParserAdapter(new RandomizerAction()));
+    register(new CompositeAction());
+    register(new ExecuteCommandAction());        
+    register(new RandomizerAction());
   }
 
-  private static void add(ITyped typed) {
+  private static void register(ITyped typed) {
     ParserRegister.instance.register(new GsonParserAdapter(typed));
   }
   
-  private static void add(ParserAdapater fact) {
-    ParserRegister.instance.register(fact);
+  private static void register(IParser parser) {
+    ParserRegister.instance.register(parser);
   }
    
 

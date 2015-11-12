@@ -58,8 +58,10 @@ public class Structure implements IStructure {
     if(!isValid()) {
       return;
     }
-    runtimeBehaviour = getTemplate().getBehaviour().createInstance(world, this, null);
-    runtimeBehaviour.onStructureGenerated(world, this);   
+    if(getTemplate() != null && getTemplate().getBehaviour() != null) {
+      runtimeBehaviour = getTemplate().getBehaviour().createInstance(world, this, null);
+      runtimeBehaviour.onStructureGenerated(world, this);
+    }
   }
 
   @Override
@@ -72,10 +74,10 @@ public class Structure implements IStructure {
     if(state != null && state.hasKey("rootBehaviour")) {
       behavState = state.getCompoundTag("rootBehaviour");
     }
-    if(runtimeBehaviour == null) {
+    if(runtimeBehaviour == null && getTemplate() != null && getTemplate().getBehaviour() != null) {
       runtimeBehaviour = getTemplate().getBehaviour().createInstance(world, this, behavState);
-    }
-    runtimeBehaviour.onStructureLoaded(world, this, behavState);
+      runtimeBehaviour.onStructureLoaded(world, this, behavState);
+    }        
   }
 
   @Override
@@ -104,7 +106,7 @@ public class Structure implements IStructure {
       res.setTag("rootBehaviour", behavState);
     }
     return res;
-  }  
+  }
 
   @Override
   public AxisAlignedBB getBounds() {
@@ -232,7 +234,7 @@ public class Structure implements IStructure {
   }
 
   @Override
-  public Point3i getRotatedLocation(Point3i templateLocalPos) {    
+  public Point3i getRotatedLocation(Point3i templateLocalPos) {
     return VecUtil.rotatePosition(templateLocalPos, this);
   }
 
@@ -247,6 +249,5 @@ public class Structure implements IStructure {
     res.add(origin);
     return res;
   }
-  
 
 }

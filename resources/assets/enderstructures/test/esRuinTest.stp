@@ -9,56 +9,61 @@
           {"uid" : "esRuinTest"}
         ],
         
-        "siteValidators" : [
+	"siteValidator" : {
+          "type" : "CompositeSiteValidator",
+                   "validators" : [
         
-         { "type" : "SpacingValidator", 
-                    "minSpacing" : 20},
+                      { "type" : "SpacingValidator", 
+                                  "minSpacing" : 20},
                                             
-        { "type" : "LevelGroundValidator",
-                    "canSpawnOnWater" : "false",
-                    "tolerance" : 2,
-                    "sampleSpacing" : 4,
-                    "maxSamples" : 50,
-                    "Border" : { "sizeXZ" : 2 }}                    
+                      { "type" : "LevelGroundValidator",
+                                 "canSpawnOnWater" : "false",
+                                 "tolerance" : 2,
+                                 "sampleSpacing" : 4,
+                                 "maxSamples" : 50,
+                                 "Border" : { "sizeXZ" : 2 }}                    
+                    ]                    
         
-        ],
+        },
         
-        "sitePreperations" : [
+       "sitePreperation" : {
                   
-            { "type": "ClearPreperation", 
-                      "clearPlants" : "false",    
-                      "clearBellowGround" : "false",       
-                      "Border" : {
-                          "up" : 6, "down" : 0, "north" : 2, "south" : 2, "east" : 2, "west" : 2
-                      }
-            },
+         "type" : "CompositePreperation",
+                  "preperations" : [
+                                     
+                      { "type": "ClearPreperation", 
+                                "clearPlants" : "false",   
+				"clearBellowGround" : "false",  
+                                "Border" : { "up" : 6, "down" : 0, "north" : 2, "south" : 2, "east" : 2, "west" : 2 }
+                      },
            
-            { "type" : "FillPreperation",
-                      "clearPlants" : "true",
-                      "Border" : {
-                          "sizeXZ" : 1
-                      }}           
-       ],
+                      { "type" : "FillPreperation",
+                                 "clearPlants" : "true",
+                                 "Border" : { "sizeXZ" : 1 }
+                      }  
+                  ]         
+       },
        
-       "decorators" : [
-        
-         { "type" : "LootTableInventory",
-                    "category" : "esRuinTestPrivateCat",  
-                    "comment_category" : "mineshaftCorridor, pyramidDesertyChest, pyramidJungleChest, pyramidJungleDispenser, strongholdCorridor, strongholdLibrary, strongholdCrossing, villageBlacksmith, bonusChest, dungeonChest",
-                    "targets" : ["upstairsChest"]
+       
+       "decorator" : {
+                  
+         "type" : "CompositeDecorator",
+                  "decorators" : [
+                         
+                    { "type" : "LootTableInventory",
+                               "category" : "esRuinTestPrivateCat",                                 
+                               "targets" : ["upstairsChest"]
                     },
-                    
-         { "type" : "LootTableInventory",
-                    "category" : "esTestCat2",                      
-                    "targets" : [ "lowerChest1", "lowerChest2"]                    
-                    },  
-                    
-         { "type" : "LootTableInventory",
-                    "category" : "dungeonChest",                      
-                    "targets" : [ "doubleChest1" ]                    
-                    }               
-        
-        ],
+		    { "type" : "LootTableInventory",
+                               "category" : "esTestCat2",                                                                
+                               "targets" : ["lowerChest1", "lowerChest2"]
+                    },
+		    { "type" : "LootTableInventory",
+                               "category" : "dungeonChest",                                                                
+                               "targets" : [ "doubleChest1" ]
+                    }
+                  ]                        
+        },
         
         "LootTableCategories" : [
     
@@ -76,18 +81,21 @@
                 
       ],
       
-      "behaviours" : [
+      "behaviour" : {                     
+          
+          "type" : "CompositeBehaviour",
+          "behaviours" : [
            
-           { "type": "ResidentSpawner",
-                     "entity" : "Creeper",
-                     "entityNbt" : "{powered:1,CustomName:McDoodle The Second}",
-                     "numSpawned" : 4,                    
-                     "spawnRange" : 4,
-                     "respawnRate" : 2500,
-                     "homeRadius" : 64,
-                     "taggedPosition" : "resSpawner",
-                     "preCondition" : {"type" : "PlayerInRange", "range" : 32 },
-                     "onSpawnAction" : {"type" : "CompositeAction", 
+               { "type": "ResidentSpawner",
+                         "entity" : "Creeper",
+                         "entityNbt" : "{powered:1,CustomName:McDoodle The Second}",
+                         "numSpawned" : 4,                    
+                         "spawnRange" : 4,
+                         "respawnRate" : 2500,
+                         "homeRadius" : 64,
+                         "taggedPosition" : "resSpawner",
+                         "preCondition" : {"type" : "PlayerInRange", "range" : 32 },
+                         "onSpawnAction" : {"type" : "CompositeAction", 
                                                 "actions" : [                                 
                                                     {"type" : "RandomizerAction", "minOffset" : [-2,0,-2], "maxOffset" : [2,0,2],
                                                               "actions" : [
@@ -102,10 +110,11 @@
                                                                 {"type" : "ExecuteCommand",  "commands" : ["summon Fireball ~ ~ ~ {direction:[0.0,-4.0,0.0]}"]}  
                                                               ]                                                    
                                                     }                                                                                                                   
-                                                  ]                                 
-                                                }  
+                                                ]                                 
+                                             }  
                                                     
-           }
+            }
          ]
+      }
     }
 }

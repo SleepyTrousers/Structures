@@ -5,24 +5,36 @@
           {"uid" : "esVillageHouse1Test"}
         ],               
         
-        "sitePreperations" : [
+        "sitePreperation": {
+            "type": "CompositePreperation",
+            "preperations": [
+                {
+                    "type": "ClearPreperation",
+                    "clearPlants": "true"
+                },
+                {
+                    "type": "FillPreperation",
+                    "clearPlants": "true"
+                }
+            ]
+        },
+
+	"decorator" : {
                   
-            { "type": "ClearPreperation", 
-                      "clearPlants" : "true"},
-           
-            { "type" : "FillPreperation",
-                      "clearPlants" : "true"}           
-       ],
-       
-       "decorators" : [
-        
-         { "type" : "LootTableInventory",
-                    "category" : "mineshaftCorridor",  
-                    "comment_category" : "mineshaftCorridor, pyramidDesertyChest, pyramidJungleChest, pyramidJungleDispenser, strongholdCorridor, strongholdLibrary, strongholdCrossing, villageBlacksmith, bonusChest, dungeonChest",
-                    "targets" : ["inv0", "inv1", "inv2"]} 
-       ],
-       
-       "behaviours" : [
+         "type" : "CompositeDecorator",
+                  "decorators" : [
+                         
+                    { "type" : "LootTableInventory",
+                               "category" : "mineshaftCorridor",                                                                
+                               "targets" : ["inv0", "inv1", "inv2"]
+                    }
+                  ]                        
+        },
+              
+      "behaviour" : {                     
+          
+          "type" : "CompositeBehaviour",
+          "behaviours" : [
            
            { "type": "VirtualSpawner",
                      "entity" : "Wolf",
@@ -53,8 +65,8 @@
                       
              }
              
-       
-       ]                           
+         ]
+       }                           
        
     }
 }

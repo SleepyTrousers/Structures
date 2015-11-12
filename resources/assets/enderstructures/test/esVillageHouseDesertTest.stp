@@ -1,18 +1,22 @@
 {
-    "StructureTemplate" : {
-                    
-        "components" : [
-          {"uid" : "esVillageHouseDesertTest"}
-        ],               
-        
-        "sitePreperations" : [
-                  
-            { "type": "ClearPreperation", 
-                      "clearPlants" : "true"},
-           
-            { "type" : "FillPreperation",
-                      "clearPlants" : "true"}           
-       ]
-       
+    "StructureTemplate": {
+        "components": [
+            {
+                "uid": "esVillageHouseDesertTest"
+            }
+        ],
+        "sitePreperation": {
+            "type": "CompositePreperation",
+            "preperations": [
+                {
+                    "type": "ClearPreperation",
+                    "clearPlants": "true"
+                },
+                {
+                    "type": "FillPreperation",
+                    "clearPlants": "true"
+                }
+            ]
+        }
     }
 }

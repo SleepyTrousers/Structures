@@ -5,28 +5,35 @@
           {"uid" : "esVillageHouse2Test"}
         ],               
         
-        "sitePreperations" : [
+        "sitePreperation": {
+            "type": "CompositePreperation",
+            "preperations": [
+                {
+                    "type": "ClearPreperation",
+                    "clearPlants": "true"
+                },
+                {
+                    "type": "FillPreperation",
+                    "clearPlants": "true"
+                }
+            ]
+        },       
+
+        "decorator" : {
                   
-            { "type": "ClearPreperation", 
-                      "clearPlants" : "true"},
-           
-            { "type" : "FillPreperation",
-                      "clearPlants" : "true"}           
-       ],
-       
-       "decorators" : [
-        
-         { "type" : "LootTableInventory",
-                    "category" : "villageBlacksmith",  
-                    "comment_category" : "mineshaftCorridor, pyramidDesertyChest, pyramidJungleChest, pyramidJungleDispenser, strongholdCorridor, strongholdLibrary, strongholdCrossing, villageBlacksmith, bonusChest, dungeonChest",
-                    "targets" : ["inv0"]},
-                    
-         { "type" : "LootTableInventory",
-                    "category" : "dungeonChest",  
-                    "comment_category" : "mineshaftCorridor, pyramidDesertyChest, pyramidJungleChest, pyramidJungleDispenser, strongholdCorridor, strongholdLibrary, strongholdCrossing, villageBlacksmith, bonusChest, dungeonChest",
-                    "targets" : ["inv2", "inv3"]}
-                     
-       ]
+         "type" : "CompositeDecorator",
+                  "decorators" : [
+                         
+                    { "type" : "LootTableInventory",
+                               "category" : "villageBlacksmith",                                 
+                               "targets" : ["inv0"]
+                    },
+		    { "type" : "LootTableInventory",
+                               "category" : "dungeonChest",                                                                
+                               "targets" : ["inv2", "inv3"]
+                    }
+                  ]                        
+        }
        
     }
 }

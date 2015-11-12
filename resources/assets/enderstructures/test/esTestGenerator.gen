@@ -9,6 +9,11 @@
           {"uid" : "esRuinTest"},    
           {"uid" : "esSpawnHouseTest"}
         ],
+
+	    "_templates" : [
+          {"uid" : "esSmallHouseTest"},
+          {"uid" : "esRuinTest"}         
+        ],
         
         "_templates" : [
           {"uid" : "esSmallHouseTest"}            
@@ -44,8 +49,8 @@
             
             
             { "type" : "SpacingValidator",
-                      "minSpacing" : 100,
-                      "templateFilter" : [ "esSmallHouseTest", "esRuinTest" ] },
+                      "minSpacing" : 200,
+                      "templateFilter" : [ "esSmallHouseTest", "esRuinTest", "esSpawnHouseTest" ]},
                       
             { "type" : "SpacingValidator",
                       "minSpacing" : 50 }                                    

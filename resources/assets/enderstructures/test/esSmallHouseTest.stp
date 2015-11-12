@@ -6,61 +6,72 @@
         "rotations" : [0,90,180,270],
         
         "_components" : [
-          {"uid" : "test"},
-          {"uid" : "villageHouseDesert",
+          {"uid" : "esSmallHouseTest"},
+          {"uid" : "esVillageHouseDesertTest",
            "offset" : [10, 10, 10] }
         ],
         
         "components" : [
           {"uid" : "esSmallHouseTest"}
         ],
+                
+        "siteValidator" : {
+          "type" : "CompositeSiteValidator",
+                   "validators" : [
         
-        "siteValidators" : [
-        
-         { "type" : "SpacingValidator", 
-                    "minSpacing" : 20},
+                      { "type" : "SpacingValidator", 
+                                  "minSpacing" : 20},
                                             
-        { "type" : "LevelGroundValidator",
-                    "canSpawnOnWater" : "false",
-                    "tolerance" : 2,
-                    "sampleSpacing" : 4,
-                    "maxSamples" : 50,
-                    "Border" : { "sizeXZ" : 1 }}                    
+                      { "type" : "LevelGroundValidator",
+                                 "canSpawnOnWater" : "false",
+                                 "tolerance" : 2,
+                                 "sampleSpacing" : 4,
+                                 "maxSamples" : 50,
+                                 "Border" : { "sizeXZ" : 1 }}                    
+                    ]                    
         
-        ],
+        },
         
-        "sitePreperations" : [
+        
+        "sitePreperation" : {
                   
-            { "type": "ClearPreperation", 
-                      "clearPlants" : "true",          
-                      "Border" : {
-                          "up" : 3, "down" : 0, "north" : 1, "south" : 1, "east" : 1, "west" : 1
-                      }
-            },
+         "type" : "CompositePreperation",
+                  "preperations" : [
+                                     
+                      { "type": "ClearPreperation", 
+                                "clearPlants" : "true",          
+                                "Border" : { "up" : 3, "down" : 0, "north" : 1, "south" : 1, "east" : 1, "west" : 1 }
+                      },
            
-            { "type" : "FillPreperation",
-                      "clearPlants" : "true",
-                      "Border" : {
-                          "sizeXZ" : 1
-                      }}           
-       ],
+                      { "type" : "FillPreperation",
+                                 "clearPlants" : "true",
+                                 "Border" : { "sizeXZ" : 1 }
+                      }  
+                  ]         
+       },
        
-       "decorators" : [
-       
-         { "type" : "LootTableInventory",
-                    "_category" : "esTestCat1",  
-                    "category" : "esRuinTestPrivateCat",
-                    "comment_category" : "mineshaftCorridor, pyramidDesertyChest, pyramidJungleChest, pyramidJungleDispenser, strongholdCorridor, strongholdLibrary, strongholdCrossing, villageBlacksmith, bonusChest, dungeonChest",
-                    "targets" : ["chest"]
+       "decorator" : {
+                  
+         "type" : "CompositeDecorator",
+                  "decorators" : [
+                         
+                    { "type" : "LootTableInventory",
+                               "category" : "esTestCat1",                                 
+                               "_category" : "mineshaftCorridor",
+                               "comment_category" : "mineshaftCorridor, pyramidDesertyChest, pyramidJungleChest, pyramidJungleDispenser, strongholdCorridor, strongholdLibrary, strongholdCrossing, villageBlacksmith, bonusChest, dungeonChest",
+                               "targets" : ["chest"]
                     }
-                        
-        ],
+                  ]                        
+        },
        
-       "behaviours" : [                     
-             
-           { "type": "ServerTickBehaviour",
-                     "executionInterval" : 20,
-                     "condition" : { "type" : "AndCondition",
+       "behaviour" : {                     
+          
+          "type" : "CompositeBehaviour",
+          "behaviours" : [
+                      
+                   { "type": "ServerTickBehaviour",
+                             "executionInterval" : 20,
+                             "condition" : { "type" : "AndCondition",
                                               "conditions" : [
                                                {"type" : "PlayerInRange", 
                                                          "range" : 32, 
@@ -71,25 +82,16 @@
                                                          "maxTime" : 300,
                                                          "persisted" : true }
                                               ]
-                                 },
-                                   
-                      "_action" : {"type" : "ExecuteCommand", 
-                                            "position" : [2,10,2],
-                                            "commands" : [
-                                                "effect @a[r=32] 1 5",
-                                                "say \"nice place..\""                       
-                                            ]                                 
-                                 },
-                     
-                     "action" : {"type" : "CompositeAction", 
-                                           "actions" : [                                 
-                                            {"type" : "ExecuteCommand", "position" : [2,10,2], "commands" : [ "effect @a[r=32] 1 5", "say \"nice place..\""]}                                                                                                                   
-                                           ]                                 
-                                 }          
-                                 
-                              
-          }                            
-       ]
+                             },
+                                                        
+                             "action" : {"type" : "CompositeAction", 
+                                                  "actions" : [                                 
+                                                    {"type" : "ExecuteCommand", "position" : [2,10,2], "commands" : [ "effect @a[r=32] 1 5", "say \"nice place..\""]}                                                                                                                   
+                                                   ]                                 
+                                        }                                                                         
+                  }
+          ]                                                
+       }
        
     }
 }
