@@ -1,5 +1,6 @@
 package crazypants.structures.gen.structure.preperation;
 
+import java.util.List;
 import java.util.Random;
 
 import com.google.gson.annotations.Expose;
@@ -10,6 +11,7 @@ import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.util.StructureUtil;
 import crazypants.structures.api.util.VecUtil;
 import crazypants.structures.gen.structure.Border;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
@@ -24,7 +26,10 @@ public class ClearPreperation extends AbstractTyped implements ISitePreperation 
   private boolean clearPlants = true;
 
   @Expose
-  private boolean clearBellowGround = false;  
+  private boolean clearBellowGround = false;
+
+  @Expose
+  private boolean clearItems = true;
 
   public ClearPreperation() {
     super("ClearPreperation");
@@ -45,11 +50,11 @@ public class ClearPreperation extends AbstractTyped implements ISitePreperation 
     if(!clearBellowGround) {
       minY += structure.getSurfaceOffset() + 1;
     }
-    
+
     for (int x = minX; x < maxX; x++) {
       for (int y = minY; y < maxY; y++) {
         for (int z = minZ; z < maxZ; z++) {
-          if( (clip == null || VecUtil.isInBounds(clip, x, z)) && (clearPlants || !StructureUtil.isPlant(world.getBlock(x, y, z), world, x, y, z))) {
+          if((clip == null || VecUtil.isInBounds(clip, x, z)) && (clearPlants || !StructureUtil.isPlant(world.getBlock(x, y, z), world, x, y, z))) {
             if(!world.isAirBlock(x, y, z)) {
               world.setBlockToAir(x, y, z);
             }
@@ -58,6 +63,15 @@ public class ClearPreperation extends AbstractTyped implements ISitePreperation 
       }
     }
 
+    if(clearItems) {
+      @SuppressWarnings("unchecked")
+      List<EntityItem> ents = world.getEntitiesWithinAABB(EntityItem.class, bb);
+      if(ents != null) {
+        for (EntityItem item : ents) {
+          item.setDead();
+        }
+      }
+    }
     return true;
   }
 

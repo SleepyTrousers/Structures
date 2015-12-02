@@ -99,7 +99,15 @@ public class StructureResourceManager {
   }
 
   public IStructureTemplate loadTemplate(String uid) throws Exception {
-    return templateParser.parseTemplateConfig(register, uid, loadText(uid, TEMPLATE_EXT));
+    return loadTemplate(uid, loadText(uid, TEMPLATE_EXT));
+  }
+  
+  public IStructureTemplate loadTemplate(String uid, InputStream fromStream) throws Exception {
+    return loadTemplate(uid, loadText(uid, fromStream));
+  }
+  
+  public IStructureTemplate loadTemplate(String uid, String text) throws Exception {
+    return templateParser.parseTemplateConfig(register, uid, text);
   }
 
   public void loadLootTableDefination(String uid) throws Exception {

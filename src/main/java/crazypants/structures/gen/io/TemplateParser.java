@@ -23,6 +23,12 @@ public class TemplateParser {
       e.printStackTrace();
     }
 
+//    if(res != null) {
+//      json = GsonIO.INSTANCE.getGson().toJson(res);
+//      System.out.println("TemplateParser.parseTemplateConfig: -----------------------------------------------------------------------------");
+//      System.out.println(json);
+//    }
+    
     return res;
   }
 

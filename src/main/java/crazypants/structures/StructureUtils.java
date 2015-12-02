@@ -20,8 +20,10 @@ import crazypants.structures.api.util.Point3i;
 import crazypants.structures.gen.io.JsonUtil;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
 public class StructureUtils {
@@ -182,6 +184,24 @@ public class StructureUtils {
     dos.writeShort((short) coord.x);
     dos.writeShort((short) coord.y);
     dos.writeShort((short) coord.z);
+  }
+  
+  public static void clearBounds(AxisAlignedBB bb, World wld) {
+    for (int x = (int) bb.minX; x < bb.maxX; x++) {
+      for (int y = (int) bb.minY; y < bb.maxY; y++) {
+        for (int z = (int) bb.minZ; z < bb.maxZ; z++) {
+          wld.setBlockToAir(x, y, z);;
+        }
+      }
+    }
+    @SuppressWarnings("unchecked")
+    List<EntityItem> ents = wld.getEntitiesWithinAABB(EntityItem.class, bb);
+    if(ents == null || ents.isEmpty()) {
+      return;
+    }    
+    for(EntityItem item : ents) {
+      item.setDead();
+    }
   }
 
 }

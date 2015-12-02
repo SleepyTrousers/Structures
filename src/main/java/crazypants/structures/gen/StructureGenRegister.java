@@ -241,4 +241,8 @@ public class StructureGenRegister {
     return templates.values();
   }
 
+  public Map<String, IStructureTemplate> getStructureTemplateMap() {
+    return templates;
+  }
+
 }
