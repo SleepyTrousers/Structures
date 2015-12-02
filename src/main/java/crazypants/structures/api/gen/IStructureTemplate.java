@@ -46,6 +46,10 @@ public interface IStructureTemplate {
   
   void build(IStructure structure, World world, Random random, StructureBoundingBox clipBounds);
 
+  void setSitePreperation(ISitePreperation sitePreperation);
+
+  ISitePreperation getSitePreperation();
+
   
 
 }

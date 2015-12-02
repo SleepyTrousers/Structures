@@ -3,22 +3,26 @@ package crazypants.structures.gen.io;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import crazypants.structures.api.gen.IStructureTemplate;
 import crazypants.structures.gen.StructureGenRegister;
 import crazypants.structures.gen.structure.StructureTemplate;
 
 public class TemplateParser {
 
-  public StructureTemplate parseTemplateConfig(StructureGenRegister reg, String uid, String json) throws Exception {
+  public IStructureTemplate parseTemplateConfig(StructureGenRegister reg, String uid, String json) throws Exception {
 
     StructureTemplate res = null;
     try {
       JsonObject to = new JsonParser().parse(json).getAsJsonObject();
       to = to.getAsJsonObject("StructureTemplate");
 
-      reg.getResourceManager().getLootTableParser().parseLootTableCategories(to);
+      if(to != null) {
+        reg.getResourceManager().getLootTableParser().parseLootTableCategories(to);
+        res = GsonIO.INSTANCE.getGson().fromJson(to, StructureTemplate.class);
+        res.setUid(uid);
+      }
 
-      res = GsonIO.INSTANCE.getGson().fromJson(to, StructureTemplate.class);
-      res.setUid(uid);
+      
     } catch (Exception e) {
       e.printStackTrace();
     }

@@ -205,10 +205,12 @@ public class StructureTemplate implements IStructureTemplate {
     return siteValidator;
   }
   
+  @Override
   public ISitePreperation getSitePreperation() {
     return sitePreperation;
   }
 
+  @Override
   public void setSitePreperation(ISitePreperation sitePreperation) {
     this.sitePreperation = sitePreperation;
   }

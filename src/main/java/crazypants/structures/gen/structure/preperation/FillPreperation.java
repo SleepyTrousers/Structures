@@ -44,6 +44,11 @@ public class FillPreperation extends AbstractTyped implements ISitePreperation {
     super("FillPreperation");
     border.setBorderXZ(1);
   }
+  
+  @Override
+  public StructureBoundingBox getEffectedBounds(IStructure structure) {
+    return border.getBounds(structure);
+  }
 
   @Override
   public boolean prepareLocation(IStructure structure, World world, Random random, StructureBoundingBox clip) {

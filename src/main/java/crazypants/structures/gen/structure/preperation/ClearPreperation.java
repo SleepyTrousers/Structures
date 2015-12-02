@@ -15,7 +15,6 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
-import net.minecraftforge.common.util.ForgeDirection;
 
 public class ClearPreperation extends AbstractTyped implements ISitePreperation {
 
@@ -37,23 +36,21 @@ public class ClearPreperation extends AbstractTyped implements ISitePreperation 
   }
 
   @Override
+  public StructureBoundingBox getEffectedBounds(IStructure structure) {
+    StructureBoundingBox res = border.getBounds(structure);    
+    if(!clearBellowGround) {
+      res.minY += structure.getSurfaceOffset() + 1;
+    }
+    return res;
+  }
+
+  @Override
   public boolean prepareLocation(IStructure structure, World world, Random random, StructureBoundingBox clip) {
 
-    AxisAlignedBB bb = structure.getBounds();
-    int minX = (int) bb.minX - border.get(ForgeDirection.WEST);
-    int maxX = (int) bb.maxX + border.get(ForgeDirection.EAST);
-    int minY = (int) bb.minY - border.get(ForgeDirection.DOWN);
-    int maxY = (int) bb.maxY + border.get(ForgeDirection.UP);
-    int minZ = (int) bb.minZ - border.get(ForgeDirection.NORTH);
-    int maxZ = (int) bb.maxZ + border.get(ForgeDirection.SOUTH);
-
-    if(!clearBellowGround) {
-      minY += structure.getSurfaceOffset() + 1;
-    }
-
-    for (int x = minX; x < maxX; x++) {
-      for (int y = minY; y < maxY; y++) {
-        for (int z = minZ; z < maxZ; z++) {
+    StructureBoundingBox bb = getEffectedBounds(structure);
+    for (int x = bb.minX; x < bb.maxX; x++) {
+      for (int y = bb.minY; y < bb.maxY; y++) {
+        for (int z = bb.minZ; z < bb.maxZ; z++) {
           if((clip == null || VecUtil.isInBounds(clip, x, z)) && (clearPlants || !StructureUtil.isPlant(world.getBlock(x, y, z), world, x, y, z))) {
             if(!world.isAirBlock(x, y, z)) {
               world.setBlockToAir(x, y, z);
@@ -63,9 +60,10 @@ public class ClearPreperation extends AbstractTyped implements ISitePreperation 
       }
     }
 
-    if(clearItems) {
+    if(clearItems) {            
+      AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(bb.minX, bb.minY, bb.minZ, bb.maxX, bb.maxY, bb.maxZ);
       @SuppressWarnings("unchecked")
-      List<EntityItem> ents = world.getEntitiesWithinAABB(EntityItem.class, bb);
+      List<EntityItem> ents = world.getEntitiesWithinAABB(EntityItem.class, aabb);
       if(ents != null) {
         for (EntityItem item : ents) {
           item.setDead();

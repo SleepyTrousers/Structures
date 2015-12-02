@@ -25,6 +25,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.structure.StructureBoundingBox;
 
 public class StructureUtils {
 
@@ -202,6 +203,17 @@ public class StructureUtils {
     for(EntityItem item : ents) {
       item.setDead();
     }
+  }
+  
+  public static AxisAlignedBB growBounds(AxisAlignedBB bounds, StructureBoundingBox growBy) {
+    bounds = AxisAlignedBB.getBoundingBox(
+        Math.min(growBy.minX, bounds.minX),
+        Math.min(growBy.minY, bounds.minY), 
+        Math.min(growBy.minZ, bounds.minZ), 
+        Math.max(growBy.maxX, bounds.maxX),
+        Math.max(growBy.maxY, bounds.maxY), 
+        Math.max(growBy.maxZ, bounds.maxZ));
+    return bounds;
   }
 
 }

@@ -10,4 +10,5 @@ public interface ISitePreperation extends ITyped {
 
   boolean prepareLocation(IStructure structure, World world, Random random, StructureBoundingBox bounds);
 
+  StructureBoundingBox getEffectedBounds(IStructure structure);
 }

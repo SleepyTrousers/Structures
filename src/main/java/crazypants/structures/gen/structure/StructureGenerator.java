@@ -55,7 +55,7 @@ public class StructureGenerator implements IStructureGenerator {
   public StructureGenerator(String uid, Collection<StructureTemplate> gens) {
     this.uid = uid;
     if (gens != null) {
-      for (StructureTemplate gen : gens) {
+      for (IStructureTemplate gen : gens) {
         if (gen != null) {
           structureTemplates.add(gen);
         }

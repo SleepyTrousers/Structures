@@ -3,12 +3,21 @@ package crazypants.structures.gen.structure;
 import java.util.HashMap;
 import java.util.Map;
 
+import crazypants.structures.api.gen.IStructure;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class Border {
   
   private Map<ForgeDirection, Integer> border = new HashMap<ForgeDirection, Integer>();
 
+  public Border() {
+    for(ForgeDirection dir : ForgeDirection.values()) {
+      set(dir, 0);
+    }
+  }
+  
   public void setBorderXZ(int size) {
     setBorder(size, size, size, size);
   }
@@ -34,6 +43,18 @@ public class Border {
     border.put(ForgeDirection.SOUTH, south);
   }
 
+  public StructureBoundingBox getBounds(IStructure structure) {
+    //TODO: Rotations? 
+    AxisAlignedBB bb = structure.getBounds();
+    int minX = (int) bb.minX - border.get(ForgeDirection.WEST);
+    int maxX = (int) bb.maxX + border.get(ForgeDirection.EAST);
+    int minY = (int) bb.minY - border.get(ForgeDirection.DOWN);
+    int maxY = (int) bb.maxY + border.get(ForgeDirection.UP);
+    int minZ = (int) bb.minZ - border.get(ForgeDirection.NORTH);
+    int maxZ = (int) bb.maxZ + border.get(ForgeDirection.SOUTH);
+    return new StructureBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);        
+  }
+  
   public void set(ForgeDirection dir, int val) {
     border.put(dir, val);
   }
