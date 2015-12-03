@@ -67,4 +67,20 @@ public class Border {
     return res;
   }
 
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("[ ");
+    for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+      sb.append(dir.toString());
+      sb.append("=");
+      sb.append(get(dir));
+      sb.append(" ");
+    }
+    sb.append("]");
+    return sb.toString();
+  }
+  
+  
+
 }

@@ -311,7 +311,7 @@ public class StructureComponentNBT implements IStructureComponent {
 
   @Override
   public String toString() {
-    return "StructureTemplate [uid=" + uid + "]";
+    return "StructureComponent [uid=" + uid + "]";
   }
 
   @Override

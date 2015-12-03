@@ -248,6 +248,9 @@ public class StructureTemplate implements IStructureTemplate {
     return res;
   }
 
-  
+  @Override
+  public String toString() {
+    return "StructureTemplate [uid=" + uid + "]";
+  }
 
 }
