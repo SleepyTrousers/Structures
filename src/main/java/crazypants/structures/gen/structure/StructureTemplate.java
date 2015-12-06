@@ -25,6 +25,14 @@ public class StructureTemplate implements IStructureTemplate {
 
   private static final Random RND = new Random(987345098532932115L);
 
+  private String uid;
+  
+  @Expose
+  private boolean canSpanChunks = true;
+
+  @Expose
+  private boolean generationRequiresLoadedChunks = canSpanChunks;
+
   @Expose
   private List<Rotation> rotations = new ArrayList<Rotation>();
 
@@ -42,14 +50,6 @@ public class StructureTemplate implements IStructureTemplate {
 
   @Expose
   private IBehaviour behaviour;
-
-  @Expose
-  private boolean canSpanChunks = true;
-
-  @Expose
-  private boolean generationRequiresLoadedChunks = canSpanChunks;
-
-  private String uid;
 
   public StructureTemplate() {
     this(null);

@@ -62,6 +62,7 @@ public class GsonIO {
     builder.registerTypeAdapter(IAction.class, new ActionIO());
     builder.registerTypeAdapter(ICondition.class, new ConditionIO());
     builder.registerTypeAdapter(IBehaviour.class, new BehaviourIO());
+    builder.setPrettyPrinting();
     
   }
 
@@ -72,7 +73,7 @@ public class GsonIO {
 
   public Gson getGson() {
     if(gson == null) {
-      gson = builder.create();
+      gson = builder.create();      
     }
     return gson;
   }

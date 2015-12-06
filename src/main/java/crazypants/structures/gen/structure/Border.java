@@ -18,6 +18,15 @@ public class Border {
     }
   }
   
+  public Border(int north, int south, int east, int west, int up, int down) {
+    border.put(ForgeDirection.DOWN, down);
+    border.put(ForgeDirection.UP, up);
+    border.put(ForgeDirection.EAST, east);
+    border.put(ForgeDirection.WEST, west);
+    border.put(ForgeDirection.NORTH, north);
+    border.put(ForgeDirection.SOUTH, south);
+  }
+  
   public void setBorderXZ(int size) {
     setBorder(size, size, size, size);
   }
@@ -72,13 +81,38 @@ public class Border {
     StringBuilder sb = new StringBuilder();
     sb.append("[ ");
     for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
-      sb.append(dir.toString());
+      sb.append(dir.toString().substring(0,1));
       sb.append("=");
       sb.append(get(dir));
       sb.append(" ");
     }
     sb.append("]");
     return sb.toString();
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((border == null) ? 0 : border.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if(this == obj)
+      return true;
+    if(obj == null)
+      return false;
+    if(getClass() != obj.getClass())
+      return false;
+    Border other = (Border) obj;
+    if(border == null) {
+      if(other.border != null)
+        return false;
+    } else if(!border.equals(other.border))
+      return false;
+    return true;
   }
   
   

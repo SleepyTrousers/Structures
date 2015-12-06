@@ -6,6 +6,7 @@ import crazypants.structures.api.ITyped;
 import crazypants.structures.api.gen.IChunkValidator;
 import crazypants.structures.api.gen.ISiteValidator;
 import crazypants.structures.api.io.IParser;
+import crazypants.structures.gen.structure.TypeRegister;
 import crazypants.structures.gen.structure.decorator.CompositeDecorator;
 import crazypants.structures.gen.structure.decorator.LootTableDecorator;
 import crazypants.structures.gen.structure.preperation.ClearPreperation;
@@ -83,6 +84,7 @@ public class DefaultParsers {
   }
 
   private static void register(ITyped typed) {
+    TypeRegister.INSTANCE.register(typed);
     ParserRegister.instance.register(new GsonParserAdapter(typed));
   }
   

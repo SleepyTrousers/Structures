@@ -159,7 +159,10 @@ public class Structure implements IStructure {
     root.setInteger("x", origin.x);
     root.setInteger("y", origin.y);
     root.setInteger("z", origin.z);
-    root.setString("template", template.getUid());
+    String tmpUid = template.getUid();
+    if(tmpUid != null && tmpUid.length() > 0) {
+      root.setString("template", template.getUid());
+    }
     root.setShort("rotation", (short) rotation.ordinal());
   }
 
