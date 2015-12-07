@@ -1,6 +1,5 @@
 package crazypants.structures.api.gen;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
@@ -37,7 +36,7 @@ public interface IStructureTemplate {
   
   IBehaviour getBehaviour();
 
-  Collection<Point3i> getTaggedLocations(String target);
+  List<Point3i> getTaggedLocations(String target);
   
 
   IStructure createInstance();
