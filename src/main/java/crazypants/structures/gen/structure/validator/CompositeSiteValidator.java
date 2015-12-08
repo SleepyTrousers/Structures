@@ -8,6 +8,7 @@ import java.util.Random;
 import com.google.gson.annotations.Expose;
 
 import crazypants.structures.AbstractTyped;
+import crazypants.structures.api.ListElementType;
 import crazypants.structures.api.gen.ISiteValidator;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.gen.IWorldStructures;
@@ -20,6 +21,7 @@ public class CompositeSiteValidator extends AbstractTyped implements ISiteValida
     super("CompositeSiteValidator");
   }
 
+  @ListElementType(elementType=ISiteValidator.class)
   @Expose
   private final List<ISiteValidator> validators = new ArrayList<ISiteValidator>();
 

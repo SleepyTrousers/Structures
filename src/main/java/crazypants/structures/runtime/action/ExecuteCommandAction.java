@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.google.gson.annotations.Expose;
 
+import crazypants.structures.api.ListElementType;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.IAction;
 import crazypants.structures.api.util.Point3i;
@@ -22,6 +23,7 @@ import net.minecraft.world.World;
 
 public class ExecuteCommandAction extends PositionedType implements IAction {
 
+  @ListElementType(elementType=String.class)
   @Expose
   private List<String> commands = new ArrayList<String>();
   

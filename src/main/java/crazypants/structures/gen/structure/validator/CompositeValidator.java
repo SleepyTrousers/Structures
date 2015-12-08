@@ -8,6 +8,7 @@ import java.util.Random;
 import com.google.gson.annotations.Expose;
 
 import crazypants.structures.AbstractTyped;
+import crazypants.structures.api.ListElementType;
 import crazypants.structures.api.gen.IChunkValidator;
 import crazypants.structures.api.gen.IStructureGenerator;
 import crazypants.structures.api.gen.IWorldStructures;
@@ -15,6 +16,7 @@ import net.minecraft.world.World;
 
 public class CompositeValidator extends AbstractTyped implements IChunkValidator {
 
+  @ListElementType(elementType=IChunkValidator.class)
   @Expose
   private final List<IChunkValidator> validators = new ArrayList<IChunkValidator>();
   

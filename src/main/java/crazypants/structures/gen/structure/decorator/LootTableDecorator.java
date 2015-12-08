@@ -7,6 +7,7 @@ import java.util.Random;
 import com.google.gson.annotations.Expose;
 
 import crazypants.structures.AbstractTyped;
+import crazypants.structures.api.ListElementType;
 import crazypants.structures.api.gen.IDecorator;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.util.Point3i;
@@ -22,6 +23,7 @@ public class LootTableDecorator extends AbstractTyped implements IDecorator {
   @Expose 
   private String category;
   
+  @ListElementType(elementType=String.class)
   @Expose
   private List<String> targets;
 

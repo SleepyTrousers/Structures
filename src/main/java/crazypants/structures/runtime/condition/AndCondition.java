@@ -7,6 +7,7 @@ import java.util.List;
 import com.google.gson.annotations.Expose;
 
 import crazypants.structures.AbstractTyped;
+import crazypants.structures.api.ListElementType;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.ICondition;
 import crazypants.structures.api.util.Point3i;
@@ -16,6 +17,10 @@ import net.minecraft.world.World;
 
 public class AndCondition extends AbstractTyped implements ICondition {
 
+  @ListElementType(elementType=ICondition.class)
+  @Expose
+  private List<ICondition> conditions = new ArrayList<ICondition>();
+  
   public AndCondition() {
     super("AndCondition");
   }
@@ -23,9 +28,6 @@ public class AndCondition extends AbstractTyped implements ICondition {
   public AndCondition(String type) {
     super(type);
   }
-
-  @Expose
-  private List<ICondition> conditions = new ArrayList<ICondition>();
 
   public void addCondition(ICondition condition) {
     if(condition != null) {

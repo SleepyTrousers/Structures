@@ -36,12 +36,12 @@ import crazypants.structures.runtime.condition.OrCondition;
 import crazypants.structures.runtime.condition.PlayerInRangeCondition;
 import crazypants.structures.runtime.condition.TickCountCondition;
 
-public class DefaultParsers {
+public class DefaultTypes {
 
   public static void register() {
 
     //Location samplers    
-    register(new GsonParserAdapter(new SurfaceLocationSampler()));
+    register(new SurfaceLocationSampler());
 
     //validators
     register(new CompositeValidator());
@@ -51,7 +51,7 @@ public class DefaultParsers {
     register(new LevelGroundValidator());
     register(new BiomeValidatorAny());
     register(new BiomeValidatorAll());
-    register(new SpacingValParser());    
+    register(new SpacingValidator(), new SpacingValParser());    
 
     //site preps    
     register(new CompositePreperation());
@@ -84,14 +84,13 @@ public class DefaultParsers {
   }
 
   private static void register(ITyped typed) {
-    TypeRegister.INSTANCE.register(typed);
-    ParserRegister.instance.register(new GsonParserAdapter(typed));
+    register(typed, new GsonParserAdapter(typed));    
   }
   
-  private static void register(IParser parser) {
+  private static void register(ITyped typed, IParser parser) {
+    TypeRegister.INSTANCE.register(typed);
     ParserRegister.instance.register(parser);
   }
-   
 
   //-----------------------------------------------------------------
   static class SpacingValParser extends ParserAdapater {

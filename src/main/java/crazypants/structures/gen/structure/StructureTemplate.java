@@ -7,6 +7,7 @@ import java.util.Random;
 
 import com.google.gson.annotations.Expose;
 
+import crazypants.structures.api.ListElementType;
 import crazypants.structures.api.gen.IDecorator;
 import crazypants.structures.api.gen.ISitePreperation;
 import crazypants.structures.api.gen.ISiteValidator;
@@ -33,9 +34,11 @@ public class StructureTemplate implements IStructureTemplate {
   @Expose
   private boolean generationRequiresLoadedChunks = canSpanChunks;
 
+  @ListElementType(elementType=Rotation.class)
   @Expose
   private List<Rotation> rotations = new ArrayList<Rotation>();
 
+  @ListElementType(elementType=PositionedComponent.class)
   @Expose
   private List<PositionedComponent> components = new ArrayList<PositionedComponent>();
 

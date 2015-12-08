@@ -6,6 +6,7 @@ import java.util.List;
 import com.google.gson.annotations.Expose;
 
 import crazypants.structures.AbstractTyped;
+import crazypants.structures.api.ListElementType;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.IBehaviour;
 import crazypants.structures.api.runtime.IStateful;
@@ -15,6 +16,7 @@ import net.minecraft.world.World;
 
 public class CompositeBehaviour extends AbstractTyped implements IBehaviour {
 
+  @ListElementType(elementType=IBehaviour.class)
   @Expose
   private List<IBehaviour> behaviours = new ArrayList<IBehaviour>();
   

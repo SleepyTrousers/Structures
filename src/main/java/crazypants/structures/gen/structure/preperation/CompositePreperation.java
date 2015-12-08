@@ -7,6 +7,7 @@ import java.util.Random;
 import com.google.gson.annotations.Expose;
 
 import crazypants.structures.AbstractTyped;
+import crazypants.structures.api.ListElementType;
 import crazypants.structures.api.gen.ISitePreperation;
 import crazypants.structures.api.gen.IStructure;
 import net.minecraft.util.AxisAlignedBB;
@@ -15,6 +16,7 @@ import net.minecraft.world.gen.structure.StructureBoundingBox;
 
 public class CompositePreperation extends AbstractTyped implements ISitePreperation {
 
+  @ListElementType(elementType=ISitePreperation.class)
   @Expose
   private final List<ISitePreperation> preperations = new ArrayList<ISitePreperation>();
 
