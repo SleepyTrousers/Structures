@@ -68,6 +68,9 @@ public class StructureRegister {
 
     @SubscribeEvent
     public void onChunkLoad(ChunkEvent.Load evt) {
+      if(evt.world.isRemote) {
+        return;
+      }
       Collection<IStructure> structs = getStructuresForWorld(evt.world).getStructuresWithOriginInChunk(evt.getChunk().getChunkCoordIntPair());
       if(!structs.isEmpty()) {
         loadedStructures.addAll(structs);        
@@ -79,6 +82,9 @@ public class StructureRegister {
 
     @SubscribeEvent
     public void onChunkUnload(ChunkEvent.Unload evt) {
+      if(evt.world.isRemote) {
+        return;
+      }
       Collection<IStructure> structs = getStructuresForWorld(evt.world).getStructuresWithOriginInChunk(evt.getChunk().getChunkCoordIntPair());
       if(!structs.isEmpty()) {
         loadedStructures.removeAll(structs);
@@ -91,6 +97,9 @@ public class StructureRegister {
 
     @SubscribeEvent
     public void eventWorldSave(WorldEvent.Save evt) {
+      if(evt.world.isRemote) {
+        return;
+      }
       WorldStructures wm = getStructuresForWorldImpl(evt.world);
       if(wm != null) {
         wm.save();

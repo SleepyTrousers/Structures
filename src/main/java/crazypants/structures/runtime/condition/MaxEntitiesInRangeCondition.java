@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.google.gson.annotations.Expose;
 
+import crazypants.structures.api.ListElementType;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.util.Point3i;
 import net.minecraft.command.IEntitySelector;
@@ -26,6 +27,7 @@ public class MaxEntitiesInRangeCondition extends PositionedCondition {
   @Expose
   private int range = 32;
   
+  @ListElementType(elementType=String.class)
   @Expose
   private List<String> entities = new ArrayList<String>();
   

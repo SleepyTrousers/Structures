@@ -9,6 +9,7 @@ import java.util.Random;
 import com.google.gson.annotations.Expose;
 
 import crazypants.structures.AbstractTyped;
+import crazypants.structures.api.ListElementType;
 import crazypants.structures.api.gen.IChunkValidator;
 import crazypants.structures.api.gen.ISiteValidator;
 import crazypants.structures.api.gen.IStructure;
@@ -27,6 +28,7 @@ public class SpacingValidator extends AbstractTyped implements IChunkValidator, 
   @Expose
   private int minSpacing;
   
+  @ListElementType(elementType=String.class)
   @Expose
   private List<String> templateFilter = new ArrayList<String>();
   
