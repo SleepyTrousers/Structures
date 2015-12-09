@@ -7,6 +7,10 @@ import net.minecraft.world.World;
 
 public class OrCondition extends AndCondition {
 
+  public OrCondition() {
+    super("OrCondition");
+  }
+  
   @Override
   public boolean isConditionMet(World world, IStructure structure, Point3i refPoint) {
     for(ICondition con : getConditions()) {
