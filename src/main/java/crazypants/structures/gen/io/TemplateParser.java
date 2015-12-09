@@ -13,16 +13,16 @@ public class TemplateParser {
 
     StructureTemplate res = null;
     try {
-      JsonObject to = new JsonParser().parse(json).getAsJsonObject();
-      to = to.getAsJsonObject("StructureTemplate");
-
+      JsonObject root = new JsonParser().parse(json).getAsJsonObject();
+      JsonObject to = root.getAsJsonObject("StructureTemplate");
+      if(to == null) {
+        to = root.getAsJsonObject("structureTemplate");        
+      }
       if(to != null) {
         reg.getResourceManager().getLootTableParser().parseLootTableCategories(to);
         res = GsonIO.INSTANCE.getGson().fromJson(to, StructureTemplate.class);
         res.setUid(uid);
       }
-
-      
     } catch (Exception e) {
       e.printStackTrace();
     }

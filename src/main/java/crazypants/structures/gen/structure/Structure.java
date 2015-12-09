@@ -213,6 +213,9 @@ public class Structure implements IStructure {
 
   @Override
   public String getUid() {
+    if(template == null) {
+      return null;
+    }
     return template.getUid();
   }
 

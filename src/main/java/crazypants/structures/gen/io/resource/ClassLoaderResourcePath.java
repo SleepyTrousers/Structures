@@ -11,11 +11,11 @@ import org.apache.commons.io.IOUtils;
 import crazypants.structures.gen.StructureGenRegister;
 import scala.actors.threadpool.Arrays;
 
-public class ClassLoaderReourcePath extends AbstractResourcePath {
+public class ClassLoaderResourcePath extends AbstractResourcePath {
 
   private final String root;
 
-  public ClassLoaderReourcePath(String root) {
+  public ClassLoaderResourcePath(String root) {
     this.root = root;
   }
 

@@ -22,6 +22,9 @@ import crazypants.structures.api.gen.IDecorator;
 import crazypants.structures.api.gen.ISitePreperation;
 import crazypants.structures.api.gen.ISiteValidator;
 import crazypants.structures.api.gen.IStructureComponent;
+import crazypants.structures.api.gen.IStructureGenerator;
+import crazypants.structures.api.gen.IStructureTemplate;
+import crazypants.structures.api.gen.IVillagerGenerator;
 import crazypants.structures.api.gen.PositionedComponent;
 import crazypants.structures.api.runtime.IAction;
 import crazypants.structures.api.runtime.IBehaviour;
@@ -30,6 +33,9 @@ import crazypants.structures.api.util.Point3i;
 import crazypants.structures.api.util.Rotation;
 import crazypants.structures.gen.StructureGenRegister;
 import crazypants.structures.gen.structure.Border;
+import crazypants.structures.gen.structure.StructureGenerator;
+import crazypants.structures.gen.structure.StructureTemplate;
+import crazypants.structures.gen.villager.VillagerGenerator;
 import net.minecraft.block.Block;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -50,15 +56,17 @@ public class GsonIO {
     builder.registerTypeAdapter(Rotation.class, new RotationIO());
 
     
-    //Template    
+    //Templates    
+    builder.registerTypeAdapter(IStructureTemplate.class, new StructureTemplateIO());
+    builder.registerTypeAdapter(IStructureGenerator.class, new StructureGeneratorIO());
+    builder.registerTypeAdapter(IVillagerGenerator.class, new VillagerGeneratorIO());
     builder.registerTypeAdapter(PositionedComponent.class, new PositionedComponentIO());
     
     //Typed parsers    
     builder.registerTypeAdapter(IChunkValidator.class, new ChunkValIO());
     builder.registerTypeAdapter(ISiteValidator.class, new SiteValIO());
     builder.registerTypeAdapter(ISitePreperation.class, new SitePrepIO());
-    builder.registerTypeAdapter(IDecorator.class, new DecoratorIO());
-    
+    builder.registerTypeAdapter(IDecorator.class, new DecoratorIO());    
     builder.registerTypeAdapter(IAction.class, new ActionIO());
     builder.registerTypeAdapter(ICondition.class, new ConditionIO());
     builder.registerTypeAdapter(IBehaviour.class, new BehaviourIO());
@@ -385,5 +393,66 @@ public class GsonIO {
     }
     
   }
+  
+  //------------------------- Templates
+  
+  private static class StructureTemplateIO implements JsonSerializer<IStructureTemplate>, JsonDeserializer<IStructureTemplate> {
+
+    @Override
+    public IStructureTemplate deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+      if(!json.isJsonObject()) {
+        return null;
+      }
+      JsonObject obj = json.getAsJsonObject();
+      StructureTemplate res = GsonIO.INSTANCE.getGson().fromJson(obj, StructureTemplate.class);
+      return res;
+    }
+
+    @Override
+    public JsonElement serialize(IStructureTemplate src, Type typeOfSrc, JsonSerializationContext context) {
+      return INSTANCE.getGson().toJsonTree(src);
+    }
+    
+  }
+
+  
+  private static class StructureGeneratorIO implements JsonSerializer<IStructureGenerator>, JsonDeserializer<IStructureGenerator> {
+
+    @Override
+    public IStructureGenerator deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+      if(!json.isJsonObject()) {
+        return null;
+      }
+      JsonObject obj = json.getAsJsonObject();
+      StructureGenerator res = GsonIO.INSTANCE.getGson().fromJson(obj, StructureGenerator.class);
+      return res;
+    }
+
+    @Override
+    public JsonElement serialize(IStructureGenerator src, Type typeOfSrc, JsonSerializationContext context) {
+      return INSTANCE.getGson().toJsonTree(src);
+    }
+    
+  }
+  
+  
+  private static class VillagerGeneratorIO implements JsonSerializer<IVillagerGenerator>, JsonDeserializer<IVillagerGenerator> {
+
+    @Override
+    public IVillagerGenerator deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+      if(!json.isJsonObject()) {
+        return null;
+      }
+      JsonObject obj = json.getAsJsonObject();
+      VillagerGenerator res = GsonIO.INSTANCE.getGson().fromJson(obj, VillagerGenerator.class);
+      return res;
+    }
+
+    @Override
+    public JsonElement serialize(IVillagerGenerator src, Type typeOfSrc, JsonSerializationContext context) {
+      return INSTANCE.getGson().toJsonTree(src);
+    }
+    
+  }  
   
 }

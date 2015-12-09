@@ -11,43 +11,54 @@ public class PositionedType extends AbstractTyped {
 
   @Expose
   private Point3i position;
-  
+
   @Expose
   private String taggedPosition;
-  
+
   public PositionedType(String type) {
     super(type);
   }
-  
+
   public PositionedType(PositionedType other) {
-    super(other.getType());    
+    super(other.getType());
     this.position = other.position == null ? null : new Point3i(other.position);
     this.taggedPosition = other.taggedPosition;
-  }  
-  
+  }
+
   public Point3i getWorldPosition(IStructure structure) {
     if(structure == null) {
       return null;
     }
     return getWorldPosition(structure, structure.getOrigin());
   }
-  
+
   public Point3i getWorldPosition(IStructure structure, Point3i def) {
-    Point3i worldPos = def;
-    Point3i sLocalPos = StructureUtils.getTaggedLocationInStructureCoords(taggedPosition, structure, position);
-    if(sLocalPos != null) {
-      worldPos = structure.transformStructureLocalToWorld(sLocalPos);
+
+    //tagged position and is applied without modification
+    //a local position is added to the default value if possible
+    //    System.out.println("PositionedType.getWorldPosition: " + def);
+    Point3i result = def == null ? null : new Point3i(def);
+    Point3i taggedPos = StructureUtils.getTaggedLocationInStructureCoords(taggedPosition, structure, null);
+    if(taggedPos != null) {
+      result = structure.transformStructureLocalToWorld(taggedPos);
+    } else if(position != null) {
+      if(result == null) {
+        result = structure.transformStructureLocalToWorld(position);
+      } else {
+        result.add(position);
+      }
     }
-    return worldPos;    
+    return result;
+
   }
-  
+
   public Point3i getLocalPosition(IStructure structure, Point3i def) {
     Point3i res = StructureUtils.getTaggedLocationInStructureCoords(taggedPosition, structure, position);
     if(res != null) {
       return res;
     }
     return def;
-  }  
+  }
 
   public Point3i getPosition() {
     return position;

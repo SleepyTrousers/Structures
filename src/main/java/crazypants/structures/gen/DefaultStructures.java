@@ -7,11 +7,9 @@ import java.util.List;
 
 import org.apache.commons.compress.utils.IOUtils;
 
-import crazypants.IoUtil;
-import crazypants.structures.Log;
 import crazypants.structures.config.Config;
+import crazypants.structures.gen.io.resource.ClassLoaderResourcePath;
 import crazypants.structures.gen.io.resource.IResourcePath;
-import crazypants.structures.gen.io.resource.StructureResourceManager;
 
 public class DefaultStructures {
 
@@ -25,15 +23,13 @@ public class DefaultStructures {
 
     StructureGenRegister reg = StructureGenRegister.instance;
     List<IResourcePath> toScan = new ArrayList<IResourcePath>();
-
+    toScan.add(reg.getResourceManager().addResourceDirectory(ROOT_DIR));
+    toScan.add(reg.getResourceManager().addClassLoaderResourcePath(RESOURCE_PATH));    
+    registerZipFiles(ROOT_DIR, toScan);
+    
     if(Config.testStructuresEnabled) {
       loadTestResources(reg, toScan);
     }
-
-    toScan.add(reg.getResourceManager().addResourceDirectory(ROOT_DIR));
-    toScan.add(reg.getResourceManager().addClassLoaderResourcePath(RESOURCE_PATH));
-
-    registerZipFiles(ROOT_DIR, toScan);
 
     for (IResourcePath path : toScan) {
       StructureGenRegister.instance.loadAndRegisterAllResources(path, true);
@@ -57,43 +53,24 @@ public class DefaultStructures {
   }
 
   private static void loadTestResources(StructureGenRegister reg, List<IResourcePath> toScan) {
-    String name = "esTestGenerator" + StructureResourceManager.GENERATOR_EXT;
-    copyTestFile(name, name + ".defaultValues");
-
-    name = "esRuinTest" + StructureResourceManager.TEMPLATE_EXT;
-    copyTestFile(name, name + ".defaultValues");
-
-    name = "esSmallHouseTest" + StructureResourceManager.TEMPLATE_EXT;
-    copyTestFile(name, name + ".defaultValues");
-
-    name = "esVillagerTest" + StructureResourceManager.VILLAGER_EXT;
-    copyTestFile(name, name + ".defaultValues");
-
-    name = "esZipTest.zip";
-    copyBinaryFile(name, name);
-
+    if(!TEST_DIR.exists()) {
+      TEST_DIR.mkdirs();
+    }    
+    ClassLoaderResourcePath path = new ClassLoaderResourcePath(TEST_RESOURCE_PATH);
+    List<String> kids = path.getChildren();
+    for(String kid : kids) {
+      File targetFile = new File(TEST_DIR, kid);
+      if(!targetFile.exists()) {              
+        try {
+          IOUtils.copy(path.getStream(kid),new FileOutputStream(targetFile));
+        } catch (Exception e) {        
+          e.printStackTrace();
+        }        
+      }
+    }
+    toScan.add(reg.getResourceManager().addResourceDirectory(TEST_DIR)); 
+    
     registerZipFiles(TEST_DIR, toScan);
-
-    toScan.add(reg.getResourceManager().addResourceDirectory(TEST_DIR));
-    toScan.add(reg.getResourceManager().addClassLoaderResourcePath(TEST_RESOURCE_PATH));
-  }
-  
-  private static void copyBinaryFile(String resourceName, String fileName) {
-    try {
-      IOUtils.copy(DefaultStructures.class.getResourceAsStream(TEST_RESOURCE_PATH + resourceName), new FileOutputStream(new File(TEST_DIR, fileName)));
-    } catch (Exception e) {
-      Log.warn(
-          "EnderZooStructures: Could not copy " + TEST_RESOURCE_PATH + resourceName + " from jar to " + TEST_DIR.getAbsolutePath() + "\\" + fileName + " Ex:" + e);
-    }
-  }
-
-  private static void copyTestFile(String resourceName, String fileName) {
-    try {
-      IoUtil.copyTextTo(new File(TEST_DIR, fileName), DefaultStructures.class.getResourceAsStream(TEST_RESOURCE_PATH + resourceName));
-    } catch (Exception e) {
-      Log.warn(
-          "EnderZooStructures: Could not copy " + TEST_RESOURCE_PATH + resourceName + " from jar to " + TEST_DIR.getAbsolutePath() + "\\" + fileName + " Ex:" + e);
-    }
   }
 
 }

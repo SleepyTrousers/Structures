@@ -45,10 +45,12 @@ public class StructureResourceManager {
       return null;
     }
     IResourcePath res = new DirectoryResourcePath(dir);
-    resourcePaths.add(res);
+    if(!resourcePaths.contains(res)) {    
+      resourcePaths.add(res);
+    }
     return res;
   }
-  
+
   public IResourcePath addResourceZip(File zipDile) {
     if(zipDile == null) {
       return null;
@@ -62,7 +64,7 @@ public class StructureResourceManager {
     if(resourcePath == null) {
       return null;
     }
-    IResourcePath res = new ClassLoaderReourcePath(resourcePath);
+    IResourcePath res = new ClassLoaderResourcePath(resourcePath);
     resourcePaths.add(res);
     return res;
   }
@@ -78,6 +80,22 @@ public class StructureResourceManager {
       }
     }
     return false;
+  }
+
+  public List<File> getFilesWithExt(String ext) {
+    List<File> res = new ArrayList<File>();
+    for (IResourcePath rp : resourcePaths) {
+      if(rp instanceof DirectoryResourcePath) {
+        File dir = ((DirectoryResourcePath)rp).getDirectory(); 
+        List<String> uids = rp.getChildUids(ext);
+        if(uids != null) {
+          for(String uid : uids) {
+            res.add(new File(dir, uid + ext));
+          }
+        }
+      }
+    }
+    return res;
   }
 
   public InputStream getStream(String resourceName) {
@@ -101,11 +119,11 @@ public class StructureResourceManager {
   public IStructureTemplate loadTemplate(String uid) throws Exception {
     return loadTemplate(uid, loadText(uid, TEMPLATE_EXT));
   }
-  
+
   public IStructureTemplate loadTemplate(String uid, InputStream fromStream) throws Exception {
     return loadTemplate(uid, loadText(uid, fromStream));
   }
-  
+
   public IStructureTemplate loadTemplate(String uid, String text) throws Exception {
     return templateParser.parseTemplateConfig(register, uid, text);
   }
@@ -143,13 +161,13 @@ public class StructureResourceManager {
     StringBuffer buf = new StringBuffer();
     BufferedReader br = new BufferedReader(new StringReader(res));
     String line = br.readLine();
-    while(line != null) {
+    while (line != null) {
       line = line.trim();
       if(!line.startsWith("#")) {
         buf.append(line + "\n");
       }
       line = br.readLine();
-    }        
+    }
     return buf.toString();
   }
 

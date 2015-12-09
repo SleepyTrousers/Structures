@@ -40,6 +40,7 @@ public class ServerTickBehaviour extends AbstractEventBehaviour  {
     
     worldPosition = getWorldPosition(strcuture);
              
+    executionInterval = template.executionInterval;
     if(template.getCondition() != null) {      
       condition = template.getCondition().createInstance(world, strcuture, getSubState(state, "condition"));
     }
