@@ -109,7 +109,15 @@ public class StructureResourceManager {
   }
 
   public IStructureGenerator loadGenerator(String uid) throws Exception {
-    return generatorParsor.parseGeneratorConfig(register, uid, loadText(uid, GENERATOR_EXT));
+    return loadGenerator(uid, loadText(uid, GENERATOR_EXT));
+  }
+  
+  public IStructureGenerator loadGenerator(String uid, String text) throws Exception {
+    return generatorParsor.parseGeneratorConfig(register, uid, text);
+  }
+  
+  public IStructureGenerator loadGenerator(String uid, InputStream stream) throws Exception {   
+    return loadGenerator(uid, loadText(uid, stream));
   }
 
   public IVillagerGenerator loadVillager(String uid) throws Exception {

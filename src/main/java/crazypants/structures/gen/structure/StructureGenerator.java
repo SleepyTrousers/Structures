@@ -30,7 +30,7 @@ public class StructureGenerator implements IStructureGenerator {
 
   private static final Random RND = new Random();
 
-  private final String uid;
+  private String uid;
 
   private final CompositeValidator chunkValidators = new CompositeValidator();
 
@@ -196,6 +196,9 @@ public class StructureGenerator implements IStructureGenerator {
     return uid;
   }
 
+  public void setUid(String newUid) {
+    uid = newUid;    
+  }
 
   public int getMaxAttemptsPerChunk() {
     return attemptsPerChunk;
