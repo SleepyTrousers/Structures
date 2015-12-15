@@ -2,10 +2,8 @@ package crazypants.structures.api.gen;
 
 import crazypants.structures.gen.villager.CreationHandler;
 
-public interface IVillagerGenerator {
+public interface IVillagerGenerator extends IResource {
 
-  String getUid();
-  
   CreationHandler getCreationHandler();
   
   void register();

@@ -10,7 +10,10 @@ import java.util.ListIterator;
 import java.util.Random;
 import java.util.Set;
 
+import com.google.gson.annotations.Expose;
+
 import crazypants.structures.Log;
+import crazypants.structures.api.ListElementType;
 import crazypants.structures.api.gen.IChunkValidator;
 import crazypants.structures.api.gen.ILocationSampler;
 import crazypants.structures.api.gen.IStructure;
@@ -32,14 +35,24 @@ public class StructureGenerator implements IStructureGenerator {
 
   private String uid;
 
-  private final CompositeValidator chunkValidators = new CompositeValidator();
+  @Expose
+  private final CompositeValidator chunkValidator = new CompositeValidator();
 
+  @Expose
   private ILocationSampler locSampler;
+  
+  @Expose
   private boolean canSpanChunks = false;
+  
+  @Expose  
   private int attemptsPerChunk = 2;
+  
   //Max number of structures of this type that be generated in a single chunk
+  @Expose
   private int maxInChunk = 1;
 
+  @ListElementType(elementType=IStructureTemplate.class)
+  @Expose
   private final List<IStructureTemplate> structureTemplates = new ArrayList<IStructureTemplate>();
   
   private final List<DeferredGenTask> deferredGenTasks = new ArrayList<DeferredGenTask>();
@@ -107,7 +120,7 @@ public class StructureGenerator implements IStructureGenerator {
       }
     }
     
-    if (!chunkValidators.isValidChunk(this, structures, world, random, chunkX, chunkZ)) {
+    if (!chunkValidator.isValidChunk(this, structures, world, random, chunkX, chunkZ)) {
       return Collections.emptyList();
     }
 
@@ -187,7 +200,7 @@ public class StructureGenerator implements IStructureGenerator {
 
   public void addChunkValidator(IChunkValidator val) {
     if (val != null) {
-      chunkValidators.add(val);
+      chunkValidator.add(val);
     }
   }
 

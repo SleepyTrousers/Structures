@@ -2,6 +2,7 @@ package crazypants.structures.gen;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.Set;
 
 import cpw.mods.fml.common.registry.VillagerRegistry;
 import crazypants.structures.Log;
+import crazypants.structures.api.gen.IResource;
 import crazypants.structures.api.gen.IStructureComponent;
 import crazypants.structures.api.gen.IStructureGenerator;
 import crazypants.structures.api.gen.IStructureTemplate;
@@ -55,10 +57,6 @@ public class StructureGenRegister {
     MapGenStructureIO.func_143031_a(VillageHouse.class, "EnderStructuresHouse");
   }
 
-  public StructureResourceManager getResourceManager() {
-    return resourceManager;
-  }
-
   public void registerGenerator(IStructureGenerator gen) {
     if(gen == null) {
       return;
@@ -93,22 +91,6 @@ public class StructureGenRegister {
     }
     components.put(sc.getUid(), sc);
     Log.info("StructureGenRegister: Registered Component: " + sc.getUid());
-  }
-
-  public Collection<IStructureGenerator> getGenerators() {
-    return generators.values();
-  }
-
-  public Collection<IStructureComponent> getStructureComponents() {
-    return components.values();
-  }
-  
-  public Map<String, IStructureComponent> getStructureComponentMap() {
-    return components;
-  }
-
-  public IStructureComponent getStructureComponent(String uid) {
-    return getStructureComponent(uid, false);
   }
 
   public IStructureComponent getStructureComponent(String uid, boolean doLoadIfNull) {
@@ -243,6 +225,37 @@ public class StructureGenRegister {
 
   public Map<String, IStructureTemplate> getStructureTemplateMap() {
     return templates;
+  }
+  
+  public StructureResourceManager getResourceManager() {
+    return resourceManager;
+  }
+  
+  public Collection<IStructureGenerator> getGenerators() {
+    return generators.values();
+  }
+
+  public Collection<IStructureComponent> getStructureComponents() {
+    return components.values();
+  }
+  
+  public Map<String, IStructureComponent> getStructureComponentMap() {
+    return components;
+  }
+
+  public IStructureComponent getStructureComponent(String uid) {
+    return getStructureComponent(uid, false);
+  }
+    
+  public Collection<? extends IResource> getResources(Class<?> ofType) {
+    if(IStructureComponent.class.isAssignableFrom(ofType)) {
+      return getStructureComponents();
+    } else if(IStructureTemplate.class.isAssignableFrom(ofType)) {
+      return getStructureTemplates();
+    } else if(IStructureGenerator.class.isAssignableFrom(ofType)) {
+      return getGenerators();
+    }
+    return Collections.emptyList();
   }
 
 }

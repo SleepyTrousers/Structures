@@ -10,9 +10,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 
-public interface IStructureComponent {
-
-  String getUid();
+public interface IStructureComponent extends IResource {  
 
   int getSurfaceOffset();
 

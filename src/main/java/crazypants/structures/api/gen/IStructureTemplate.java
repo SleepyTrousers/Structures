@@ -10,9 +10,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 
-public interface IStructureTemplate {
-
-  String getUid();
+public interface IStructureTemplate extends IResource {
 
   //TODO: These need offsets
   List<PositionedComponent> getComponents();
