@@ -31,8 +31,7 @@ public class CompositeValidator extends AbstractTyped implements IChunkValidator
   @Override
   public boolean isValidChunk(IStructureGenerator generator, IWorldStructures structures, World world, Random random, int chunkX, int chunkZ) {
     for (IChunkValidator rule : validators) {
-      if(!rule.isValidChunk(generator, structures, world, random, chunkX, chunkZ)) {
-//        System.out.println("CompositeValidator.isValidChunk: Failed rule: " + rule);
+      if(rule != null && !rule.isValidChunk(generator, structures, world, random, chunkX, chunkZ)) {
         return false;
       }
     }

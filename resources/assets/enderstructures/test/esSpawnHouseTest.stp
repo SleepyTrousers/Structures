@@ -1,5 +1,5 @@
 {
-    "StructureTemplate" : {
+    "structureTemplate" : {
                        
         "canSpanChunks" :  "true",    
         
@@ -9,7 +9,7 @@
           {"uid" : "esSpawnHouseTest"}
         ],
                 
-	"siteValidator" : {
+	    "siteValidator" : {
           "type" : "CompositeSiteValidator",
                    "validators" : [
         

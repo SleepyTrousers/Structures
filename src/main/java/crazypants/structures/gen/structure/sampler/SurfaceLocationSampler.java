@@ -21,7 +21,7 @@ public class SurfaceLocationSampler extends AbstractTyped implements ILocationSa
   private int distanceFromSurface = 0;
   
   @Expose
-  private boolean canPlaceInFluid = false;
+  private boolean canGenerateOnFluid = false;
 
   public SurfaceLocationSampler() {
     super("SurfaceSampler");
@@ -36,11 +36,11 @@ public class SurfaceLocationSampler extends AbstractTyped implements ILocationSa
   }
 
   public boolean isCanPlaceInFluid() {
-    return canPlaceInFluid;
+    return canGenerateOnFluid;
   }
 
   public void setCanGenerateOnFluid(boolean canPlaceInFluid) {
-    this.canPlaceInFluid = canPlaceInFluid;
+    this.canGenerateOnFluid = canPlaceInFluid;
   }
 
   @Override
@@ -68,7 +68,7 @@ public class SurfaceLocationSampler extends AbstractTyped implements ILocationSa
     Block blk;
     Point3i loc = new Point3i();
 
-    blk = StructureUtil.getSurfaceBlock(world, x, z, loc, true, !canPlaceInFluid);
+    blk = StructureUtil.getSurfaceBlock(world, x, z, loc, true, !canGenerateOnFluid);
     if(blk != world.getBiomeGenForCoords(x, z).topBlock && blk != world.getBiomeGenForCoords(x, z).fillerBlock) {
       return null;
     }

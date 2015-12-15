@@ -77,7 +77,7 @@ public class Structure implements IStructure {
     if(runtimeBehaviour == null && getTemplate() != null && getTemplate().getBehaviour() != null) {
       runtimeBehaviour = getTemplate().getBehaviour().createInstance(world, this, behavState);
       runtimeBehaviour.onStructureLoaded(world, this, behavState);
-    }        
+    }
   }
 
   @Override
@@ -159,9 +159,11 @@ public class Structure implements IStructure {
     root.setInteger("x", origin.x);
     root.setInteger("y", origin.y);
     root.setInteger("z", origin.z);
-    String tmpUid = template.getUid();
-    if(tmpUid != null && tmpUid.length() > 0) {
-      root.setString("template", template.getUid());
+    if(template != null) {
+      String tmpUid = template.getUid();
+      if(tmpUid != null && tmpUid.length() > 0) {
+        root.setString("template", template.getUid());
+      }
     }
     root.setShort("rotation", (short) rotation.ordinal());
   }

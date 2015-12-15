@@ -1,7 +1,6 @@
 package crazypants.structures.gen.structure;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -36,65 +35,40 @@ public class StructureGenerator implements IStructureGenerator {
   private String uid;
 
   @Expose
-  private final CompositeValidator chunkValidator = new CompositeValidator();
+  private CompositeValidator chunkValidator;
 
   @Expose
-  private ILocationSampler locSampler;
+  private ILocationSampler locationSampler;
   
   @Expose
-  private boolean canSpanChunks = false;
+  private boolean canSpanChunks;
   
   @Expose  
-  private int attemptsPerChunk = 2;
+  private int maxAttemptsPerChunk;
   
   //Max number of structures of this type that be generated in a single chunk
   @Expose
-  private int maxInChunk = 1;
+  private int maxGeneratedPerChunk;
 
   @ListElementType(elementType=IStructureTemplate.class)
   @Expose
-  private final List<IStructureTemplate> structureTemplates = new ArrayList<IStructureTemplate>();
+  private final List<IStructureTemplate> templates = new ArrayList<IStructureTemplate>();
   
   private final List<DeferredGenTask> deferredGenTasks = new ArrayList<DeferredGenTask>();
 
-  public StructureGenerator(String uid) {
-    this(uid, (StructureTemplate) null);
-  }
-
-  public StructureGenerator(String uid, StructureTemplate... gens) {
-    this(uid, gens == null ? (Collection<StructureTemplate>) null : Arrays.asList(gens));
-  }
-
-  public StructureGenerator(String uid, Collection<StructureTemplate> gens) {
-    this.uid = uid;
-    if (gens != null) {
-      for (IStructureTemplate gen : gens) {
-        if (gen != null) {
-          structureTemplates.add(gen);
-        }
-      }
-    }
-    locSampler = new SurfaceLocationSampler();
-  }
-
-  public void addStructureTemaplate(IStructureTemplate structureTemplate) {
-    if (structureTemplate != null) {
-      structureTemplates.add(structureTemplate);
-    }
-    canSpanChunks = false;
-    for(IStructureTemplate tp : structureTemplates) {      
-      if(tp.getCanSpanChunks()) {
-        canSpanChunks = true;
-        return;
-      }
-    }
+  public StructureGenerator() {
+    canSpanChunks = true;
+    maxAttemptsPerChunk = 2;
+    maxGeneratedPerChunk = 1;
+    chunkValidator = new CompositeValidator();
+    locationSampler = new SurfaceLocationSampler();
   }
 
   public IStructure createStructure() {
-    if (structureTemplates.isEmpty()) {
+    if (templates.isEmpty()) {
       return null;
     }
-    return structureTemplates.get(RND.nextInt(structureTemplates.size())).createInstance();
+    return templates.get(RND.nextInt(templates.size())).createInstance();
   }
 
   @Override
@@ -129,8 +103,8 @@ public class StructureGenerator implements IStructureGenerator {
       return Collections.emptyList();
     }
     
-    for (int i = 0; i < attemptsPerChunk && res.size() < maxInChunk; i++) {
-      Point3i origin = locSampler.generateCandidateLocation(struct, structures, random, chunkX, chunkZ);
+    for (int i = 0; i < maxAttemptsPerChunk && res.size() < maxGeneratedPerChunk; i++) {
+      Point3i origin = locationSampler.generateCandidateLocation(struct, structures, random, chunkX, chunkZ);
       if (origin != null) {
         struct.setOrigin(origin);        
         if(struct.getGenerationRequiresLoadedChunks()) {
@@ -195,7 +169,7 @@ public class StructureGenerator implements IStructureGenerator {
   }
 
   public boolean isValid() {
-    return uid != null && !uid.trim().isEmpty() && !structureTemplates.isEmpty() && locSampler != null;
+    return uid != null && !uid.trim().isEmpty() && templates != null && !templates.isEmpty() && locationSampler != null;
   }
 
   public void addChunkValidator(IChunkValidator val) {
@@ -214,35 +188,35 @@ public class StructureGenerator implements IStructureGenerator {
   }
 
   public int getMaxAttemptsPerChunk() {
-    return attemptsPerChunk;
+    return maxAttemptsPerChunk;
   }
 
   public ILocationSampler getLocationSampler() {
-    return locSampler;
+    return locationSampler;
   }
 
   public void setLocationSampler(ILocationSampler locSampler) {
-    this.locSampler = locSampler;
+    this.locationSampler = locSampler;
   }
 
   public int getAttemptsPerChunk() {
-    return attemptsPerChunk;
+    return maxAttemptsPerChunk;
   }
 
   public void setAttemptsPerChunk(int attemptsPerChunk) {
-    this.attemptsPerChunk = attemptsPerChunk;
+    this.maxAttemptsPerChunk = attemptsPerChunk;
   }
 
   public int getMaxInChunk() {
-    return maxInChunk;
+    return maxGeneratedPerChunk;
   }
 
   public void setMaxInChunk(int maxInChunk) {
-    this.maxInChunk = maxInChunk;
+    this.maxGeneratedPerChunk = maxInChunk;
   }
 
   public List<IStructureTemplate> getTemplates() {
-    return structureTemplates;
+    return templates;
   }
 
   @Override

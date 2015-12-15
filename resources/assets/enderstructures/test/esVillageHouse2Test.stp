@@ -1,5 +1,5 @@
 {
-    "StructureTemplate" : {
+    "structureTemplate" : {
                    
         "components" : [
           {"uid" : "esVillageHouse2Test"}

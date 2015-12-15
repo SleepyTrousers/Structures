@@ -10,6 +10,7 @@ import org.apache.commons.compress.utils.IOUtils;
 import crazypants.structures.config.Config;
 import crazypants.structures.gen.io.resource.ClassLoaderResourcePath;
 import crazypants.structures.gen.io.resource.IResourcePath;
+import crazypants.structures.gen.io.resource.ZipResourcePath;
 
 public class DefaultStructures {
 
@@ -32,6 +33,9 @@ public class DefaultStructures {
     }
 
     for (IResourcePath path : toScan) {
+      if(path instanceof ZipResourcePath) {
+        System.out.println("DefaultStructures.init: ");
+      }
       StructureGenRegister.instance.loadAndRegisterAllResources(path, true);
     }
 

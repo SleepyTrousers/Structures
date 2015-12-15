@@ -1,5 +1,5 @@
 {
-    "StructureGenerator" : {
+    "structureGenerator" : {
                          
         "maxAttemptsPerChunk" : 2,
         "maxGeneratedPerChunk" : 1,
@@ -9,53 +9,42 @@
           {"uid" : "esRuinTest"},    
           {"uid" : "esSpawnHouseTest"}
         ],
-
-	    "_templates" : [
-          {"uid" : "esSmallHouseTest"},
-          {"uid" : "esRuinTest"}         
-        ],
-        
-        "_templates" : [
-          {"uid" : "esSmallHouseTest"}            
-        ],
-        
-         "_templates" : [          
-          {"uid" : "esRuinTest"}    
-        ],
-        
-        "LocationSampler" : {
+ 
+        "locationSampler" : {
               "type" : "SurfaceSampler",
               "distanceFromSurface" : 0,
               "canGenerateOnFluid" : "false"            
         },
         
-        "chunkValidators" : [
+        "chunkValidator" : {
+                  
+             "type" : "CompositeValidator",
+        
+                "validators" : [
                     
-            { "_type" : "RandomValidator", 
-                      "chancePerChunk" : 0.05 },
-                      
-            { "_type" : "RandomValidator", 
-                      "chancePerChunk" : 1.0 },
+                { "type" : "RandomValidator", 
+                          "chancePerChunk" : 0.05 },
                                   
-            { "type" : "BiomeValidatorAny",                                  
-                      "types" : [ "MESA", "FOREST", "PLAINS", "MOUNTAIN", "HILLS", "SWAMP", "SANDY", "SNOWY", "WASTELAND" ],
-                      "typeExcludes" : [ "BEACH", "MUSHROOM", "OCEAN", "RIVER", "NETHER", "END"],
-                      "names" : [],
-                      "nameExcludes" : [] },                                                
+                { "type" : "BiomeValidatorAny",                                  
+                          "types" : [ "MESA", "FOREST", "PLAINS", "MOUNTAIN", "HILLS", "SWAMP", "SANDY", "SNOWY", "WASTELAND" ],
+                          "typeExcludes" : [ "BEACH", "MUSHROOM", "OCEAN", "RIVER", "NETHER", "END"],
+                          "names" : [],
+                          "nameExcludes" : [] },                                                
             
-            { "type" : "DimensionValidator",                               
-                      "includes" : [],
-                      "excludes" : ["Twilight Forest", "Dungeon"] },
+                { "type" : "DimensionValidator",                               
+                          "includes" : [],
+                          "excludes" : ["Twilight Forest", "Dungeon"] },
             
             
-            { "type" : "SpacingValidator",
-                      "minSpacing" : 200,
-                      "templateFilter" : [ "esSmallHouseTest", "esRuinTest", "esSpawnHouseTest" ]},
+                { "type" : "SpacingValidator",
+                          "minSpacing" : 200,
+                          "templateFilter" : [ "esSmallHouseTest", "esRuinTest", "esSpawnHouseTest" ]},
                       
-            { "type" : "SpacingValidator",
-                      "minSpacing" : 50 }                                    
+                { "type" : "SpacingValidator",
+                          "minSpacing" : 50 }                                    
                                                            
-       ]
+               ]
+       }
        
        
        

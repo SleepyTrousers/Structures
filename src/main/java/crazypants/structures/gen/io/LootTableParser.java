@@ -25,8 +25,8 @@ public final class LootTableParser {
   }
   
   public void parseLootTableCategories(JsonObject to) {
-    if (to.has("LootTableCategories")) {
-      JsonArray arr = to.getAsJsonArray("LootTableCategories");
+    if (to.has("lootTableCategories")) {
+      JsonArray arr = to.getAsJsonArray("lootTableCategories");
       for (JsonElement e : arr) {
         if (!e.isJsonNull() && e.isJsonObject()) {
           JsonObject valObj = e.getAsJsonObject();

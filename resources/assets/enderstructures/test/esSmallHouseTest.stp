@@ -1,16 +1,10 @@
 {
-    "StructureTemplate" : {
+    "structureTemplate" : {
                        
         "canSpanChunks" :  "true",    
         
         "rotations" : [0,90,180,270],
-        
-        "_components" : [
-          {"uid" : "esSmallHouseTest"},
-          {"uid" : "esVillageHouseDesertTest",
-           "offset" : [10, 10, 10] }
-        ],
-        
+               
         "components" : [
           {"uid" : "esSmallHouseTest"}
         ],

@@ -1,5 +1,5 @@
 {
-    "LootTableCategories" : [
+    "lootTableCategories" : [
     
         {
            "category" : "esTestCat1",

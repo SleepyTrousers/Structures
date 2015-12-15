@@ -14,10 +14,7 @@ public class TemplateParser {
     StructureTemplate res = null;
     try {
       JsonObject root = new JsonParser().parse(json).getAsJsonObject();
-      JsonObject to = root.getAsJsonObject("StructureTemplate");
-      if(to == null) {
-        to = root.getAsJsonObject("structureTemplate");        
-      }
+      JsonObject to = root.getAsJsonObject("structureTemplate");     
       if(to != null) {
         reg.getResourceManager().getLootTableParser().parseLootTableCategories(to);
         res = GsonIO.INSTANCE.getGson().fromJson(to, StructureTemplate.class);
