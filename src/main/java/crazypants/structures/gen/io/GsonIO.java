@@ -35,6 +35,7 @@ import crazypants.structures.gen.structure.Border;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class GsonIO {
@@ -197,8 +198,16 @@ public class GsonIO {
       Item item = GameRegistry.findItem(itemId.modId, itemId.name);
       if(item == null) {
         throw new JsonParseException("No item found for " + itemStr);
-      }            
-      return new ItemStack(item, JsonUtil.getIntField(obj, "number", 1), JsonUtil.getIntField(obj, "meta", 0));
+      }      
+      ItemStack res = new ItemStack(item, JsonUtil.getIntField(obj, "number", 1), JsonUtil.getIntField(obj, "meta", 0));
+      
+      String nbtStr = JsonUtil.getStringField(obj, "nbt", null);
+      if(nbtStr != null) {
+        NBTTagCompound entityNBT = JsonUtil.parseNBT(nbtStr);
+        res.stackTagCompound = entityNBT;
+      }
+      
+      return res;
     }
 
     @Override
@@ -211,9 +220,11 @@ public class GsonIO {
       UniqueIdentifier id = GameRegistry.findUniqueIdentifierFor(src.getItem());      
       res.addProperty("item", id.modId + ":" + id.name);
       res.addProperty("number", src.stackSize);
-      res.addProperty("meta", src.getItemDamage());
-      
-      return res;
+      res.addProperty("meta", src.getItemDamage());           
+//      if(src.stackTagCompound  != null) {
+//        res.addProperty("nbt", src.stackTagCompound.toString());
+//      }      
+      return res;      
     }
 
   }

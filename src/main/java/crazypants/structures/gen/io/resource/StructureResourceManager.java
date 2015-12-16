@@ -121,7 +121,7 @@ public class StructureResourceManager {
   }
 
   public IVillagerGenerator loadVillager(String uid) throws Exception {
-    return villagerParser.parseVillagerConfig(register, uid, loadText(uid, VILLAGER_EXT));
+    return villagerParser.parseVillagerGenerator(uid, loadText(uid, VILLAGER_EXT));
   }
 
   public IStructureTemplate loadTemplate(String uid) throws Exception {
@@ -157,7 +157,7 @@ public class StructureResourceManager {
     return loadText(uid, getStream(uid, ext));
   }
 
-  private String loadText(String uid, InputStream str) throws IOException {
+  public String loadText(String uid, InputStream str) throws IOException {
     if(str == null) {
       throw new IOException("Could not find the resource for generator: " + uid);
     }

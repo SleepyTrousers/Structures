@@ -69,7 +69,9 @@ public class VillagerGenerator implements IVillagerGenerator {
   @Override
   public void register() {
     if(getVillagerId() > 0) {
-      VillagerRegistry.instance().registerVillagerId(getVillagerId());
+      if(!VillagerRegistry.getRegisteredVillagers().contains(getVillagerId())) {
+        VillagerRegistry.instance().registerVillagerId(getVillagerId());
+      }
     }
     onReload();
   }

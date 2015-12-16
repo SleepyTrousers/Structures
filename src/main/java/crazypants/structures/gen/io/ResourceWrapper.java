@@ -7,7 +7,7 @@ import crazypants.structures.api.gen.IStructureTemplate;
 import crazypants.structures.gen.villager.VillagerTemplate;
 
 /**
- * Used to save / load the templates
+ * Used to save / load the resources
  */
 public class ResourceWrapper {
 
