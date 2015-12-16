@@ -33,6 +33,8 @@ import crazypants.structures.api.util.Rotation;
 import crazypants.structures.gen.StructureGenRegister;
 import crazypants.structures.gen.structure.Border;
 import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class GsonIO {
@@ -45,16 +47,20 @@ public class GsonIO {
 
   private GsonIO() {
     builder.excludeFieldsWithoutExposeAnnotation();
+    
     //Basic types
-    builder.registerTypeAdapter(Point3i.class, new Point3iIO());
-    builder.registerTypeAdapter(Block.class, new BlockIO());
+    builder.registerTypeAdapter(Point3i.class, new Point3iIO());    
     builder.registerTypeAdapter(Border.class, new BorderIO());
     builder.registerTypeAdapter(Rotation.class, new RotationIO());
     
-    //Templates    
+    //MC Types
+    builder.registerTypeAdapter(Block.class, new BlockIO());
+    builder.registerTypeAdapter(ItemStack.class, new ItemStackIO());
+    
+    //Resources
     builder.registerTypeAdapter(IStructureTemplate.class, new StructureTemplateIO());
     builder.registerTypeAdapter(PositionedComponent.class, new PositionedComponentIO());
-    
+        
     //Typed parsers    
     builder.registerTypeAdapter(ILocationSampler.class, new LocationSamplerIO());
     builder.registerTypeAdapter(IChunkValidator.class, new ChunkValIO());
@@ -171,6 +177,43 @@ public class GsonIO {
         return null;
       }
       return new JsonPrimitive(id.toString());
+    }
+
+  }
+  
+//--------------------------------------------------
+  private static class ItemStackIO implements JsonSerializer<ItemStack>, JsonDeserializer<ItemStack> {
+
+    @Override
+    public ItemStack deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+      if(!json.isJsonObject()) {
+        return null;
+      }
+
+      JsonObject obj = json.getAsJsonObject();
+      String itemStr = JsonUtil.getStringField(obj, "item", null);      
+
+      UniqueIdentifier itemId = new UniqueIdentifier(itemStr);
+      Item item = GameRegistry.findItem(itemId.modId, itemId.name);
+      if(item == null) {
+        throw new JsonParseException("No item found for " + itemStr);
+      }            
+      return new ItemStack(item, JsonUtil.getIntField(obj, "number", 1), JsonUtil.getIntField(obj, "meta", 0));
+    }
+
+    @Override
+    public JsonElement serialize(ItemStack src, Type typeOfSrc, JsonSerializationContext context) {
+      if(src == null) {
+        return JsonNull.INSTANCE;
+      }
+      JsonObject res = new JsonObject();
+      
+      UniqueIdentifier id = GameRegistry.findUniqueIdentifierFor(src.getItem());      
+      res.addProperty("item", id.modId + ":" + id.name);
+      res.addProperty("number", src.stackSize);
+      res.addProperty("meta", src.getItemDamage());
+      
+      return res;
     }
 
   }
