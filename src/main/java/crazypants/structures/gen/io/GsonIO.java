@@ -1,6 +1,11 @@
 package crazypants.structures.gen.io;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.lang.reflect.Type;
+
+import org.apache.commons.codec.binary.Base64;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -35,6 +40,7 @@ import crazypants.structures.gen.structure.Border;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -48,31 +54,31 @@ public class GsonIO {
 
   private GsonIO() {
     builder.excludeFieldsWithoutExposeAnnotation();
-    
+
     //Basic types
-    builder.registerTypeAdapter(Point3i.class, new Point3iIO());    
+    builder.registerTypeAdapter(Point3i.class, new Point3iIO());
     builder.registerTypeAdapter(Border.class, new BorderIO());
     builder.registerTypeAdapter(Rotation.class, new RotationIO());
-    
+
     //MC Types
     builder.registerTypeAdapter(Block.class, new BlockIO());
     builder.registerTypeAdapter(ItemStack.class, new ItemStackIO());
-    
+
     //Resources
     builder.registerTypeAdapter(IStructureTemplate.class, new StructureTemplateIO());
     builder.registerTypeAdapter(PositionedComponent.class, new PositionedComponentIO());
-        
+
     //Typed parsers    
     builder.registerTypeAdapter(ILocationSampler.class, new LocationSamplerIO());
     builder.registerTypeAdapter(IChunkValidator.class, new ChunkValIO());
     builder.registerTypeAdapter(ISiteValidator.class, new SiteValIO());
     builder.registerTypeAdapter(ISitePreperation.class, new SitePrepIO());
-    builder.registerTypeAdapter(IDecorator.class, new DecoratorIO());    
+    builder.registerTypeAdapter(IDecorator.class, new DecoratorIO());
     builder.registerTypeAdapter(IAction.class, new ActionIO());
     builder.registerTypeAdapter(ICondition.class, new ConditionIO());
     builder.registerTypeAdapter(IBehaviour.class, new BehaviourIO());
     builder.setPrettyPrinting();
-    
+
   }
 
   public void registerTypeAdapter(Type type, Object typeAdapter) {
@@ -82,11 +88,11 @@ public class GsonIO {
 
   public Gson getGson() {
     if(gson == null) {
-      gson = builder.create();      
+      gson = builder.create();
     }
     return gson;
   }
-  
+
   //--------------------------------------------------
   private static class PositionedComponentIO implements JsonSerializer<PositionedComponent>, JsonDeserializer<PositionedComponent> {
 
@@ -99,21 +105,21 @@ public class GsonIO {
       if(!obj.has("uid")) {
         return null;
       }
-      
-      String uid = obj.get("uid").getAsString();            
+
+      String uid = obj.get("uid").getAsString();
       IStructureComponent st = StructureGenRegister.instance.getStructureComponent(uid, true);
       if(st == null) {
         return null;
       }
-      
-      Point3i offset = JsonUtil.getPoint3iField(obj, "offset", new Point3i());            
+
+      Point3i offset = JsonUtil.getPoint3iField(obj, "offset", new Point3i());
       return new PositionedComponent(st, offset);
     }
 
     @Override
     public JsonElement serialize(PositionedComponent src, Type typeOfSrc, JsonSerializationContext context) {
       JsonObject res = new JsonObject();
-      res.addProperty("uid", src.getComponent().getUid());      
+      res.addProperty("uid", src.getComponent().getUid());
       Point3i offset = src.getOffset();
       if(offset != null) {
         JsonArray arr = new JsonArray();
@@ -121,10 +127,10 @@ public class GsonIO {
         arr.add(new JsonPrimitive(offset.y));
         arr.add(new JsonPrimitive(offset.z));
         res.add("offset", arr);
-      }      
+      }
       return res;
     }
-    
+
   }
 
   //--------------------------------------------------
@@ -181,8 +187,8 @@ public class GsonIO {
     }
 
   }
-  
-//--------------------------------------------------
+
+  //--------------------------------------------------
   private static class ItemStackIO implements JsonSerializer<ItemStack>, JsonDeserializer<ItemStack> {
 
     @Override
@@ -192,21 +198,27 @@ public class GsonIO {
       }
 
       JsonObject obj = json.getAsJsonObject();
-      String itemStr = JsonUtil.getStringField(obj, "item", null);      
+      String itemStr = JsonUtil.getStringField(obj, "item", null);
 
       UniqueIdentifier itemId = new UniqueIdentifier(itemStr);
       Item item = GameRegistry.findItem(itemId.modId, itemId.name);
       if(item == null) {
         throw new JsonParseException("No item found for " + itemStr);
-      }      
+      }
       ItemStack res = new ItemStack(item, JsonUtil.getIntField(obj, "number", 1), JsonUtil.getIntField(obj, "meta", 0));
-      
+
       String nbtStr = JsonUtil.getStringField(obj, "nbt", null);
       if(nbtStr != null) {
-        NBTTagCompound entityNBT = JsonUtil.parseNBT(nbtStr);
-        res.stackTagCompound = entityNBT;
+        try {
+          byte[] decodedBytes = Base64.decodeBase64(nbtStr.getBytes());
+          ByteArrayInputStream bais = new ByteArrayInputStream(decodedBytes);
+          NBTTagCompound nbt = CompressedStreamTools.readCompressed(bais);
+          res.stackTagCompound = nbt;
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
       }
-      
+
       return res;
     }
 
@@ -216,20 +228,27 @@ public class GsonIO {
         return JsonNull.INSTANCE;
       }
       JsonObject res = new JsonObject();
-      
-      UniqueIdentifier id = GameRegistry.findUniqueIdentifierFor(src.getItem());      
+
+      UniqueIdentifier id = GameRegistry.findUniqueIdentifierFor(src.getItem());
       res.addProperty("item", id.modId + ":" + id.name);
       res.addProperty("number", src.stackSize);
-      res.addProperty("meta", src.getItemDamage());           
-//      if(src.stackTagCompound  != null) {
-//        res.addProperty("nbt", src.stackTagCompound.toString());
-//      }      
-      return res;      
+      res.addProperty("meta", src.getItemDamage());
+      if(src.stackTagCompound != null) {
+        try {
+          ByteArrayOutputStream baos = new ByteArrayOutputStream();
+          CompressedStreamTools.writeCompressed(src.stackTagCompound, new DataOutputStream(baos));
+          byte[] encodedBytes = Base64.encodeBase64(baos.toByteArray());
+          res.addProperty("nbt", new String(encodedBytes));
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
+      return res;
     }
 
   }
-  
-//--------------------------------------------------
+
+  //--------------------------------------------------
   private static class RotationIO implements JsonSerializer<Rotation>, JsonDeserializer<Rotation> {
 
     @Override
@@ -243,12 +262,12 @@ public class GsonIO {
       }
       if(prim.isString()) {
         return Rotation.valueOf(prim.getAsString());
-      }      
+      }
       return null;
     }
 
     @Override
-    public JsonElement serialize(Rotation src, Type typeOfSrc, JsonSerializationContext context) {      
+    public JsonElement serialize(Rotation src, Type typeOfSrc, JsonSerializationContext context) {
       return new JsonPrimitive(src.getRotationDegrees());
     }
 
@@ -284,7 +303,7 @@ public class GsonIO {
       for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
         int val = src.get(dir);
         res.addProperty(dir.name().toLowerCase(), val);
-      }      
+      }
       return res;
     }
 
@@ -354,8 +373,8 @@ public class GsonIO {
     }
 
   }
-  
-//--------------------------------------------------
+
+  //--------------------------------------------------
   private static class LocationSamplerIO implements JsonSerializer<ILocationSampler>, JsonDeserializer<ILocationSampler> {
 
     @Override
@@ -442,7 +461,7 @@ public class GsonIO {
     }
 
   }
-  
+
   private static class DecoratorIO implements JsonSerializer<IDecorator>, JsonDeserializer<IDecorator> {
 
     @Override
@@ -461,11 +480,11 @@ public class GsonIO {
     public JsonElement serialize(IDecorator src, Type typeOfSrc, JsonSerializationContext context) {
       return INSTANCE.getGson().toJsonTree(src);
     }
-    
+
   }
-  
+
   //------------------------- Templates
-  
+
   private static class StructureTemplateIO implements JsonSerializer<IStructureTemplate>, JsonDeserializer<IStructureTemplate> {
 
     @Override
@@ -473,7 +492,7 @@ public class GsonIO {
       if(!json.isJsonObject()) {
         return null;
       }
-      
+
       if(!json.isJsonObject() || json.isJsonNull()) {
         return null;
       }
@@ -481,9 +500,9 @@ public class GsonIO {
       if(!obj.has("uid")) {
         return null;
       }
-      
-      String uid = obj.get("uid").getAsString();            
-      IStructureTemplate st = StructureGenRegister.instance.getStructureTemplate(uid, true);      
+
+      String uid = obj.get("uid").getAsString();
+      IStructureTemplate st = StructureGenRegister.instance.getStructureTemplate(uid, true);
       return st;
     }
 
@@ -493,10 +512,10 @@ public class GsonIO {
         return JsonNull.INSTANCE;
       }
       JsonObject res = new JsonObject();
-      res.addProperty("uid", src.getUid());      
+      res.addProperty("uid", src.getUid());
       return res;
     }
-    
+
   }
-  
+
 }
