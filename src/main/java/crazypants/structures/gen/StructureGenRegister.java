@@ -16,6 +16,7 @@ import crazypants.structures.api.gen.IStructureComponent;
 import crazypants.structures.api.gen.IStructureGenerator;
 import crazypants.structures.api.gen.IStructureTemplate;
 import crazypants.structures.api.gen.IVillagerGenerator;
+import crazypants.structures.gen.io.LootCategories;
 import crazypants.structures.gen.io.resource.IResourcePath;
 import crazypants.structures.gen.io.resource.StructureResourceManager;
 import crazypants.structures.gen.structure.StructureComponentNBT;
@@ -152,7 +153,10 @@ public class StructureGenRegister {
     uids = path.getChildUids(StructureResourceManager.LOOT_EXT);
     for (String uid : uids) {
       try {
-        resourceManager.loadLootTableDefination(uid);
+        LootCategories lc = resourceManager.loadLootCategories(uid);
+        if(lc != null) {
+          lc.register();
+        }
       } catch (Exception e) {
         e.printStackTrace();
         Log.warn("StructureGenRegister.loadAndRegisterAllResources: Could not load loot table categories from: " + uid + " error: " + e);

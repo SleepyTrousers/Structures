@@ -16,7 +16,8 @@ import crazypants.structures.api.gen.IStructureTemplate;
 import crazypants.structures.api.gen.IVillagerGenerator;
 import crazypants.structures.gen.StructureGenRegister;
 import crazypants.structures.gen.io.GeneratorParser;
-import crazypants.structures.gen.io.LootTableParser;
+import crazypants.structures.gen.io.LootCategeoriesParser;
+import crazypants.structures.gen.io.LootCategories;
 import crazypants.structures.gen.io.TemplateParser;
 import crazypants.structures.gen.io.VillagerParser;
 import crazypants.structures.gen.structure.StructureComponentNBT;
@@ -32,8 +33,7 @@ public class StructureResourceManager {
   private final List<IResourcePath> resourcePaths = new ArrayList<IResourcePath>();
   private final GeneratorParser generatorParsor = new GeneratorParser();
   private final TemplateParser templateParser = new TemplateParser();
-  private final VillagerParser villagerParser = new VillagerParser();
-  private final LootTableParser chestGenParser = new LootTableParser();
+  private final VillagerParser villagerParser = new VillagerParser();  
   private final StructureGenRegister register;
 
   public StructureResourceManager(StructureGenRegister register) {
@@ -67,10 +67,6 @@ public class StructureResourceManager {
     IResourcePath res = new ClassLoaderResourcePath(resourcePath);
     resourcePaths.add(res);
     return res;
-  }
-
-  public LootTableParser getLootTableParser() {
-    return chestGenParser;
   }
 
   public boolean resourceExists(String resource) {
@@ -136,8 +132,8 @@ public class StructureResourceManager {
     return templateParser.parseTemplateConfig(register, uid, text);
   }
 
-  public void loadLootTableDefination(String uid) throws Exception {
-    chestGenParser.parseLootTableCategories(uid, loadText(uid, LOOT_EXT));
+  public LootCategories loadLootCategories(String uid) throws Exception {    
+    return LootCategeoriesParser.parseLootCategories(uid, loadText(uid, LOOT_EXT));
   }
 
   public StructureComponentNBT loadStructureComponent(String uid) throws IOException {

@@ -10,11 +10,10 @@ import org.apache.commons.compress.utils.IOUtils;
 import crazypants.structures.config.Config;
 import crazypants.structures.gen.io.resource.ClassLoaderResourcePath;
 import crazypants.structures.gen.io.resource.IResourcePath;
-import crazypants.structures.gen.io.resource.ZipResourcePath;
 
 public class DefaultStructures {
 
-  public static final File ROOT_DIR = new File(Config.configDirectory + "/structures/");
+  public static final File ROOT_DIR = new File(Config.configDirectory + "/structures/");  
   public static final String RESOURCE_PATH = "/assets/enderstructures/structures/";
 
   public static final File TEST_DIR = new File(Config.configDirectory + "/test/");
@@ -22,20 +21,25 @@ public class DefaultStructures {
 
   public static void init() {
 
+    if(!ROOT_DIR.exists()) {
+      ROOT_DIR.mkdirs();
+    }
+    
     StructureGenRegister reg = StructureGenRegister.instance;
     List<IResourcePath> toScan = new ArrayList<IResourcePath>();
+    toScan.add(reg.getResourceManager().addClassLoaderResourcePath(RESOURCE_PATH));
+    
     toScan.add(reg.getResourceManager().addResourceDirectory(ROOT_DIR));
-    toScan.add(reg.getResourceManager().addClassLoaderResourcePath(RESOURCE_PATH));    
     registerZipFiles(ROOT_DIR, toScan);
+    toScan.add(reg.getResourceManager().addResourceDirectory(Config.configDirectory));
+    registerZipFiles(Config.configDirectory, toScan);
+    
     
     if(Config.testStructuresEnabled) {
       loadTestResources(reg, toScan);
     }
 
     for (IResourcePath path : toScan) {
-      if(path instanceof ZipResourcePath) {
-        System.out.println("DefaultStructures.init: ");
-      }
       StructureGenRegister.instance.loadAndRegisterAllResources(path, true);
     }
 

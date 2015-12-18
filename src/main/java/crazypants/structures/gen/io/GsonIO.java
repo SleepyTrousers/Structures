@@ -22,6 +22,7 @@ import com.google.gson.JsonSerializer;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
+import crazypants.structures.Log;
 import crazypants.structures.api.gen.IChunkValidator;
 import crazypants.structures.api.gen.IDecorator;
 import crazypants.structures.api.gen.ILocationSampler;
@@ -207,17 +208,27 @@ public class GsonIO {
       }
       ItemStack res = new ItemStack(item, JsonUtil.getIntField(obj, "number", 1), JsonUtil.getIntField(obj, "meta", 0));
 
-      String nbtStr = JsonUtil.getStringField(obj, "nbt", null);
-      if(nbtStr != null) {
+      String nbt64 = JsonUtil.getStringField(obj, "nbt", null);
+      if(nbt64 != null) {
         try {
-          byte[] decodedBytes = Base64.decodeBase64(nbtStr.getBytes());
+          byte[] decodedBytes = Base64.decodeBase64(nbt64.getBytes());
           ByteArrayInputStream bais = new ByteArrayInputStream(decodedBytes);
           NBTTagCompound nbt = CompressedStreamTools.readCompressed(bais);
           res.stackTagCompound = nbt;
         } catch (Exception e) {
-          e.printStackTrace();
+          Log.warn("GsonIO.ItemStackIO.deserialize: Could not parse nbt. " + e);
+        }
+      } else {
+        try {
+        NBTTagCompound nbt = JsonUtil.parseNBT(JsonUtil.getStringField(obj, "nbtString", null));
+        if(nbt != null) {
+          res.stackTagCompound = nbt;
+        }
+        } catch (Exception e) {
+          Log.warn("GsonIO.ItemStackIO.deserialize: Could not parse nbt string. " + e);
         }
       }
+      
 
       return res;
     }

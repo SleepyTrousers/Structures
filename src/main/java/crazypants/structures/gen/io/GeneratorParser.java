@@ -13,14 +13,12 @@ public class GeneratorParser {
   }
 
   public IStructureGenerator parseGeneratorConfig(StructureGenRegister reg, String uid, String json) throws Exception {
-    
-    
+        
     StructureGenerator res = null;
     try {
       JsonObject root = new JsonParser().parse(json).getAsJsonObject();
       JsonObject to = root.getAsJsonObject("structureGenerator");      
-      if(to != null) {
-        reg.getResourceManager().getLootTableParser().parseLootTableCategories(to);
+      if(to != null) {        
         res = GsonIO.INSTANCE.getGson().fromJson(to, StructureGenerator.class);
         res.setUid(uid);
       }
@@ -33,9 +31,6 @@ public class GeneratorParser {
     }
     
     return res;
-    
-
-
   }
 
 }

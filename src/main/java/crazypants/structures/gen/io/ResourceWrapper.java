@@ -13,13 +13,16 @@ public class ResourceWrapper {
 
   @Expose
   private IStructureTemplate structureTemplate;
-  
+
   @Expose
   private IStructureGenerator structureGenerator;
-  
+
   @Expose
   private VillagerTemplate villagerGenerator;
 
+  @Expose
+  private LootCategories lootCategories;
+                         
   public IStructureTemplate getStructureTemplate() {
     return structureTemplate;
   }
@@ -43,5 +46,21 @@ public class ResourceWrapper {
   public void setVillagerTemplate(VillagerTemplate villagerGenerator) {
     this.villagerGenerator = villagerGenerator;
   }
-  
+
+  public VillagerTemplate getVillagerGenerator() {
+    return villagerGenerator;
+  }
+
+  public void setVillagerGenerator(VillagerTemplate villagerGenerator) {
+    this.villagerGenerator = villagerGenerator;
+  }
+
+  public LootCategories getLootCategories() {
+    return lootCategories;
+  }
+
+  public void setLootCategories(LootCategories lootCategories) {
+    this.lootCategories = lootCategories;
+  }
+
 }
