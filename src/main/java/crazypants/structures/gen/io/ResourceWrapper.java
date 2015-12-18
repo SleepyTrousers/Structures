@@ -2,8 +2,8 @@ package crazypants.structures.gen.io;
 
 import com.google.gson.annotations.Expose;
 
-import crazypants.structures.api.gen.IStructureGenerator;
-import crazypants.structures.api.gen.IStructureTemplate;
+import crazypants.structures.gen.structure.StructureGenerator;
+import crazypants.structures.gen.structure.StructureTemplate;
 import crazypants.structures.gen.villager.VillagerTemplate;
 
 /**
@@ -12,10 +12,10 @@ import crazypants.structures.gen.villager.VillagerTemplate;
 public class ResourceWrapper {
 
   @Expose
-  private IStructureTemplate structureTemplate;
+  private StructureTemplate structureTemplate;
 
   @Expose
-  private IStructureGenerator structureGenerator;
+  private StructureGenerator structureGenerator;
 
   @Expose
   private VillagerTemplate villagerGenerator;
@@ -23,19 +23,19 @@ public class ResourceWrapper {
   @Expose
   private LootCategories lootCategories;
                          
-  public IStructureTemplate getStructureTemplate() {
+  public StructureTemplate getStructureTemplate() {
     return structureTemplate;
   }
 
-  public void setStructureTemplate(IStructureTemplate structureTemplate) {
+  public void setStructureTemplate(StructureTemplate structureTemplate) {
     this.structureTemplate = structureTemplate;
   }
 
-  public IStructureGenerator getStructureGenerator() {
+  public StructureGenerator getStructureGenerator() {
     return structureGenerator;
   }
 
-  public void setStructureGenerator(IStructureGenerator structureGenerator) {
+  public void setStructureGenerator(StructureGenerator structureGenerator) {
     this.structureGenerator = structureGenerator;
   }
 

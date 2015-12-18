@@ -30,10 +30,7 @@ public class StructureResourceManager {
   public static final String VILLAGER_EXT = ".vgen";
   public static final String LOOT_EXT = ".loot";
 
-  private final List<IResourcePath> resourcePaths = new ArrayList<IResourcePath>();
-  private final GeneratorParser generatorParsor = new GeneratorParser();
-  private final TemplateParser templateParser = new TemplateParser();
-  private final VillagerParser villagerParser = new VillagerParser();  
+  private final List<IResourcePath> resourcePaths = new ArrayList<IResourcePath>();       
   private final StructureGenRegister register;
 
   public StructureResourceManager(StructureGenRegister register) {
@@ -109,7 +106,7 @@ public class StructureResourceManager {
   }
   
   public IStructureGenerator loadGenerator(String uid, String text) throws Exception {
-    return generatorParsor.parseGeneratorConfig(register, uid, text);
+    return GeneratorParser.parseGeneratorConfig(register, uid, text);
   }
   
   public IStructureGenerator loadGenerator(String uid, InputStream stream) throws Exception {   
@@ -117,7 +114,7 @@ public class StructureResourceManager {
   }
 
   public IVillagerGenerator loadVillager(String uid) throws Exception {
-    return villagerParser.parseVillagerGenerator(uid, loadText(uid, VILLAGER_EXT));
+    return VillagerParser.parseVillagerGenerator(uid, loadText(uid, VILLAGER_EXT));
   }
 
   public IStructureTemplate loadTemplate(String uid) throws Exception {
@@ -129,7 +126,7 @@ public class StructureResourceManager {
   }
 
   public IStructureTemplate loadTemplate(String uid, String text) throws Exception {
-    return templateParser.parseTemplateConfig(register, uid, text);
+    return TemplateParser.parseTemplateConfig(register, uid, text);
   }
 
   public LootCategories loadLootCategories(String uid) throws Exception {    

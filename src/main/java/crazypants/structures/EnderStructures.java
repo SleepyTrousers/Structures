@@ -97,6 +97,7 @@ public class EnderStructures {
   }
 
   private void processImc(ImmutableList<IMCMessage> messages) {
+    //TODO: Villager gens, loot tables and custom types 
     StructureGenRegister reg = StructureGenRegister.instance;
     for (IMCMessage msg : messages) {
       String key = msg.key;

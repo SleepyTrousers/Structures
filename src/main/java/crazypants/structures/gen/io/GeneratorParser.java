@@ -1,36 +1,26 @@
 package crazypants.structures.gen.io;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import crazypants.structures.api.gen.IStructureGenerator;
 import crazypants.structures.gen.StructureGenRegister;
 import crazypants.structures.gen.structure.StructureGenerator;
 
 public class GeneratorParser {
 
-  public GeneratorParser() {
+  private GeneratorParser() {
   }
 
-  public IStructureGenerator parseGeneratorConfig(StructureGenRegister reg, String uid, String json) throws Exception {
-        
-    StructureGenerator res = null;
-    try {
-      JsonObject root = new JsonParser().parse(json).getAsJsonObject();
-      JsonObject to = root.getAsJsonObject("structureGenerator");      
-      if(to != null) {        
-        res = GsonIO.INSTANCE.getGson().fromJson(to, StructureGenerator.class);
+  public static IStructureGenerator parseGeneratorConfig(StructureGenRegister reg, String uid, String json) throws Exception {
+    ResourceWrapper rw = GsonIO.INSTANCE.getGson().fromJson(json, ResourceWrapper.class);
+    if(rw != null) {
+      StructureGenerator res = rw.getStructureGenerator();
+      if(res != null) {
         res.setUid(uid);
+        if(res.isValid()) {
+          return res;
+        }
       }
-    } catch (Exception e) {
-      e.printStackTrace();
     }
-    
-    if(res == null || !res.isValid()) {
-      throw new Exception("GeneratorParser: Could not create a valid generator for " + res);
-    }
-    
-    return res;
+    throw new Exception("GeneratorParser: No valid generator found in " + uid);
   }
 
 }

@@ -40,7 +40,7 @@ public class DefaultStructures {
     }
 
     for (IResourcePath path : toScan) {
-      StructureGenRegister.instance.loadAndRegisterAllResources(path, true);
+      StructureGenRegister.instance.loadAndRegisterAllResources(path, false);
     }
 
   }
