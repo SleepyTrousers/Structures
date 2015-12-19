@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 
 import crazypants.structures.gen.structure.StructureGenerator;
 import crazypants.structures.gen.structure.StructureTemplate;
+import crazypants.structures.gen.structure.loot.LootCategories;
 import crazypants.structures.gen.villager.VillagerTemplate;
 
 /**

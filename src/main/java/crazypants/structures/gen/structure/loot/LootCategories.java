@@ -1,14 +1,14 @@
-package crazypants.structures.gen.io;
+package crazypants.structures.gen.structure.loot;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.annotations.Expose;
 
+import crazypants.structures.Log;
 import crazypants.structures.api.ListElementType;
-import crazypants.structures.api.gen.IResource;
 
-public class LootCategories implements IResource {
+public class LootCategories {
 
   @ListElementType(elementType = LootCategory.class)
   @Expose
@@ -19,6 +19,17 @@ public class LootCategories implements IResource {
   public LootCategories() {
     categories = new ArrayList<LootCategory>();
   }
+  
+  public LootCategories(LootCategories other) {
+    this();
+    if(other.categories != null) {
+      for(LootCategory cat : other.categories) {
+        if(cat != null) {
+          categories.add(new LootCategory(cat));
+        }
+      }
+    }
+  }
 
   public List<LootCategory> getCategories() {
     return categories;
@@ -28,7 +39,6 @@ public class LootCategories implements IResource {
     this.categories = curCategories;
   }
 
-  @Override
   public String getUid() {
     return uid;
   }
@@ -38,7 +48,7 @@ public class LootCategories implements IResource {
   }
   
   public void register() {
-    System.out.println("LootCategories.register: UID = " + uid);
+    Log.info("LootCategories.register: Registered loot categories in: " + uid);
     if(categories == null) {
       return;
     }
@@ -46,6 +56,17 @@ public class LootCategories implements IResource {
       if(cat != null) {
 //        System.out.println("LootCategories.register:    - Category " + cat.getCategory());
         cat.register();
+      }
+    }   
+  }
+  
+  public void deregister() {    
+    if(categories == null) {
+      return;
+    }
+    for(LootCategory cat : categories) {
+      if(cat != null) {
+        cat.deregister();
       }
     }   
   }

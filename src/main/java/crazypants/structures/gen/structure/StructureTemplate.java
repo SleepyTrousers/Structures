@@ -18,6 +18,7 @@ import crazypants.structures.api.gen.PositionedComponent;
 import crazypants.structures.api.runtime.IBehaviour;
 import crazypants.structures.api.util.Point3i;
 import crazypants.structures.api.util.Rotation;
+import crazypants.structures.gen.structure.loot.LootCategories;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
@@ -53,9 +54,12 @@ public class StructureTemplate implements IStructureTemplate {
 
   @Expose
   private IBehaviour behaviour;
+  
+  @Expose
+  private LootCategories lootCategories;
 
   public StructureTemplate() {
-    this(null);
+    this(null);    
   }
 
   public StructureTemplate(String uid) {
@@ -63,10 +67,11 @@ public class StructureTemplate implements IStructureTemplate {
   }
 
   public StructureTemplate(String uid, Collection<PositionedComponent> components) {
-    this.uid = uid;
+    this.uid = uid;    
     if(components != null) {
       this.components.addAll(components);
     }
+    lootCategories = new LootCategories();
   }
 
   @Override
@@ -233,6 +238,11 @@ public class StructureTemplate implements IStructureTemplate {
   @Override
   public IBehaviour getBehaviour() {
     return behaviour;
+  }
+
+  @Override
+  public LootCategories getLootCategories() {    
+    return lootCategories;
   }
 
   @Override

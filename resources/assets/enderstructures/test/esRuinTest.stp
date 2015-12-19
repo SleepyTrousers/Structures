@@ -65,21 +65,43 @@
                   ]                        
         },
         
-        "LootTableCategories" : [
-    
-        {
-           "category" : "esRuinTestPrivateCat",
-           "minCount" : 1,
-           "maxCount" : 3,
-           "contents" : [
-             { "itemStack" : { "uid" : "minecraft:pumpkin_pie", "meta" : 0},"minSize" : 1,"maxSize" : 3,"weight" :  30},
-             { "itemStack" : { "uid" : "minecraft:cookie", "meta" : 6},"minSize" : 1, "maxSize" : 3, "weight" :  30},                      
-             { "itemStack" : { "uid" : "minecraft:experience_bottle"}, "minSize" : 1, "maxSize" : 64, "weight" :  80},
-             { "itemStack" : { "uid" : "minecraft:diamond_sword"}, "minSize" : 1, "maxSize" : 1, "weight" :  50}                           
-           ]
-        }
-                
-      ],
+        "lootCategories": {
+          "categories": [ 
+            
+            {
+             "category" : "esRuinTestPrivateCat",
+             "minItems" : 1,
+             "maxItems" : 3,
+             "entries" : [
+             
+               { 
+                 "item":  { "item" : "minecraft:pumpkin_pie", "meta" : 0 },
+                 "minChanceToGenerate" : 1,
+                 "maxChanceToGenerate" : 3,
+                 "weight" : 30                
+               },
+               { 
+                 "item":  { "item" : "minecraft:cookie", "meta" : 6 },
+                 "minChanceToGenerate" : 1,
+                 "maxChanceToGenerate" : 3,
+                 "weight" : 30                
+               },
+               { 
+                 "item":  { "item" : "minecraft:experience_bottle", "meta" : 0 },
+                 "minChanceToGenerate" : 1,
+                 "maxChanceToGenerate" : 64,
+                 "weight" : 80                
+               },
+               { 
+                 "item":  { "item" : "minecraft:diamond_sword", "meta" : 0 },
+                 "minChanceToGenerate" : 1,
+                 "maxChanceToGenerate" : 1,
+                 "weight" : 50                
+               }
+             ]
+            }
+        ]          
+      },
       
       "behaviour" : {                     
           

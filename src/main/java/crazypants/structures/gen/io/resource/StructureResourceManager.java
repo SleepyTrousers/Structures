@@ -17,10 +17,10 @@ import crazypants.structures.api.gen.IVillagerGenerator;
 import crazypants.structures.gen.StructureGenRegister;
 import crazypants.structures.gen.io.GeneratorParser;
 import crazypants.structures.gen.io.LootCategeoriesParser;
-import crazypants.structures.gen.io.LootCategories;
 import crazypants.structures.gen.io.TemplateParser;
 import crazypants.structures.gen.io.VillagerParser;
 import crazypants.structures.gen.structure.StructureComponentNBT;
+import crazypants.structures.gen.structure.loot.LootCategories;
 
 public class StructureResourceManager {
 

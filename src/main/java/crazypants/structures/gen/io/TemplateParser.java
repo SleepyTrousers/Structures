@@ -3,6 +3,7 @@ package crazypants.structures.gen.io;
 import crazypants.structures.api.gen.IStructureTemplate;
 import crazypants.structures.gen.StructureGenRegister;
 import crazypants.structures.gen.structure.StructureTemplate;
+import crazypants.structures.gen.structure.loot.LootCategories;
 
 public class TemplateParser {
 
@@ -15,6 +16,10 @@ public class TemplateParser {
       StructureTemplate res = rw.getStructureTemplate();
       if(res != null) {
         res.setUid(uid);
+        LootCategories lc = res.getLootCategories();
+        if(lc != null) {
+          lc.setUid(uid);
+        }
         if(res.isValid()) {
           return res;
         }

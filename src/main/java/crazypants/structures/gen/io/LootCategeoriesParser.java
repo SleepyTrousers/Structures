@@ -1,5 +1,7 @@
 package crazypants.structures.gen.io;
 
+import crazypants.structures.gen.structure.loot.LootCategories;
+
 public final class LootCategeoriesParser {
 
   private LootCategeoriesParser() {

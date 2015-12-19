@@ -1,4 +1,4 @@
-package crazypants.structures.gen.io;
+package crazypants.structures.gen.structure.loot;
 
 import com.google.gson.annotations.Expose;
 
@@ -19,6 +19,21 @@ public class LootEntry {
   @Expose
   ItemStack item;
 
+  public LootEntry() { 
+    minChanceToGenerate = 1;
+    maxChanceToGenerate = 1;
+    weight = 30;
+  }
+  
+  public LootEntry(LootEntry other) {
+    minChanceToGenerate = other.minChanceToGenerate;
+    maxChanceToGenerate = other.maxChanceToGenerate;
+    weight = other.weight;
+    if(other.item != null) {
+      item = new ItemStack(other.item.getItem(), other.item.stackSize, other.item.getItemDamage());
+    }
+  }
+  
   public WeightedRandomChestContent createContent() {
     return new WeightedRandomChestContent(item, minChanceToGenerate, maxChanceToGenerate, weight);
   }

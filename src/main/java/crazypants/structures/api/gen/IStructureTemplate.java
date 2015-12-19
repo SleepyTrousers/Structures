@@ -6,13 +6,13 @@ import java.util.Random;
 import crazypants.structures.api.runtime.IBehaviour;
 import crazypants.structures.api.util.Point3i;
 import crazypants.structures.api.util.Rotation;
+import crazypants.structures.gen.structure.loot.LootCategories;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 
 public interface IStructureTemplate extends IResource {
 
-  //TODO: These need offsets
   List<PositionedComponent> getComponents();
 
   List<Rotation> getRotations();
@@ -22,7 +22,8 @@ public interface IStructureTemplate extends IResource {
   boolean getCanSpanChunks();
 
   boolean getGenerationRequiresLoadedChunks();
-
+  
+  LootCategories getLootCategories();
   
   AxisAlignedBB getBounds();
 

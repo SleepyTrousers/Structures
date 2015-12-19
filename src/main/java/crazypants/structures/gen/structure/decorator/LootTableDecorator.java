@@ -1,5 +1,6 @@
 package crazypants.structures.gen.structure.decorator;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
@@ -29,6 +30,7 @@ public class LootTableDecorator extends AbstractTyped implements IDecorator {
 
   public LootTableDecorator() {
     super("LootTableInventory");
+    targets = new ArrayList<String>();
   }
 
   @Override

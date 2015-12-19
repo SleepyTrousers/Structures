@@ -1,4 +1,4 @@
-package crazypants.structures.gen.io;
+package crazypants.structures.gen.structure.loot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,10 +31,23 @@ public class LootCategory {
     maxItems = 1;
   }
 
+  public LootCategory(LootCategory other) {    
+    category = other.category;
+    minItems = other.minItems;
+    maxItems = other.maxItems;
+    if(other.entries != null) {
+      entries = new ArrayList<LootEntry>();
+      for(LootEntry ent : other.entries) {
+        entries.add(new LootEntry(ent));
+      }
+    }
+  }
+
   public void register() {
     ChestGenHooks cat = ChestGenHooks.getInfo(category);
     cat.setMin(minItems);
     cat.setMax(maxItems);
+    
     if(entries != null) {
       for(LootEntry entry : entries) {
         if(entry != null) {
@@ -46,6 +59,20 @@ public class LootCategory {
       }
     }    
   }  
+  
+  public void deregister() {    
+    if(entries != null) {
+      ChestGenHooks cat = ChestGenHooks.getInfo(category);
+      for(LootEntry entry : entries) {
+        if(entry != null) {
+          WeightedRandomChestContent content = entry.createContent();
+          if(content != null) {
+            cat.removeItem(content.theItemId);
+          }
+        }
+      }
+    }
+  }
   
   public String getCategory() {
     return category;

@@ -210,25 +210,17 @@ public class GsonIO {
 
       String nbt64 = JsonUtil.getStringField(obj, "nbt", null);
       if(nbt64 != null) {
-        try {
-          byte[] decodedBytes = Base64.decodeBase64(nbt64.getBytes());
-          ByteArrayInputStream bais = new ByteArrayInputStream(decodedBytes);
-          NBTTagCompound nbt = CompressedStreamTools.readCompressed(bais);
-          res.stackTagCompound = nbt;
-        } catch (Exception e) {
-          Log.warn("GsonIO.ItemStackIO.deserialize: Could not parse nbt. " + e);
-        }
+        res.stackTagCompound = deserializeNBT(nbt64);
       } else {
         try {
-        NBTTagCompound nbt = JsonUtil.parseNBT(JsonUtil.getStringField(obj, "nbtString", null));
-        if(nbt != null) {
-          res.stackTagCompound = nbt;
-        }
+          NBTTagCompound nbt = JsonUtil.parseNBT(JsonUtil.getStringField(obj, "nbtString", null));
+          if(nbt != null) {
+            res.stackTagCompound = nbt;
+          }
         } catch (Exception e) {
           Log.warn("GsonIO.ItemStackIO.deserialize: Could not parse nbt string. " + e);
         }
       }
-      
 
       return res;
     }
@@ -244,19 +236,50 @@ public class GsonIO {
       res.addProperty("item", id.modId + ":" + id.name);
       res.addProperty("number", src.stackSize);
       res.addProperty("meta", src.getItemDamage());
-      if(src.stackTagCompound != null) {
-        try {
-          ByteArrayOutputStream baos = new ByteArrayOutputStream();
-          CompressedStreamTools.writeCompressed(src.stackTagCompound, new DataOutputStream(baos));
-          byte[] encodedBytes = Base64.encodeBase64(baos.toByteArray());
-          res.addProperty("nbt", new String(encodedBytes));
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
-      }
+      
+      String nbt = serializeNBT(src.stackTagCompound);
+      if(nbt != null && nbt.trim().length() > 0) {
+        res.addProperty("nbt", nbt);
+      }    
+      
+      NBTTagCompound des = deserializeNBT(nbt);
+      
+      System.out.println("GsonIO.ItemStackIO.serialize: ");
+      System.out.println("GsonIO.ItemStackIO.serialize: nbt pre: " + src.stackTagCompound);
+      System.out.println("GsonIO.ItemStackIO.serialize: nbt pos: " + des);
+      System.out.println("GsonIO.ItemStackIO.serialize: ");
+      
       return res;
     }
 
+    
+    private NBTTagCompound deserializeNBT(String encoded) {
+      try {
+        byte[] decodedBytes = Base64.decodeBase64(encoded.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(decodedBytes);
+        return CompressedStreamTools.readCompressed(bais);
+      } catch (Exception e) {
+        Log.warn("GsonIO.deserializeNBT: Could not deserialize nbt: " + e);
+        return null;
+      }
+    }
+    
+    private String serializeNBT(NBTTagCompound nbt) {
+      if(nbt == null) {
+        return null;
+      }
+      try {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        CompressedStreamTools.writeCompressed(nbt, new DataOutputStream(baos));
+        byte[] encodedBytes = Base64.encodeBase64(baos.toByteArray());
+        return new String(encodedBytes);
+      } catch (Exception e) {
+        Log.warn("GsonIO.ItemStackIO.serializeNBT: Could not serialize nbt: " + e);
+        return null;
+      }
+      
+    }
+    
   }
 
   //--------------------------------------------------

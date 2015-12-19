@@ -16,10 +16,10 @@ import crazypants.structures.api.gen.IStructureComponent;
 import crazypants.structures.api.gen.IStructureGenerator;
 import crazypants.structures.api.gen.IStructureTemplate;
 import crazypants.structures.api.gen.IVillagerGenerator;
-import crazypants.structures.gen.io.LootCategories;
 import crazypants.structures.gen.io.resource.IResourcePath;
 import crazypants.structures.gen.io.resource.StructureResourceManager;
 import crazypants.structures.gen.structure.StructureComponentNBT;
+import crazypants.structures.gen.structure.loot.LootCategories;
 import crazypants.structures.gen.villager.CompositeCreationHandler;
 import crazypants.structures.gen.villager.VillageHouse;
 import net.minecraft.world.gen.structure.MapGenStructureIO;
@@ -81,9 +81,18 @@ public class StructureGenRegister {
     if(st == null) {
       return;
     }
+    
+    IStructureTemplate oldVal = templates.get(st.getUid());
+    if(oldVal != null && oldVal.getLootCategories() != null) {
+      oldVal.getLootCategories().deregister();
+    }    
     templates.put(st.getUid(), st);
-
+    
     Log.info("StructureGenRegister: Registered Template: " + st.getUid());
+    LootCategories lc = st.getLootCategories();
+    if(lc != null) {
+      lc.register();
+    }    
   }
 
   public void registerStructureComponent(IStructureComponent sc) {
