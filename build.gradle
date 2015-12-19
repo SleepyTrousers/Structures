@@ -29,7 +29,7 @@ minecraft {
     runDir = 'run'
 
     replace "@VERSION@", project.version
-    replaceIn "Structures.java"
+    replaceIn "EnderStructures.java"
 }
 
 configurations {
