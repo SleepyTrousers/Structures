@@ -218,7 +218,7 @@ public class GsonIO {
             res.stackTagCompound = nbt;
           }
         } catch (Exception e) {
-          Log.warn("GsonIO.ItemStackIO.deserialize: Could not parse nbt string. " + e);
+          Log.warn("GsonIO.ItemStackIO.deserialize: Could not deserialize nbt string. " + e);
         }
       }
 
@@ -240,20 +240,15 @@ public class GsonIO {
       String nbt = serializeNBT(src.stackTagCompound);
       if(nbt != null && nbt.trim().length() > 0) {
         res.addProperty("nbt", nbt);
-      }    
-      
-      NBTTagCompound des = deserializeNBT(nbt);
-      
-      System.out.println("GsonIO.ItemStackIO.serialize: ");
-      System.out.println("GsonIO.ItemStackIO.serialize: nbt pre: " + src.stackTagCompound);
-      System.out.println("GsonIO.ItemStackIO.serialize: nbt pos: " + des);
-      System.out.println("GsonIO.ItemStackIO.serialize: ");
-      
+      }                     
       return res;
     }
 
     
     private NBTTagCompound deserializeNBT(String encoded) {
+      if(encoded == null) {
+        return null;
+      }
       try {
         byte[] decodedBytes = Base64.decodeBase64(encoded.getBytes());
         ByteArrayInputStream bais = new ByteArrayInputStream(decodedBytes);
