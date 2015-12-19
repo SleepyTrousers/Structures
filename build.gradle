@@ -18,7 +18,7 @@ else
     logger.lifecycle "No build number detected, setting to 0"
 
 group = "com.enderio.structures"
-archivesBaseName = "Structures"
+archivesBaseName = "EnderStructures"
 version = "${minecraft_version}-${mod_version}.${buildnumber}"
 
 if (project.hasProperty('mod_appendix'))
