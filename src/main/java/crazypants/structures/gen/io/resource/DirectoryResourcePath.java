@@ -4,10 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import scala.actors.threadpool.Arrays;
 
 public class DirectoryResourcePath extends AbstractResourcePath {
 
@@ -18,7 +17,6 @@ public class DirectoryResourcePath extends AbstractResourcePath {
   }
   
   @Override
-  @SuppressWarnings("unchecked")
   public List<String> getChildren() {
     String[] kids = dir.list();
     if(kids == null || kids.length == 0) {

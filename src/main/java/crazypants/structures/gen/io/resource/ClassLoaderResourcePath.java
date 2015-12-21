@@ -3,13 +3,13 @@ package crazypants.structures.gen.io.resource;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 
 import crazypants.structures.gen.StructureGenRegister;
-import scala.actors.threadpool.Arrays;
 
 public class ClassLoaderResourcePath extends AbstractResourcePath {
 
@@ -20,7 +20,6 @@ public class ClassLoaderResourcePath extends AbstractResourcePath {
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<String> getChildren() {
     String[] kids = null;
     try {
