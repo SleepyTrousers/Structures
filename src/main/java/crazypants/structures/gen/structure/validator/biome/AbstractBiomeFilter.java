@@ -6,27 +6,36 @@ import java.util.List;
 import com.google.gson.annotations.Expose;
 
 import crazypants.structures.AbstractTyped;
+import crazypants.structures.api.ListElementType;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.BiomeDictionary;
 
 public abstract class AbstractBiomeFilter extends AbstractTyped implements IBiomeFilter {
 
+  @ListElementType(elementType=BiomeDictionary.Type.class)
+  @Expose
+  protected List<BiomeDictionary.Type> types;
+  
+  @ListElementType(elementType=BiomeDictionary.Type.class)
+  @Expose
+  protected List<BiomeDictionary.Type> typeExcludes;
+
+  @ListElementType(elementType=String.class)
+  @Expose
+  protected List<String> names;
+  
+  @ListElementType(elementType=String.class)
+  @Expose
+  protected List<String> nameExcludes;
+
   protected AbstractBiomeFilter(String type) {
     super(type);
+    types = new ArrayList<BiomeDictionary.Type>();
+    typeExcludes = new ArrayList<BiomeDictionary.Type>();
+    names = new ArrayList<String>();
+    nameExcludes = new ArrayList<String>();
   }
-
-  @Expose
-  protected List<BiomeDictionary.Type> types = new ArrayList<BiomeDictionary.Type>();
   
-  @Expose
-  protected List<BiomeDictionary.Type> typeExcludes = new ArrayList<BiomeDictionary.Type>();
-
-  @Expose
-  protected List<String> names = new ArrayList<String>();
-  
-  @Expose
-  protected List<String> nameExcludes = new ArrayList<String>();
-
   @Override
   public void addBiomeDescriptor(IBiomeDescriptor biome) {
     if(biome.getType() != null) {
