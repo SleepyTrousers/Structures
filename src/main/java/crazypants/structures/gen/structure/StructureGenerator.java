@@ -255,7 +255,7 @@ public class StructureGenerator implements IStructureGenerator {
         return false;
       }
       
-      if(getStructure().getTemplate().getSiteValiditor() != null && !getStructure().getTemplate().getSiteValiditor().isValidBuildSite(getStructure(), existingStructures, world, random, null)) {
+      if(getStructure().getTemplate().getSiteValidator() != null && !getStructure().getTemplate().getSiteValidator().isValidBuildSite(getStructure(), existingStructures, world, random, null)) {
         return false;
       }
       getStructure().build(world, random, null);

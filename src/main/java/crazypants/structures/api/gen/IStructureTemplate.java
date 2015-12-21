@@ -31,7 +31,9 @@ public interface IStructureTemplate extends IResource {
 
   int getSurfaceOffset();
   
-  ISiteValidator getSiteValiditor();
+  ISiteValidator getSiteValidator();
+  
+  void setSiteValidator(ISiteValidator val);
   
   IBehaviour getBehaviour();
 

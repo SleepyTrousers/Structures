@@ -228,7 +228,7 @@ public class Structure implements IStructure {
 
   @Override
   public boolean isValidSite(IWorldStructures existingStructures, World world, Random random, StructureBoundingBox bounds) {
-    return template.getSiteValiditor().isValidBuildSite(this, existingStructures, world, random, bounds);
+    return template.getSiteValidator().isValidBuildSite(this, existingStructures, world, random, bounds);
   }
 
   @Override

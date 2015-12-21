@@ -201,16 +201,13 @@ public class StructureTemplate implements IStructureTemplate {
   }
 
   @Override
-  public ISiteValidator getSiteValiditor() {
-    return siteValidator;
-  }
-
-  public void setSiteValidator(ISiteValidator sv) {
-    siteValidator = sv;
-  }
-
   public ISiteValidator getSiteValidator() {
     return siteValidator;
+  }
+
+  @Override
+  public void setSiteValidator(ISiteValidator sv) {
+    siteValidator = sv;
   }
   
   @Override
