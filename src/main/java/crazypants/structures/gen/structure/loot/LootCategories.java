@@ -7,8 +7,9 @@ import com.google.gson.annotations.Expose;
 
 import crazypants.structures.Log;
 import crazypants.structures.api.ListElementType;
+import crazypants.structures.api.gen.IResource;
 
-public class LootCategories {
+public class LootCategories implements IResource {
 
   @ListElementType(elementType = LootCategory.class)
   @Expose
@@ -39,6 +40,7 @@ public class LootCategories {
     this.categories = curCategories;
   }
 
+  @Override
   public String getUid() {
     return uid;
   }

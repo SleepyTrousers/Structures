@@ -243,6 +243,18 @@ public class StructureTemplate implements IStructureTemplate {
   }
 
   @Override
+  public List<String> getLocationTags() {
+    List<String> res = new ArrayList<String>();
+    for (PositionedComponent pc : components) {
+      Collection<String> r = pc.getComponent().getTaggedLocations().keySet();
+      if(r != null) {
+        res.addAll(r);
+      }      
+    }
+    return res;    
+  }
+
+  @Override
   public List<Point3i> getTaggedLocations(String target) {
     List<Point3i> res = new ArrayList<Point3i>();
     for (PositionedComponent pc : components) {

@@ -39,6 +39,8 @@ public interface IStructureTemplate extends IResource {
 
   List<Point3i> getTaggedLocations(String target);
   
+  List<String> getLocationTags();
+  
 
   IStructure createInstance();
   

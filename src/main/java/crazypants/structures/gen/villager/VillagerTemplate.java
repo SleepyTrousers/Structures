@@ -20,7 +20,7 @@ public class VillagerTemplate implements IResource {
 
   @Expose
   private int minGeneratedPerVillage;
-  
+
   @Expose
   private int maxGeneratedPerVillage;
 
@@ -82,12 +82,12 @@ public class VillagerTemplate implements IResource {
       }
     }
     res.setWeight(weight, minGeneratedPerVillage, maxGeneratedPerVillage);
-    
+
     res.setTexture(texture);
     res.setVillagerId(villagerId);
-    
+
     if(trades != null) {
-      for(MerchantRecipeWrapper rec : trades) {
+      for (MerchantRecipeWrapper rec : trades) {
         if(rec != null) {
           MerchantRecipe recipe = rec.createRecipe();
           if(recipe != null) {
@@ -107,6 +107,70 @@ public class VillagerTemplate implements IResource {
 
   public void setUid(String uid) {
     this.uid = uid;
+  }
+
+  public int getWeight() {
+    return weight;
+  }
+
+  public void setWeight(int weight) {
+    this.weight = weight;
+  }
+
+  public int getMinGeneratedPerVillage() {
+    return minGeneratedPerVillage;
+  }
+
+  public void setMinGeneratedPerVillage(int minGeneratedPerVillage) {
+    this.minGeneratedPerVillage = minGeneratedPerVillage;
+  }
+
+  public int getMaxGeneratedPerVillage() {
+    return maxGeneratedPerVillage;
+  }
+
+  public void setMaxGeneratedPerVillage(int maxGeneratedPerVillage) {
+    this.maxGeneratedPerVillage = maxGeneratedPerVillage;
+  }
+
+  public List<IStructureTemplate> getPlainsTemplates() {
+    return plainsTemplates;
+  }
+
+  public void setPlainsTemplates(List<IStructureTemplate> plainsTemplates) {
+    this.plainsTemplates = plainsTemplates;
+  }
+
+  public List<IStructureTemplate> getDesertTemplates() {
+    return desertTemplates;
+  }
+
+  public void setDesertTemplates(List<IStructureTemplate> desertTemplates) {
+    this.desertTemplates = desertTemplates;
+  }
+
+  public int getVillagerId() {
+    return villagerId;
+  }
+
+  public void setVillagerId(int villagerId) {
+    this.villagerId = villagerId;
+  }
+
+  public String getTexture() {
+    return texture;
+  }
+
+  public void setTexture(String texture) {
+    this.texture = texture;
+  }
+
+  public List<MerchantRecipeWrapper> getTrades() {
+    return trades;
+  }
+
+  public void setTrades(List<MerchantRecipeWrapper> trades) {
+    this.trades = trades;
   }
 
 }
