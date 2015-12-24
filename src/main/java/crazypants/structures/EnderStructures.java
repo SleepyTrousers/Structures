@@ -28,6 +28,7 @@ import crazypants.structures.gen.DefaultStructures;
 import crazypants.structures.gen.ReloadConfigCommand;
 import crazypants.structures.gen.StructureGenRegister;
 import crazypants.structures.gen.WorldGenerator;
+import crazypants.structures.gen.io.DefaultTypes;
 import crazypants.structures.runtime.StructureRegister;
 
 @Mod(modid = MODID, name = MOD_NAME, version = VERSION, dependencies = "required-after:Forge@10.13.0.1150,)", guiFactory = "crazypants.structures.config.ConfigFactoryEnderStructures")
@@ -47,6 +48,7 @@ public class EnderStructures {
 
   public static StructureRegister structureRegister;
 
+  //SuperFlat Overworld village spawn seed: 3002013171567938552
   
   //TODO:
   /*
@@ -72,7 +74,8 @@ public class EnderStructures {
   @EventHandler
   public void postInit(FMLPostInitializationEvent event) {
     addRecipes();
-    DefaultStructures.init();
+    DefaultTypes.register();
+    DefaultStructures.init();    
   }
 
   @EventHandler

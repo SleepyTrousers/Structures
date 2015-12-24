@@ -48,10 +48,6 @@ public class ParserRegister {
 
   public static final ParserRegister instance = new ParserRegister();
 
-  static {
-    DefaultTypes.register();    
-  }
-
   private final NullFactory nullFactory = new NullFactory();
 
   private ParserRegister() {
