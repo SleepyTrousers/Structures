@@ -32,6 +32,7 @@ import net.minecraft.block.BlockGravel;
 import net.minecraft.block.BlockRedstoneWire;
 import net.minecraft.block.BlockSand;
 import net.minecraft.block.BlockTorch;
+import net.minecraft.block.BlockTripWire;
 import net.minecraft.block.BlockTripWireHook;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
@@ -220,7 +221,8 @@ public class StructureComponentNBT implements IStructureComponent {
       return false;
     }
     
-    return block instanceof BlockTorch || block instanceof BlockSand || block instanceof BlockGravel || block instanceof BlockAnvil || block instanceof BlockTripWireHook || block instanceof BlockRedstoneWire;
+    return block instanceof BlockTorch || block instanceof BlockSand || block instanceof BlockGravel || block instanceof BlockAnvil 
+        || block instanceof BlockTripWireHook || block instanceof  BlockTripWire|| block instanceof BlockRedstoneWire;
   }
 
   private void fillBlocks(World world, int x, int y, int z, Rotation rot, StructureBoundingBox genBounds, List<Point3i> coords, Block filler) {
