@@ -33,13 +33,17 @@ public class StructureGenerator implements IStructureGenerator {
   private static final Random RND = new Random();
 
   private String uid;
-
+  
+  @ListElementType(elementType=IStructureTemplate.class)
   @Expose
-  private CompositeValidator chunkValidator;
+  private final List<IStructureTemplate> templates = new ArrayList<IStructureTemplate>();
 
   @Expose
   private ILocationSampler locationSampler;
   
+  @Expose
+  private CompositeValidator chunkValidator;
+
   @Expose
   private boolean canSpanChunks;
   
@@ -49,10 +53,7 @@ public class StructureGenerator implements IStructureGenerator {
   //Max number of structures of this type that be generated in a single chunk
   @Expose
   private int maxGeneratedPerChunk;
-
-  @ListElementType(elementType=IStructureTemplate.class)
-  @Expose
-  private final List<IStructureTemplate> templates = new ArrayList<IStructureTemplate>();
+  
   
   private final List<DeferredGenTask> deferredGenTasks = new ArrayList<DeferredGenTask>();
 

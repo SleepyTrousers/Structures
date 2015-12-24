@@ -21,6 +21,8 @@ import net.minecraftforge.fluids.FluidRegistry;
 
 public class LevelGroundValidator extends AbstractTyped implements ISiteValidator {
 
+  //TODO: Ignore plants and trees!
+  
   @Expose
   private boolean canSpawnOnWater = false;
 
