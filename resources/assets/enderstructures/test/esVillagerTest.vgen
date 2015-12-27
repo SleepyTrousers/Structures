@@ -9,12 +9,12 @@
       "maxGeneratedPerVillage" : 10,
 
       "plainsTemplates" : [
-          {"uid" : "esVillageHouse1Test"},
-          {"uid" : "esVillageHouse2Test"}    
+          { weight : 1, template : {"uid" : "esVillageHouse1Test"}},
+          { weight : 1, template : {"uid" : "esVillageHouse2Test"}}    
         ],
 
        "desertTemplates" : [
-          {"uid" : "esVillageHouseDesertTest"}
+          { weight : 1, template : {"uid" : "esVillageHouse1Test"}}
         ],
 
 	"trades" : [

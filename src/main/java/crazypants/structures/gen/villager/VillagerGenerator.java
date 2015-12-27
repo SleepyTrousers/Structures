@@ -3,6 +3,7 @@ package crazypants.structures.gen.villager;
 import cpw.mods.fml.common.registry.VillagerRegistry;
 import crazypants.structures.Log;
 import crazypants.structures.api.gen.IVillagerGenerator;
+import crazypants.structures.api.gen.WeightedTemplate;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.village.MerchantRecipe;
 import net.minecraft.world.gen.structure.StructureVillagePieces.PieceWeight;
@@ -49,12 +50,12 @@ public class VillagerGenerator implements IVillagerGenerator {
     creationHandler.setVillagePieceWeight(new PieceWeight(VillageHouse.class, weight, maxNum), minNum);
   }
 
-  public void addPlainsTemplate(String templateUid) {
-    creationHandler.addPlainsTemplate(templateUid);
+  public void addPlainsTemplate(WeightedTemplate template) {
+    creationHandler.addPlainsTemplate(template);
   }
 
-  public void addDesertTemplate(String templateUid) {
-    creationHandler.addDesertTemplate(templateUid);
+  public void addDesertTemplate(WeightedTemplate template) {
+    creationHandler.addDesertTemplate(template);
   }
 
   public void addRecipe(MerchantRecipe recipe) {

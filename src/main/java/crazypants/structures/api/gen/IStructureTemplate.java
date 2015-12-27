@@ -18,40 +18,37 @@ public interface IStructureTemplate extends IResource {
   List<Rotation> getRotations();
 
   boolean isValid();
-  
+
   boolean getCanSpanChunks();
 
   boolean getGenerationRequiresLoadedChunks();
-  
+
   LootCategories getLootCategories();
-  
+
   AxisAlignedBB getBounds();
 
   Point3i getSize();
 
   int getSurfaceOffset();
-  
+
   ISiteValidator getSiteValidator();
-  
+
   void setSiteValidator(ISiteValidator val);
-  
-  IBehaviour getBehaviour();
-
-  List<Point3i> getTaggedLocations(String target);
-  
-  List<String> getLocationTags();
-  
-
-  IStructure createInstance();
-  
-  IStructure createInstance(Rotation rotation);
-  
-  void build(IStructure structure, World world, Random random, StructureBoundingBox clipBounds);
-
-  void setSitePreperation(ISitePreperation sitePreperation);
 
   ISitePreperation getSitePreperation();
 
-  
+  void setSitePreperation(ISitePreperation sitePreperation);
+
+  IBehaviour getBehaviour();
+
+  List<Point3i> getTaggedLocations(String target);
+
+  List<String> getLocationTags();
+
+  IStructure createInstance();
+
+  IStructure createInstance(Rotation rotation);
+
+  void build(IStructure structure, World world, Random random, StructureBoundingBox clipBounds);
 
 }

@@ -58,8 +58,7 @@
                "weight" : 80               
              },
              { 
-               "item":  { "item" : "minecraft:leather_chestplate" },
-               "nbtString" : "{display:{color:3402699,Name:\"Diamond Jersey\",Lore:[\"The Strange\"]}}",
+               "item":  { "item" : "minecraft:leather_chestplate" , "nbtString" : "{display:{color:3402699,Name:\"Diamond Jersey\",Lore:[\"The Strange\"]}}" },
                "minChanceToGenerate" : 1,
                "maxChanceToGenerate" : 1,
                "weight" : 200

@@ -7,8 +7,8 @@ import com.google.gson.annotations.Expose;
 
 import crazypants.structures.api.ListElementType;
 import crazypants.structures.api.gen.IResource;
-import crazypants.structures.api.gen.IStructureTemplate;
 import crazypants.structures.api.gen.IVillagerGenerator;
+import crazypants.structures.api.gen.WeightedTemplate;
 import net.minecraft.village.MerchantRecipe;
 
 public class VillagerTemplate implements IResource {
@@ -24,13 +24,13 @@ public class VillagerTemplate implements IResource {
   @Expose
   private int maxGeneratedPerVillage;
 
-  @ListElementType(elementType = IStructureTemplate.class)
+  @ListElementType(elementType = WeightedTemplate.class)
   @Expose
-  private List<IStructureTemplate> plainsTemplates = new ArrayList<IStructureTemplate>();
+  private List<WeightedTemplate> plainsTemplates = new ArrayList<WeightedTemplate>();
 
-  @ListElementType(elementType = IStructureTemplate.class)
+  @ListElementType(elementType = WeightedTemplate.class)
   @Expose
-  private List<IStructureTemplate> desertTemplates = new ArrayList<IStructureTemplate>();
+  private List<WeightedTemplate> desertTemplates = new ArrayList<WeightedTemplate>();
 
   @Expose
   private int villagerId;
@@ -54,7 +54,7 @@ public class VillagerTemplate implements IResource {
     if(uid == null) {
       return false;
     }
-    if(plainsTemplates == null || plainsTemplates.isEmpty()) {
+    if(!hasValidTemplate(plainsTemplates)) {
       return false;
     }
     if(weight <= 0) {
@@ -65,19 +65,31 @@ public class VillagerTemplate implements IResource {
     }
     return true;
   }
+  
+  private boolean hasValidTemplate(List<WeightedTemplate> templates) {
+    if(templates == null || templates.isEmpty()) {
+      return false;
+    }
+    for( WeightedTemplate tmpl : templates) {
+      if(tmpl.getTemplate() == null) {
+        return false;
+      }
+    }
+    return true;
+  }
 
   public IVillagerGenerator createGenerator() {
     VillagerGenerator res = new VillagerGenerator(uid);
 
-    for (IStructureTemplate tmpl : plainsTemplates) {
-      if(tmpl != null) {
-        res.addPlainsTemplate(tmpl.getUid());
+    for (WeightedTemplate tmpl : plainsTemplates) {
+      if(tmpl != null && tmpl.getTemplate() != null) {       
+        res.addPlainsTemplate(tmpl);
       }
     }
     if(desertTemplates != null) {
-      for (IStructureTemplate tmpl : desertTemplates) {
-        if(tmpl != null) {
-          res.addDesertTemplate(tmpl.getUid());
+      for (WeightedTemplate tmpl : desertTemplates) {
+        if(tmpl != null && tmpl.getTemplate() != null) {
+          res.addDesertTemplate(tmpl);
         }
       }
     }
@@ -133,19 +145,19 @@ public class VillagerTemplate implements IResource {
     this.maxGeneratedPerVillage = maxGeneratedPerVillage;
   }
 
-  public List<IStructureTemplate> getPlainsTemplates() {
+  public List<WeightedTemplate> getPlainsTemplates() {
     return plainsTemplates;
   }
 
-  public void setPlainsTemplates(List<IStructureTemplate> plainsTemplates) {
+  public void setPlainsTemplates(List<WeightedTemplate> plainsTemplates) {
     this.plainsTemplates = plainsTemplates;
   }
 
-  public List<IStructureTemplate> getDesertTemplates() {
+  public List<WeightedTemplate> getDesertTemplates() {
     return desertTemplates;
   }
 
-  public void setDesertTemplates(List<IStructureTemplate> desertTemplates) {
+  public void setDesertTemplates(List<WeightedTemplate> desertTemplates) {
     this.desertTemplates = desertTemplates;
   }
 

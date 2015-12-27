@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Random;
 
 import cpw.mods.fml.common.registry.VillagerRegistry.IVillageCreationHandler;
+import crazypants.structures.api.gen.IStructureTemplate;
+import crazypants.structures.api.gen.WeightedTemplate;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraft.world.gen.structure.StructureComponent;
@@ -16,8 +18,8 @@ public class CreationHandler implements IVillageCreationHandler {
   private int villagerId = -1;
   
   private final String uid;
-  private final List<String> templates = new ArrayList<String>();
-  private final List<String> desertTemplates = new ArrayList<String>();
+  private final List<WeightedTemplate> templates = new ArrayList<WeightedTemplate>();
+  private final List<WeightedTemplate> desertTemplates = new ArrayList<WeightedTemplate>();
   
   private PieceWeight weight;
   private int minNum;
@@ -43,11 +45,11 @@ public class CreationHandler implements IVillageCreationHandler {
     this.villagerId = id;
   }
   
-  public void addPlainsTemplate(String tmp) {
+  public void addPlainsTemplate(WeightedTemplate tmp) {
     templates.add(tmp);
   }
   
-  public void addDesertTemplate(String tmp) {
+  public void addDesertTemplate(WeightedTemplate tmp) {
     desertTemplates.add(tmp);
   }
 
@@ -81,14 +83,18 @@ public class CreationHandler implements IVillageCreationHandler {
   @Override
   public Object buildComponent(PieceWeight villagePiece, Start startPiece, List pieces, Random random, int x, int y, int z, int coordBaseMode, int p5) {
     
-    String templateUid;
+    
+    IStructureTemplate template = null;
     if(startPiece.inDesert && !desertTemplates.isEmpty()) {
-      templateUid = desertTemplates.get(random.nextInt(desertTemplates.size()));
-    } else {
-      templateUid = templates.get(random.nextInt(templates.size()));
+      template = WeightedTemplate.getTemplate(desertTemplates);      
+    } 
+    if(template == null) {
+      template = WeightedTemplate.getTemplate(templates);
     }
-    VillageHouse comp = new VillageHouse(templateUid, villagerId, x, y, z, coordBaseMode);
-
+    if(template == null) {
+      return null;
+    }
+    VillageHouse comp = new VillageHouse(template, villagerId, x, y, z, coordBaseMode);
     VillageHouse res = canVillageGoDeeper(comp.getBoundingBox()) && StructureComponent.findIntersecting(pieces, comp.getBoundingBox()) == null
         ? comp : null;
     

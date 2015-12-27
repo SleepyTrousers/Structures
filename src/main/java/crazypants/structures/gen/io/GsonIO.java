@@ -213,9 +213,12 @@ public class GsonIO {
         res.stackTagCompound = deserializeNBT(nbt64);
       } else {
         try {
-          NBTTagCompound nbt = JsonUtil.parseNBT(JsonUtil.getStringField(obj, "nbtString", null));
-          if(nbt != null) {
-            res.stackTagCompound = nbt;
+          String nbtString = JsonUtil.getStringField(obj, "nbtString", null);
+          if(nbtString != null) {
+            NBTTagCompound nbt = JsonUtil.parseNBT(nbtString);
+            if(nbt != null) {
+              res.stackTagCompound = nbt;
+            }
           }
         } catch (Exception e) {
           Log.warn("GsonIO.ItemStackIO.deserialize: Could not deserialize nbt string. " + e);
@@ -236,15 +239,14 @@ public class GsonIO {
       res.addProperty("item", id.modId + ":" + id.name);
       res.addProperty("number", src.stackSize);
       res.addProperty("meta", src.getItemDamage());
-      
+
       String nbt = serializeNBT(src.stackTagCompound);
       if(nbt != null && nbt.trim().length() > 0) {
         res.addProperty("nbt", nbt);
-      }                     
+      }
       return res;
     }
 
-    
     private NBTTagCompound deserializeNBT(String encoded) {
       if(encoded == null) {
         return null;
@@ -258,7 +260,7 @@ public class GsonIO {
         return null;
       }
     }
-    
+
     private String serializeNBT(NBTTagCompound nbt) {
       if(nbt == null) {
         return null;
@@ -272,9 +274,9 @@ public class GsonIO {
         Log.warn("GsonIO.ItemStackIO.serializeNBT: Could not serialize nbt: " + e);
         return null;
       }
-      
+
     }
-    
+
   }
 
   //--------------------------------------------------

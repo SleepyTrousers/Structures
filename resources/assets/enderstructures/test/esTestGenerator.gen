@@ -5,9 +5,9 @@
         "maxGeneratedPerChunk" : 1,
         
         "templates" : [
-          {"uid" : "esSmallHouseTest"},
-          {"uid" : "esRuinTest"},    
-          {"uid" : "esSpawnHouseTest"}
+           { weight : 1, template : {"uid" : "esSmallHouseTest"}},
+           { weight : 1, template : {"uid" : "esRuinTest"}},    
+           { weight : 1, template : {"uid" : "esSpawnHouseTest"}}
         ],
  
         "locationSampler" : {

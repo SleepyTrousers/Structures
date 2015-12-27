@@ -8,7 +8,6 @@ import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.gen.IStructureTemplate;
 import crazypants.structures.api.util.Point3i;
 import crazypants.structures.api.util.Rotation;
-import crazypants.structures.gen.StructureGenRegister;
 import crazypants.structures.gen.structure.Structure;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
@@ -31,12 +30,12 @@ public class VillageHouse extends StructureVillagePieces.House1 {
   public VillageHouse() {
   }
 
-  public VillageHouse(String templateUid, int villagerId, int x, int y, int z, int coordBaseMode) {
+  public VillageHouse(IStructureTemplate template, int villagerId, int x, int y, int z, int coordBaseMode) {
     this.villagerId = villagerId;
     this.coordBaseMode = coordBaseMode;
 
-    template = StructureGenRegister.instance.getStructureTemplate(templateUid, true);
-    structure = template.createInstance(getRotation());
+    this.template = template;    
+    structure = template.createInstance(getRotation());    
 
     AxisAlignedBB bb = structure.getBounds();
     bb = bb.getOffsetBoundingBox(x, y, z);

@@ -1,39 +1,80 @@
 {
-    "structureTemplate" : {
-                   
-        "components" : [
-          {"uid" : "esVillageHouse2Test"}
-        ],               
-        
-        "sitePreperation": {
-            "type": "CompositePreperation",
-            "preperations": [
-                {
-                    "type": "ClearPreperation",
-                    "clearPlants": "true"
-                },
-                {
-                    "type": "FillPreperation",
-                    "clearPlants": "true"
-                }
-            ]
-        },       
-
-        "decorator" : {
-                  
-         "type" : "CompositeDecorator",
-                  "decorators" : [
-                         
-                    { "type" : "LootTableInventory",
-                               "category" : "villageBlacksmith",                                 
-                               "targets" : ["inv0"]
-                    },
-		    { "type" : "LootTableInventory",
-                               "category" : "dungeonChest",                                                                
-                               "targets" : ["inv2", "inv3"]
-                    }
-                  ]                        
+  "structureTemplate": {
+    "canSpanChunks": true,
+    "generationRequiresLoadedChunks": true,
+    "rotations": [],
+    "components": [
+      {
+        "uid": "esVillageHouse2Test",
+        "offset": [
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "sitePreperation": {
+      "preperations": [
+        {
+          "border": {
+            "down": 0,
+            "up": 3,
+            "north": 1,
+            "south": 1,
+            "west": 1,
+            "east": 1
+          },
+          "clearPlants": true,
+          "clearBellowGround": false,
+          "clearItems": true,
+          "type": "ClearPreperation"
+        },
+        {
+          "fillMeta": 0,
+          "surfaceMeta": 0,
+          "useBiomeFillerBlock": true,
+          "clearPlants": true,
+          "border": {
+            "down": 0,
+            "up": 0,
+            "north": 1,
+            "south": 1,
+            "west": 1,
+            "east": 1
+          },
+          "type": "FillPreperation"
         }
-       
+      ],
+      "type": "CompositePreperation"
+    },
+    "decorator": {
+      "decorators": [
+        {
+          "category": "villageBlacksmith",
+          "targets": [
+            "Chest"
+          ],
+          "type": "LootTableInventory"
+        },
+        {
+          "category": "esTestCat1",
+          "targets": [
+            "LowerChest1"
+          ],
+          "type": "LootTableInventory"
+        },
+        {
+          "category": "esTestCat2",
+          "targets": [
+            "LowerChest2"
+          ],
+          "type": "LootTableInventory"
+        }
+      ],
+      "type": "CompositeDecorator"
+    },
+    "lootCategories": {
+      "categories": []
     }
+  }
 }
