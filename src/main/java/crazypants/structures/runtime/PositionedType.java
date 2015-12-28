@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 
 import crazypants.structures.AbstractTyped;
 import crazypants.structures.StructureUtils;
+import crazypants.structures.api.AttributeEditor;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.util.Point3i;
 
@@ -12,6 +13,7 @@ public class PositionedType extends AbstractTyped {
   @Expose
   private Point3i position;
 
+  @AttributeEditor(name="taggedPosition")
   @Expose
   private String taggedPosition;
 

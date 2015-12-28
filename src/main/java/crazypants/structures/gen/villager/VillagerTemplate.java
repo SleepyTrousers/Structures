@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.google.gson.annotations.Expose;
 
+import crazypants.structures.api.AttributeEditor;
 import crazypants.structures.api.ListElementType;
 import crazypants.structures.api.gen.IResource;
 import crazypants.structures.api.gen.IVillagerGenerator;
@@ -35,6 +36,7 @@ public class VillagerTemplate implements IResource {
   @Expose
   private int villagerId;
 
+  @AttributeEditor(name="texture")
   @Expose
   private String texture;
 

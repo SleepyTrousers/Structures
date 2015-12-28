@@ -221,8 +221,20 @@ public class API {
   public static final String ADD_RESOURCE_DIR = "addResourceDir";
   
   /**
-   * Key for a string message to register a generator.
+   * Key for a string message to register a generator, where the message payload is the UID of the generator. For example,
+   * to register 'foo.gen' you set the string to 'foo'
    */
   public static final String REGISTER_GENERATOR = "registerGenerator";
+  
+  /**
+   * Key for a string message to register a generator.
+   */
+  public static final String REGISTER_VILLAGE_GENERATOR = "registerVillageGenerator";
+  
+  /**
+   * Key for a string message to register a type. The string will be used:
+   * Class.forName(theString).newInstance(), which should return an ITyped instance
+   */
+  public static final String REGISTER_TYPE = "registerType";
   
 }

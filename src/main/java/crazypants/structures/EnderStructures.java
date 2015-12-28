@@ -22,13 +22,18 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.event.FMLServerStoppedEvent;
 import crazypants.structures.api.API;
+import crazypants.structures.api.ITyped;
 import crazypants.structures.api.gen.IStructureGenerator;
+import crazypants.structures.api.gen.IVillagerGenerator;
 import crazypants.structures.config.Config;
 import crazypants.structures.gen.DefaultStructures;
 import crazypants.structures.gen.ReloadConfigCommand;
 import crazypants.structures.gen.StructureGenRegister;
 import crazypants.structures.gen.WorldGenerator;
 import crazypants.structures.gen.io.DefaultTypes;
+import crazypants.structures.gen.io.GsonParserAdapter;
+import crazypants.structures.gen.io.ParserRegister;
+import crazypants.structures.gen.structure.TypeRegister;
 import crazypants.structures.runtime.StructureRegister;
 
 @Mod(modid = MODID, name = MOD_NAME, version = VERSION, dependencies = "required-after:Forge@10.13.0.1150,)", guiFactory = "crazypants.structures.config.ConfigFactoryEnderStructures")
@@ -116,12 +121,20 @@ public class EnderStructures {
             reg.getResourceManager().addClassLoaderResourcePath(msg.getStringValue());
 
           } else if(API.REGISTER_GENERATOR.equalsIgnoreCase(key)) {
-
             IStructureGenerator gen = StructureGenRegister.instance.getResourceManager().loadGenerator(msg.getStringValue());
             if(gen != null) {
               reg.registerGenerator(gen);
             }
-          }
+          } else if(API.REGISTER_VILLAGE_GENERATOR.equalsIgnoreCase(key)) {
+            IVillagerGenerator vil = StructureGenRegister.instance.getResourceManager().loadVillager(msg.getStringValue());
+            if(vil != null) {
+              reg.registerVillagerGenerator(vil);
+            }
+          } else if(API.REGISTER_TYPE.equalsIgnoreCase(key)) {
+            ITyped inst = (ITyped)Class.forName(msg.getStringValue()).newInstance();
+            TypeRegister.INSTANCE.register(inst);    
+            ParserRegister.instance.register(new GsonParserAdapter(inst));
+          }             
         } else if(msg.isNBTMessage()) {
 
         }

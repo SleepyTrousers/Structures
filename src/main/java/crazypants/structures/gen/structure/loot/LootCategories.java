@@ -62,7 +62,8 @@ public class LootCategories implements IResource {
     }   
   }
   
-  public void deregister() {    
+  public void deregister() {
+    System.out.println("LootCategories.deregister: Deregistered loot categories in: " + uid);
     if(categories == null) {
       return;
     }

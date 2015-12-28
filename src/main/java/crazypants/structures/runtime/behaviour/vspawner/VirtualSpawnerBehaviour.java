@@ -2,6 +2,7 @@ package crazypants.structures.runtime.behaviour.vspawner;
 
 import com.google.gson.annotations.Expose;
 
+import crazypants.structures.api.AttributeEditor;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.IBehaviour;
 import crazypants.structures.api.runtime.ICondition;
@@ -12,6 +13,7 @@ import net.minecraft.world.World;
 public class VirtualSpawnerBehaviour extends PositionedType implements IBehaviour {
  
 //TODO: Allow for a list of entities
+  @AttributeEditor(name="entity")
   @Expose
   private String entity = "Pig";  
   

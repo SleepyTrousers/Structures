@@ -5,12 +5,14 @@ import java.util.List;
 
 import com.google.gson.annotations.Expose;
 
+import crazypants.structures.api.AttributeEditor;
 import crazypants.structures.api.ListElementType;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraftforge.common.ChestGenHooks;
 
 public class LootCategory {
 
+  @AttributeEditor(name="lootCategory")
   @Expose
   private String category;
   

@@ -6,6 +6,7 @@ import java.util.List;
 import com.google.gson.annotations.Expose;
 
 import crazypants.structures.AbstractTyped;
+import crazypants.structures.api.AttributeEditor;
 import crazypants.structures.api.ListElementType;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.BiomeDictionary;
@@ -20,10 +21,12 @@ public abstract class AbstractBiomeFilter extends AbstractTyped implements IBiom
   @Expose
   protected List<BiomeDictionary.Type> typeExcludes;
 
+  @AttributeEditor(name="biomeName")
   @ListElementType(elementType=String.class)
   @Expose
   protected List<String> names;
   
+  @AttributeEditor(name="biomeName")
   @ListElementType(elementType=String.class)
   @Expose
   protected List<String> nameExcludes;

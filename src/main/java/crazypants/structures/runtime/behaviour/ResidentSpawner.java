@@ -7,6 +7,7 @@ import com.google.gson.annotations.Expose;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
 import crazypants.structures.StructureUtils;
+import crazypants.structures.api.AttributeEditor;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.IAction;
 import crazypants.structures.api.runtime.IBehaviour;
@@ -24,6 +25,7 @@ import net.minecraft.world.World;
 public class ResidentSpawner extends AbstractEventBehaviour {
 
   //template variables
+  @AttributeEditor(name="entity")
   @Expose
   private String entity = "";
   
