@@ -11,11 +11,13 @@ import java.util.Set;
 
 import cpw.mods.fml.common.registry.VillagerRegistry;
 import crazypants.structures.Log;
+import crazypants.structures.StructureUtils;
 import crazypants.structures.api.gen.IResource;
 import crazypants.structures.api.gen.IStructureComponent;
 import crazypants.structures.api.gen.IStructureGenerator;
 import crazypants.structures.api.gen.IStructureTemplate;
 import crazypants.structures.api.gen.IVillagerGenerator;
+import crazypants.structures.config.Config;
 import crazypants.structures.gen.io.resource.IResourcePath;
 import crazypants.structures.gen.io.resource.StructureResourceManager;
 import crazypants.structures.gen.structure.StructureComponentNBT;
@@ -59,7 +61,11 @@ public class StructureGenRegister {
   }
 
   public void registerGenerator(IStructureGenerator gen) {
-    if(gen == null) {
+    if(gen == null || gen.getUid() == null) {
+      return;
+    }
+    if(isDisabled(gen, StructureResourceManager.GENERATOR_EXT, Config.disabledStructures)) {
+      Log.info("StructureGenRegister: Structure Gen " + gen.getUid() + " disabled");
       return;
     }
     generators.put(gen.getUid(), gen);
@@ -71,28 +77,42 @@ public class StructureGenRegister {
     if(gen == null) {
       return;
     }
+    if(isDisabled(gen, StructureResourceManager.VILLAGER_EXT, Config.disabledVillages)) {
+      Log.info("StructureGenRegister: Village Gen " + gen.getUid() + " disabled");
+      return;
+    }
     villagerUids.add(gen.getUid());
-    villagerGen.addCreationHandler(gen.getCreationHandler());    
+    villagerGen.addCreationHandler(gen.getCreationHandler());
     gen.register();
     Log.info("StructureGenRegister: Registered Village Gen: " + gen.getUid());
+  }
+  
+  private boolean isDisabled(IResource res, String extension, String[] disabled) {    
+    for(String uid : disabled) {      
+      uid = StructureUtils.stripExtension(uid, extension);      
+      if(uid.equalsIgnoreCase(res.getUid())) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public void registerTemplate(IStructureTemplate st) {
     if(st == null) {
       return;
     }
-    
+
     IStructureTemplate oldVal = templates.get(st.getUid());
     if(oldVal != null && oldVal.getLootCategories() != null) {
       oldVal.getLootCategories().deregister();
-    }    
+    }
     templates.put(st.getUid(), st);
-    
+
     Log.info("StructureGenRegister: Registered Template: " + st.getUid());
     LootCategories lc = st.getLootCategories();
     if(lc != null) {
       lc.register();
-    }    
+    }
   }
 
   public void registerStructureComponent(IStructureComponent sc) {
@@ -239,11 +259,11 @@ public class StructureGenRegister {
   public Map<String, IStructureTemplate> getStructureTemplateMap() {
     return templates;
   }
-  
+
   public StructureResourceManager getResourceManager() {
     return resourceManager;
   }
-  
+
   public Collection<IStructureGenerator> getGenerators() {
     return generators.values();
   }
@@ -251,7 +271,7 @@ public class StructureGenRegister {
   public Collection<IStructureComponent> getStructureComponents() {
     return components.values();
   }
-  
+
   public Map<String, IStructureComponent> getStructureComponentMap() {
     return components;
   }
@@ -259,7 +279,7 @@ public class StructureGenRegister {
   public IStructureComponent getStructureComponent(String uid) {
     return getStructureComponent(uid, false);
   }
-    
+
   public Collection<? extends IResource> getResources(Class<?> ofType) {
     if(IStructureComponent.class.isAssignableFrom(ofType)) {
       return getStructureComponents();

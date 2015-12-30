@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +30,17 @@ import net.minecraft.world.gen.structure.StructureBoundingBox;
 
 public class StructureUtils {
 
+  public static String stripExtension(String string, String extension) {    
+    if(string.endsWith(extension)) {
+      string = string.substring(0, string.length() - extension.length());
+    }
+    return string;
+  }
+  
+  public static String stripExtension(File file, String extension) {
+    return stripExtension(file.getName(), extension);    
+  }
+  
   public static boolean canSpawnEntity(World world, EntityLiving entityliving, boolean doEntityChecks) {
     boolean spaceClear = world.checkNoEntityCollision(entityliving.boundingBox)
         && world.getCollidingBoundingBoxes(entityliving, entityliving.boundingBox).isEmpty()

@@ -18,6 +18,7 @@ import crazypants.structures.api.gen.IStructureGenerator;
 import crazypants.structures.api.gen.IWorldStructures;
 import crazypants.structures.api.util.BoundingCircle;
 import crazypants.structures.api.util.Vector2d;
+import crazypants.structures.config.Config;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
@@ -47,7 +48,7 @@ public class SpacingValidator extends AbstractTyped implements IChunkValidator, 
   }
 
   public SpacingValidator(int minSpacing, String... templateType) {
-    this(minSpacing, minSpacing >= 32, minSpacing < 32, templateType);
+    this(minSpacing, (minSpacing * Config.spacingMultiplier) >= 32, (minSpacing * Config.spacingMultiplier) < 32, templateType);
   }
 
   public SpacingValidator(int minSpacing, boolean checkChunkDistance, boolean checkPointDistance, String... matchTypes) {
@@ -74,12 +75,11 @@ public class SpacingValidator extends AbstractTyped implements IChunkValidator, 
 
   @Override
   public boolean isValidChunk(IStructureGenerator template, IWorldStructures structures, World world, Random random, int chunkX, int chunkZ) {
-
     if(!validateChunk) {
       return true;
     }
     ChunkCoordIntPair cc = new ChunkCoordIntPair(chunkX, chunkZ);
-    BoundingCircle bc = new BoundingCircle(cc.getCenterXPos(), cc.getCenterZPosition(), minSpacing + CHUNK_RADIUS);
+    BoundingCircle bc = new BoundingCircle(cc.getCenterXPos(), cc.getCenterZPosition(), (minSpacing * Config.spacingMultiplier) + CHUNK_RADIUS);
     return areMatchingStructuresInBounds(structures, bc);
   }
 
@@ -89,7 +89,7 @@ public class SpacingValidator extends AbstractTyped implements IChunkValidator, 
       return true;
     }
     BoundingCircle bc = new BoundingCircle(structure.getOrigin().x + structure.getSize().x / 2, structure.getOrigin().z + structure.getSize().z / 2,
-        (int) (structure.getBoundingRadius() + minSpacing));
+        (int) (structure.getBoundingRadius() + (minSpacing * Config.spacingMultiplier)));
     return areMatchingStructuresInBounds(existingStructures, bc);
   }
 

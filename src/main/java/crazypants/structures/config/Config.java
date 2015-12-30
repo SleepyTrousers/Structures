@@ -47,6 +47,13 @@ public final class Config {
   
   public static final Section sectionTest = new Section("Test Settings", "test");
   public static boolean testStructuresEnabled = false;
+  
+
+  public static final Section sectionStructures = new Section("Structure Settings", "structures");
+  public static double spacingMultiplier = 1.0;
+  public static double chanceMultiplier = 1.0;  
+  public static String[] disabledStructures = new String[0];
+  public static String[] disabledVillages = new String[0];
 
   public static void load(FMLPreInitializationEvent event) {
 
@@ -84,6 +91,11 @@ public final class Config {
 
   public static void processConfig(Configuration config) {   
     testStructuresEnabled = config.getBoolean("testStructuresEnabled", sectionTest.name, testStructuresEnabled, "When enabled structures used for testing will be generated.");
+        
+    spacingMultiplier = config.get(sectionStructures.name, "spacingMultiplier", spacingMultiplier, "Global multiplier for the minimum spacing between structures").getDouble(spacingMultiplier);
+    chanceMultiplier = config.get(sectionStructures.name, "chanceMultiplier", chanceMultiplier, "Global multiplier for the chance a structure will be generated in a chunk").getDouble(chanceMultiplier);
+    disabledStructures = config.get(sectionStructures.name, "disabledStructures", disabledStructures, "List of disabled structures. Entries correspond to the .gen file to be disabled. Extension is optional (ie adding foo or foo.gen has the same effect").getStringList();
+    disabledVillages = config.get(sectionStructures.name, "disabledVillages", disabledVillages, "List of disabled villages. Entries correspond to the .vgen file to be disabled.").getStringList();
   }
 
   private Config() {
