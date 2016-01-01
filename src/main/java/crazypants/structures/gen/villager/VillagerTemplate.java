@@ -12,6 +12,7 @@ import crazypants.structures.api.gen.IResource;
 import crazypants.structures.api.gen.IVillagerGenerator;
 import crazypants.structures.api.gen.WeightedTemplate;
 import crazypants.structures.gen.io.resource.StructureResourceManager;
+import crazypants.structures.gen.structure.loot.LootCategories;
 import net.minecraft.village.MerchantRecipe;
 
 public class VillagerTemplate implements IResource {
@@ -53,16 +54,24 @@ public class VillagerTemplate implements IResource {
   @Expose
   private String texture;
 
+  @AttributeEditor(name="taggedPosition")
+  @AttributeDoc(text = "The tagged location at which to spawn the villager")
+  @Expose
+  private String villagerSpawnLocation;
+  
   @AttributeDoc(text = "Adds custum villager trades")
   @ListElementType(elementType = MerchantRecipeWrapper.class)
   @Expose
   private List<MerchantRecipeWrapper> trades = new ArrayList<MerchantRecipeWrapper>();
   
-  @AttributeEditor(name="taggedPosition")
-  @AttributeDoc(text = "The tagged location at which to spawn the villager")
+  @AttributeDoc(text = "Locally defined loot categories. They will still be registerd globaly.")
   @Expose
-  private String villagerSpawnLocation;
+  private LootCategories lootCategories;
 
+  public VillagerTemplate() {
+    lootCategories = new LootCategories();
+  }
+  
   public boolean isValid() {
     if(villagerId > 0) {
       if(texture == null) {
@@ -118,6 +127,7 @@ public class VillagerTemplate implements IResource {
 
     res.setTexture(texture);
     res.setVillagerId(villagerId);
+    res.setLootCategories(lootCategories);
 
     if(trades != null) {
       for (MerchantRecipeWrapper rec : trades) {
@@ -204,6 +214,22 @@ public class VillagerTemplate implements IResource {
 
   public void setTrades(List<MerchantRecipeWrapper> trades) {
     this.trades = trades;
+  }
+
+  public String getVillagerSpawnLocation() {
+    return villagerSpawnLocation;
+  }
+
+  public void setVillagerSpawnLocation(String villagerSpawnLocation) {
+    this.villagerSpawnLocation = villagerSpawnLocation;
+  }
+
+  public LootCategories getLootCategories() {
+    return lootCategories;
+  }
+
+  public void setLootCategories(LootCategories lootCategories) {
+    this.lootCategories = lootCategories;
   }
 
 }

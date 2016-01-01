@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.google.gson.annotations.Expose;
 
+import crazypants.structures.api.AttributeDoc;
 import crazypants.structures.api.AttributeEditor;
 import crazypants.structures.api.ListElementType;
 import net.minecraft.util.WeightedRandomChestContent;
@@ -12,16 +13,20 @@ import net.minecraftforge.common.ChestGenHooks;
 
 public class LootCategory {
 
+  @AttributeDoc(text="The categories name")
   @AttributeEditor(name="lootCategory")
   @Expose
   private String category;
   
+  @AttributeDoc(text="The minimum number of item stacks that will be generated")
   @Expose
   private int minItems;
   
+  @AttributeDoc(text="The maximum number of item stacks that will be generated")
   @Expose
   private int maxItems;
   
+  @AttributeDoc(text="The items to add to the category")
   @ListElementType(elementType=LootEntry.class)
   @Expose
   private List<LootEntry> entries;

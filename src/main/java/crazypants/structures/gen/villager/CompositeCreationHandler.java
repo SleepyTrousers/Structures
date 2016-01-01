@@ -3,6 +3,7 @@ package crazypants.structures.gen.villager;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Random;
 
 import cpw.mods.fml.common.registry.VillagerRegistry.IVillageCreationHandler;
@@ -35,6 +36,19 @@ public class CompositeCreationHandler implements IVillageCreationHandler {
 
   public void addCreationHandler(CreationHandler handler) {
     handlers.add(handler);
+  }
+  
+  public void removeCreationHandler(String uid) {
+    if(uid == null) {
+      return;
+    }
+    ListIterator<CreationHandler> itr = handlers.listIterator();
+    while(itr.hasNext()) {
+      CreationHandler val = itr.next();
+      if(val != null && uid.equals(val.getUid())) {
+        itr.remove();
+      }
+    }    
   }
 
   @Override

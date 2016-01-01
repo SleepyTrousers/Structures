@@ -2,6 +2,7 @@ package crazypants.structures.gen.io;
 
 import crazypants.structures.Log;
 import crazypants.structures.api.gen.IVillagerGenerator;
+import crazypants.structures.gen.structure.loot.LootCategories;
 import crazypants.structures.gen.villager.VillagerTemplate;
 
 public class VillagerParser {
@@ -22,6 +23,10 @@ public class VillagerParser {
     if(rw != null && rw.getVillagerTemplate() != null) {
       VillagerTemplate tmpl = rw.getVillagerTemplate();
       tmpl.setUid(uid);
+      LootCategories lc = tmpl.getLootCategories();
+      if(lc != null) {
+        lc.setUid(uid);
+      }      
       if(tmpl.isValid()) {
         return tmpl;
       } else {

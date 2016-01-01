@@ -41,7 +41,7 @@ public class StructureGenRegister {
   private final Map<String, IStructureComponent> components = new HashMap<String, IStructureComponent>();
   //Keep these separately so they can be retried ever reload attempt
   private final Set<String> genUids = new HashSet<String>();
-  private final Set<String> villagerUids = new HashSet<String>();
+  private final Map<String, IVillagerGenerator> villagerGens = new HashMap<String, IVillagerGenerator>();
 
   //Need to use a composite handler as we can only have one handler per Village component class.
   //All our village houses use the same class, so we can only use one creation handler, which then delegates
@@ -81,15 +81,26 @@ public class StructureGenRegister {
       Log.info("StructureGenRegister: Village Gen " + gen.getUid() + " disabled");
       return;
     }
-    villagerUids.add(gen.getUid());
+
+    IVillagerGenerator oldVal = villagerGens.get(gen.getUid());
+    if(oldVal != null && oldVal.getLootCategories() != null) {
+      oldVal.getLootCategories().deregister();
+    }
+    villagerGens.put(gen.getUid(), gen);
+    villagerGen.removeCreationHandler(gen.getUid());
     villagerGen.addCreationHandler(gen.getCreationHandler());
     gen.register();
     Log.info("StructureGenRegister: Registered Village Gen: " + gen.getUid());
+    
+    LootCategories lc = gen.getLootCategories();
+    if(lc != null) {
+      lc.register();
+    }
   }
-  
-  private boolean isDisabled(IResource res, String extension, String[] disabled) {    
-    for(String uid : disabled) {      
-      uid = StructureUtils.stripExtension(uid, extension);      
+
+  private boolean isDisabled(IResource res, String extension, String[] disabled) {
+    for (String uid : disabled) {
+      uid = StructureUtils.stripExtension(uid, extension);
       if(uid.equalsIgnoreCase(res.getUid())) {
         return true;
       }
@@ -223,7 +234,7 @@ public class StructureGenRegister {
   public void clear() {
     components.clear();
     generators.clear();
-    villagerUids.clear();
+    villagerGens.clear();
   }
 
   public void reload() {
@@ -239,12 +250,12 @@ public class StructureGenRegister {
         Log.error("StructureGenRegister: Could not load structure data for " + uid + " Ex: " + e);
       }
     }
-    for (String uid : villagerUids) {
+    for (String uid : villagerGens.keySet()) {
       IVillagerGenerator tmp;
       try {
         tmp = resourceManager.loadVillager(uid);
         if(tmp != null) {
-          villagerUids.add(tmp.getUid());
+          villagerGens.put(tmp.getUid(), tmp);
           tmp.onReload();
         }
       } catch (Exception e) {

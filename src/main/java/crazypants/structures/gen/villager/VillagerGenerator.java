@@ -4,6 +4,7 @@ import cpw.mods.fml.common.registry.VillagerRegistry;
 import crazypants.structures.Log;
 import crazypants.structures.api.gen.IVillagerGenerator;
 import crazypants.structures.api.gen.WeightedTemplate;
+import crazypants.structures.gen.structure.loot.LootCategories;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.village.MerchantRecipe;
 import net.minecraft.world.gen.structure.StructureVillagePieces.PieceWeight;
@@ -17,6 +18,8 @@ public class VillagerGenerator implements IVillagerGenerator {
   private final CreationHandler creationHandler;
 
   private ResourceLocation texture;
+  
+  private LootCategories lootCategories;
 
   public VillagerGenerator(String uid) {
     this.uid = uid;
@@ -66,6 +69,15 @@ public class VillagerGenerator implements IVillagerGenerator {
     tradeHandler.addRecipe(recipe);
   }
 
+  public void setLootCategories(LootCategories lootCategories) {
+    this.lootCategories = lootCategories;
+  }
+  
+  @Override
+  public LootCategories getLootCategories() {
+    return lootCategories;
+  }
+
   @Override
   public CreationHandler getCreationHandler() {
     return creationHandler;
@@ -101,5 +113,7 @@ public class VillagerGenerator implements IVillagerGenerator {
     }
     creationHandler.validate();
   }
+
+  
 
 }
