@@ -50,6 +50,10 @@ public class VillagerGenerator implements IVillagerGenerator {
     creationHandler.setVillagePieceWeight(new PieceWeight(VillageHouse.class, weight, maxNum), minNum);
   }
 
+  public void setSpawnLocation(String villagerSpawnLocation) {
+    creationHandler.setSpawnLocation(villagerSpawnLocation);
+  }
+  
   public void addPlainsTemplate(WeightedTemplate template) {
     creationHandler.addPlainsTemplate(template);
   }
@@ -66,7 +70,7 @@ public class VillagerGenerator implements IVillagerGenerator {
   public CreationHandler getCreationHandler() {
     return creationHandler;
   }
-  
+
   @Override
   public void register() {
     if(getVillagerId() > 0) {
@@ -79,12 +83,12 @@ public class VillagerGenerator implements IVillagerGenerator {
 
   @Override
   public void onReload() {
-    if(creationHandler.hasVillager()) {      
+    if(creationHandler.hasVillager()) {
       VillagerRegistry.instance().registerVillagerSkin(getVillagerId(), texture);
       VillagerRegistry.instance().registerVillageTradeHandler(getVillagerId(), tradeHandler);
-    };
+    }    
   }
-  
+
   public void validate() throws Exception {
     if(creationHandler.hasVillager()) {
       if(texture == null) {

@@ -57,6 +57,11 @@ public class VillagerTemplate implements IResource {
   @ListElementType(elementType = MerchantRecipeWrapper.class)
   @Expose
   private List<MerchantRecipeWrapper> trades = new ArrayList<MerchantRecipeWrapper>();
+  
+  @AttributeEditor(name="taggedPosition")
+  @AttributeDoc(text = "The tagged location at which to spawn the villager")
+  @Expose
+  private String villagerSpawnLocation;
 
   public boolean isValid() {
     if(villagerId > 0) {
@@ -96,7 +101,7 @@ public class VillagerTemplate implements IResource {
 
   public IVillagerGenerator createGenerator() {
     VillagerGenerator res = new VillagerGenerator(uid);
-
+    res.setSpawnLocation(villagerSpawnLocation);
     for (WeightedTemplate tmpl : plainsTemplates) {
       if(tmpl != null && tmpl.getTemplate() != null) {
         res.addPlainsTemplate(tmpl);

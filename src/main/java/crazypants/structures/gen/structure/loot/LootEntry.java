@@ -2,14 +2,17 @@ package crazypants.structures.gen.structure.loot;
 
 import com.google.gson.annotations.Expose;
 
+import crazypants.structures.api.AttributeDoc;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.WeightedRandomChestContent;
 
 public class LootEntry {
 
+  @AttributeDoc(text="Minimum stack size")
   @Expose
   int minChanceToGenerate;
 
+  @AttributeDoc(text="Maximum stack size")
   @Expose
   int maxChanceToGenerate;
 
@@ -29,12 +32,15 @@ public class LootEntry {
     minChanceToGenerate = other.minChanceToGenerate;
     maxChanceToGenerate = other.maxChanceToGenerate;
     weight = other.weight;
-    if(other.item != null) {
+    if(other.item != null && other.item.getItem() != null) {
       item = new ItemStack(other.item.getItem(), other.item.stackSize, other.item.getItemDamage());
     }
   }
   
   public WeightedRandomChestContent createContent() {
+    if(item == null) {
+      return null;
+    }
     return new WeightedRandomChestContent(item, minChanceToGenerate, maxChanceToGenerate, weight);
   }
 

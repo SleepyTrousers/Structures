@@ -1,5 +1,6 @@
 package crazypants.structures.gen.villager;
 
+import java.util.Collection;
 import java.util.Random;
 
 import crazypants.structures.EnderStructures;
@@ -8,6 +9,7 @@ import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.gen.IStructureTemplate;
 import crazypants.structures.api.util.Point3i;
 import crazypants.structures.api.util.Rotation;
+import crazypants.structures.api.util.Vector2d;
 import crazypants.structures.gen.structure.Structure;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
@@ -26,27 +28,28 @@ public class VillageHouse extends StructureVillagePieces.House1 {
 
   //Used to adjust the yoffset when adding villagers so they don't spawn in basements
   private boolean addingVilagers = false;
+  
+  private String spawnTag;
 
   public VillageHouse() {
   }
 
-  public VillageHouse(IStructureTemplate template, int villagerId, int x, int y, int z, int coordBaseMode) {
+  public VillageHouse(IStructureTemplate template, String spawnTag, int villagerId, int x, int y, int z, int coordBaseMode) {
+    this.template = template;
+    this.spawnTag = spawnTag;
     this.villagerId = villagerId;
     this.coordBaseMode = coordBaseMode;
-
-    this.template = template;    
+    
     structure = template.createInstance(getRotation());    
 
     AxisAlignedBB bb = structure.getBounds();
     bb = bb.getOffsetBoundingBox(x, y, z);
-    this.boundingBox = new StructureBoundingBox((int) bb.minX, (int) bb.minY, (int) bb.minZ, (int) bb.maxX, (int) bb.maxY, (int) bb.maxZ);
-
+    boundingBox = new StructureBoundingBox((int) bb.minX, (int) bb.minY, (int) bb.minZ, (int) bb.maxX, (int) bb.maxY, (int) bb.maxZ);
     if(coordBaseMode == 1) {
       boundingBox.offset((int) -(bb.maxX - bb.minX), 0, 0);
     } else if(coordBaseMode == 2) {
       boundingBox.offset(0, 0, (int) -(bb.maxZ - bb.minZ));
     }
-
   }
 
   @Override
@@ -88,18 +91,31 @@ public class VillageHouse extends StructureVillagePieces.House1 {
     EnderStructures.structureRegister.getStructuresForWorld(world).add(structure);    
     structure.onGenerated(world);
     
-    if(villagerId > 0) {
+    if(!world.isRemote && villagerId > 0) {
       addingVilagers = true;
-      try {
-        spawnVillagers(world, bb, 3, 1, 3, 1);
+      try {        
+        Point3i spawnPoint = getSpawnPoint();
+        if(spawnPoint == null) {
+          Vector2d or = structure.getBoundingCircle().getOrigin();          
+          spawnPoint = new Point3i((int)or.x, 1 + structure.getSurfaceOffset(), (int)or.y); 
+        }
+        spawnVillagers(world, bb, spawnPoint.x, spawnPoint.y, spawnPoint.z, 1);
       } finally {
         addingVilagers = false;
       }
     }
-
-    
-    
     return true;
+  }
+  
+  private Point3i getSpawnPoint() {
+    if(spawnTag == null) {
+      return null;
+    }
+    Collection<Point3i> locs = structure.getTemplate().getTaggedLocations(spawnTag);
+    if(locs == null || locs.isEmpty()) {
+      return null;
+    }
+    return locs.iterator().next();
   }
 
   @Override

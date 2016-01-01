@@ -127,31 +127,33 @@ public class StructureGenRegister {
     if(!doLoadIfNull || components.containsKey(uid)) {
       return components.get(uid);
     }
-    StructureComponentNBT sd = null;
+    StructureComponentNBT sc = null;
     try {
-      sd = resourceManager.loadStructureComponent(uid);
+      sc = resourceManager.loadStructureComponent(uid);
+      registerStructureComponent(sc);
     } catch (IOException e) {
       Log.error("StructureGenRegister: Could not load structure component: " + uid + " Ex: " + e);
     } finally {
-      components.put(uid, sd);
+      components.put(uid, sc);
     }
-    return sd;
+    return sc;
   }
 
   public IStructureTemplate getStructureTemplate(String uid, boolean doLoadIfNull) {
     if(!doLoadIfNull || templates.containsKey(uid)) {
       return templates.get(uid);
     }
-    IStructureTemplate sd = null;
+    IStructureTemplate st = null;
     try {
-      sd = resourceManager.loadTemplate(uid);
+      st = resourceManager.loadTemplate(uid);
+      registerTemplate(st);
     } catch (Exception e) {
       Log.error("StructureGenRegister: Could not load structure template: " + uid + " Ex: " + e);
       e.printStackTrace();
     } finally {
-      templates.put(uid, sd);
+      templates.put(uid, st);
     }
-    return sd;
+    return st;
   }
 
   public void loadAndRegisterAllResources(IResourcePath path, boolean onlyRootResources) {

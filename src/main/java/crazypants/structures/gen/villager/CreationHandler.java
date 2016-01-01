@@ -23,6 +23,8 @@ public class CreationHandler implements IVillageCreationHandler {
   
   private PieceWeight weight;
   private int minNum;
+  
+  private String villagerSpawnLocation;
 
   public CreationHandler(String uid) {
     this.uid = uid;
@@ -51,6 +53,10 @@ public class CreationHandler implements IVillageCreationHandler {
   
   public void addDesertTemplate(WeightedTemplate tmp) {
     desertTemplates.add(tmp);
+  }
+  
+  public void setSpawnLocation(String villagerSpawnLocation) {
+    this.villagerSpawnLocation = villagerSpawnLocation;
   }
 
   /** terraionType = World terrain type, 0 for normal, 1 for flat map */
@@ -94,7 +100,7 @@ public class CreationHandler implements IVillageCreationHandler {
     if(template == null) {
       return null;
     }
-    VillageHouse comp = new VillageHouse(template, villagerId, x, y, z, coordBaseMode);
+    VillageHouse comp = new VillageHouse(template,villagerSpawnLocation, villagerId, x, y, z, coordBaseMode);
     VillageHouse res = canVillageGoDeeper(comp.getBoundingBox()) && StructureComponent.findIntersecting(pieces, comp.getBoundingBox()) == null
         ? comp : null;
     
