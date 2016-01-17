@@ -40,6 +40,14 @@ import net.minecraft.block.BlockTripWireHook;
 import net.minecraft.block.BlockVine;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumFacing.Axis;
+
+import static net.minecraft.util.EnumFacing.NORTH;
+import static net.minecraft.util.EnumFacing.SOUTH;
+import static net.minecraft.util.EnumFacing.EAST;
+import static net.minecraft.util.EnumFacing.WEST;
+import static net.minecraft.util.EnumFacing.UP;
+import static net.minecraft.util.EnumFacing.DOWN;
 
 /**
  * Based on the forge rotation helper, but that only rotates blocks in world, I
@@ -99,10 +107,10 @@ public class RotationHelper {
     MAPPINGS.put(BlockType.BED, biMap);
 
     biMap = HashBiMap.create(4);
-    biMap.put(0x2, EAST);
-    biMap.put(0x3, WEST);
-    biMap.put(0x4, NORTH);
-    biMap.put(0x5, SOUTH);
+    biMap.put(0x2, EnumFacing.EAST);
+    biMap.put(0x3, EnumFacing.WEST);
+    biMap.put(0x4, EnumFacing.NORTH);
+    biMap.put(0x5, EnumFacing.SOUTH);
     MAPPINGS.put(BlockType.RAIL_ASCENDING, biMap);
 
     biMap = HashBiMap.create(4);
@@ -155,7 +163,10 @@ public class RotationHelper {
     MAPPINGS.put(BlockType.ANVIL, biMap);
   }   
   
-  public static int rotateMetadata(Block block, int meta, Rotation rot) {    
+  public static int rotateMetadata(Block block, int meta, Rotation rot) {   
+    
+    //BlockDirectional
+    
     int result = meta;
     for(int i=0;i<rot.ordinal();i++) {
       result = rotateMetadata(block, result);
@@ -168,10 +179,10 @@ public class RotationHelper {
     if(type == null) {
       return meta;
     }
-    return rotateMetadata(ForgeDirection.UP, type, meta);
+    return rotateMetadata(UP, type, meta);
   }
   
-  private static int rotateMetadata(ForgeDirection axis, BlockType blockType, int meta) {
+  private static int rotateMetadata(EnumFacing axis, BlockType blockType, int meta) {
     if(blockType == BlockType.RAIL || blockType == BlockType.RAIL_POWERED) {
       if(meta == 0x0 || meta == 0x1) {
         return ~meta & 0x1;
@@ -210,8 +221,8 @@ public class RotationHelper {
       return ((meta << 1) | ((meta & 0x8) >> 3));
     }
 
-    ForgeDirection orientation = metadataToDirection(blockType, meta);
-    ForgeDirection rotated = orientation.getRotation(axis);
+    EnumFacing orientation = metadataToDirection(blockType, meta);
+    EnumFacing rotated = orientation.rotateAround(Axis.Y);
     return directionToMetadata(blockType, rotated, meta);
   }
 
@@ -280,7 +291,7 @@ public class RotationHelper {
     return null;
   }
 
-  private static ForgeDirection metadataToDirection(BlockType blockType, int meta) {
+  private static EnumFacing metadataToDirection(BlockType blockType, int meta) {
     if(blockType == BlockType.LEVER) {
       if(meta == 0x6) {
         meta = 0x5;
@@ -290,62 +301,64 @@ public class RotationHelper {
     }
 
     if(MAPPINGS.containsKey(blockType)) {
-      BiMap<Integer, ForgeDirection> biMap = MAPPINGS.get(blockType);
+      BiMap<Integer, EnumFacing> biMap = MAPPINGS.get(blockType);
       if(biMap.containsKey(meta)) {
         return biMap.get(meta);
       }
     }
 
-    if(blockType == BlockType.TORCH) {
-      return ForgeDirection.getOrientation(6 - meta);
-    }
-    if(blockType == BlockType.STAIR) {
-      return ForgeDirection.getOrientation(5 - meta);
-    }
-    if(blockType == BlockType.CHEST || blockType == BlockType.DISPENSER || blockType == BlockType.SKULL) {
-      return ForgeDirection.getOrientation(meta);
-    }
-    if(blockType == BlockType.BUTTON) {
-      return ForgeDirection.getOrientation(6 - meta);
-    }
+    //TODO: 1.8
+//    if(blockType == BlockType.TORCH) {
+//      return ForgeDirection.getOrientation(6 - meta);
+//    }
+//    if(blockType == BlockType.STAIR) {
+//      return ForgeDirection.getOrientation(5 - meta);
+//    }
+//    if(blockType == BlockType.CHEST || blockType == BlockType.DISPENSER || blockType == BlockType.SKULL) {
+//      return ForgeDirection.getOrientation(meta);
+//    }
+//    if(blockType == BlockType.BUTTON) {
+//      return ForgeDirection.getOrientation(6 - meta);
+//    }
+    
     if(blockType == BlockType.TRAPDOOR) {
       //return ForgeDirection.getOrientation(meta + 2).getOpposite();
       int val = meta & 3;
       switch(val) {
       case 0:
-        return ForgeDirection.SOUTH;
+        return SOUTH;
       case 1:
-        return ForgeDirection.NORTH;
+        return NORTH;
       case 2:
-        return ForgeDirection.EAST;
+        return EAST;
       case 3:
-        return ForgeDirection.WEST;      
+        return WEST;      
       }
     }
     if(blockType == BlockType.TRIP_WIRE_HOOK) {
       int val = meta & 3;
       switch(val) {
       case 0:
-        return ForgeDirection.NORTH;
+        return NORTH;
       case 1:
-        return ForgeDirection.EAST;
+        return EAST;
       case 2:
-        return ForgeDirection.SOUTH;
+        return SOUTH;
       case 3:
-        return ForgeDirection.WEST;      
+        return WEST;      
       }
     }
 
-    return ForgeDirection.UNKNOWN;
+    return null;
   }
 
-  private static int directionToMetadata(BlockType blockType, ForgeDirection direction, int origMeta) {
-    if((blockType == BlockType.LOG || blockType == BlockType.ANVIL) && (direction.offsetX + direction.offsetY + direction.offsetZ) < 0) {
+  private static int directionToMetadata(BlockType blockType, EnumFacing direction, int origMeta) {
+    if((blockType == BlockType.LOG || blockType == BlockType.ANVIL) && (direction.getFrontOffsetX() + direction.getFrontOffsetY() + direction.getFrontOffsetZ()) < 0) {
       direction = direction.getOpposite();
     }
 
     if(MAPPINGS.containsKey(blockType)) {
-      BiMap<ForgeDirection, Integer> biMap = MAPPINGS.get(blockType).inverse();
+      BiMap<EnumFacing, Integer> biMap = MAPPINGS.get(blockType).inverse();
       if(biMap.containsKey(direction)) {
         return biMap.get(direction);
       }

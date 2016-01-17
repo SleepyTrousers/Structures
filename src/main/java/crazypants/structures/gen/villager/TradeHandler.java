@@ -8,7 +8,8 @@ import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.village.MerchantRecipe;
 import net.minecraft.village.MerchantRecipeList;
 
-public class TradeHandler implements IVillageTradeHandler {
+//TODO: 1.8 Use NBT now
+public class TradeHandler {//implements IVillageTradeHandler {
 
   private List<MerchantRecipe> recipes = new ArrayList<MerchantRecipe>();
   
@@ -16,10 +17,10 @@ public class TradeHandler implements IVillageTradeHandler {
     recipes.add(recipe);
   }
   
-  @Override
+//  @Override
   public void manipulateTradesForVillager(EntityVillager villager, MerchantRecipeList recipeList, Random random) {
     for(MerchantRecipe recipe : recipes) {
-      recipeList.addToListWithCheck(new MerchantRecipe(recipe.getItemToBuy(), recipe.getSecondItemToBuy(), recipe.getItemToSell()));
+      recipeList.add(new MerchantRecipe(recipe.getItemToBuy(), recipe.getSecondItemToBuy(), recipe.getItemToSell()));
     }
   }
 

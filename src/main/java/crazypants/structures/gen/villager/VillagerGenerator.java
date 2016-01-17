@@ -7,8 +7,6 @@ import crazypants.structures.gen.structure.loot.LootCategories;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.village.MerchantRecipe;
 import net.minecraft.world.gen.structure.StructureVillagePieces.PieceWeight;
-import net.minecraftforge.fml.common.registry.VillagerRegistry;
-import net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerProfession;
 
 public class VillagerGenerator implements IVillagerGenerator {
 
@@ -87,9 +85,10 @@ public class VillagerGenerator implements IVillagerGenerator {
   @Override
   public void register() {
     if(getVillagerId() > 0) {
-      if(!VillagerRegistry.getRegisteredVillagers().contains(getVillagerId())) {
-        VillagerRegistry.instance().registerVillagerId(getVillagerId());
-      }
+    //TODO: 1.8
+//      if(!VillagerRegistry.getRegisteredVillagers().contains(getVillagerId())) {
+//        VillagerRegistry.instance().registerVillagerId(getVillagerId());
+//      }
     }
     onReload();
   }
@@ -97,10 +96,9 @@ public class VillagerGenerator implements IVillagerGenerator {
   @Override
   public void onReload() {
     if(creationHandler.hasVillager()) {
-//      VillagerProfession prof = new VillagerProfession("MyJobName", texture.getResourcePath());     
-//      VillagerRegistry.instance().register(prof);
-      VillagerRegistry.instance().registerVillagerSkin(getVillagerId(), texture);
-      VillagerRegistry.instance().registerVillageTradeHandler(getVillagerId(), tradeHandler);
+      //TODO: 1.8
+//      VillagerRegistry.instance().registerVillagerSkin(getVillagerId(), texture);
+//      VillagerRegistry.instance().registerVillageTradeHandler(getVillagerId(), tradeHandler);
     }    
   }
 

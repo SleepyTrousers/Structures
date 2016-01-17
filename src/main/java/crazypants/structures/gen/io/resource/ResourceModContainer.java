@@ -13,26 +13,28 @@ import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.client.resources.data.IMetadataSection;
 import net.minecraft.client.resources.data.IMetadataSerializer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.ModMetadata;
+import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ResourceModContainer extends cpw.mods.fml.common.DummyModContainer {
+public class ResourceModContainer extends DummyModContainer {
 
   public static final String MODID = "esresource";
-  
+
   public static ResourceModContainer create() {
     ModMetadata md = new ModMetadata();
     md.modId = MODID;
     md.name = "EnderStructures Resource Loader";
     return new ResourceModContainer(md);
   }
-  
+
   public ResourceModContainer(ModMetadata md) {
     super(md);
   }
-  
+
   @Override
   public Class<?> getCustomResourcePackClass() {
     return ConfigFolderResourcePack.class;
@@ -42,14 +44,13 @@ public class ResourceModContainer extends cpw.mods.fml.common.DummyModContainer 
   public File getSource() {
     return Config.configDirectory;
   }
-  
-  
+
   @SideOnly(Side.CLIENT)
   public static class ConfigFolderResourcePack implements IResourcePack {
 
-    public ConfigFolderResourcePack(ModContainer mc) {    
+    public ConfigFolderResourcePack(ModContainer mc) {
     }
-    
+
     @Override
     public InputStream getInputStream(ResourceLocation rl) throws IOException {
       return StructureGenRegister.instance.getResourceManager().getStream(rl.getResourcePath());
@@ -57,19 +58,19 @@ public class ResourceModContainer extends cpw.mods.fml.common.DummyModContainer 
 
     @Override
     public boolean resourceExists(ResourceLocation rl) {
-      if(!ResourceModContainer.MODID.equals(rl.getResourceDomain())) {
+      if (!ResourceModContainer.MODID.equals(rl.getResourceDomain())) {
         return false;
-      }    
-      return StructureGenRegister.instance.getResourceManager().resourceExists(rl.getResourcePath());   
+      }
+      return StructureGenRegister.instance.getResourceManager().resourceExists(rl.getResourcePath());
     }
-    
+
     @Override
-    public Set<?> getResourceDomains() {
+    public Set<String> getResourceDomains() {
       return Collections.singleton(ResourceModContainer.MODID);
     }
 
     @Override
-    public IMetadataSection getPackMetadata(IMetadataSerializer p_135058_1_, String p_135058_2_) throws IOException {    
+    public <T extends IMetadataSection> T getPackMetadata(IMetadataSerializer p_135058_1_, String p_135058_2_) throws IOException {
       return null;
     }
 
@@ -84,7 +85,5 @@ public class ResourceModContainer extends cpw.mods.fml.common.DummyModContainer 
     }
 
   }
-
-  
 
 }
