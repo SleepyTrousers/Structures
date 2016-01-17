@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 
 public class ReloadConfigCommand implements ICommand {
@@ -17,11 +18,6 @@ public class ReloadConfigCommand implements ICommand {
     names.add(NAME);
     names.add("rsg");
   }
-  
-  @Override
-  public int compareTo(Object o) {
-    return 0;
-  }
 
   @Override
   public String getCommandName() {  
@@ -32,10 +28,9 @@ public class ReloadConfigCommand implements ICommand {
   public String getCommandUsage(ICommandSender p_71518_1_) {
     return NAME + " will reload the config for structure generation";
   }
-
-  @SuppressWarnings("rawtypes")
+  
   @Override
-  public List getCommandAliases() {
+  public List<String> getCommandAliases() {
     return names;
   }
 
@@ -51,15 +46,20 @@ public class ReloadConfigCommand implements ICommand {
     return true;
   }
 
-  @SuppressWarnings("rawtypes")
-  @Override
-  public List addTabCompletionOptions(ICommandSender p_71516_1_, String[] p_71516_2_) {
-    return null;
-  }
-
   @Override
   public boolean isUsernameIndex(String[] p_82358_1_, int p_82358_2_) {
     return false;
+  }
+
+  @Override
+  public int compareTo(ICommand arg0) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
+    return null;
   }
 
 }

@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import cpw.mods.fml.common.registry.VillagerRegistry;
 import crazypants.structures.Log;
 import crazypants.structures.StructureUtils;
 import crazypants.structures.api.gen.IResource;
@@ -25,6 +24,7 @@ import crazypants.structures.gen.structure.loot.LootCategories;
 import crazypants.structures.gen.villager.CompositeCreationHandler;
 import crazypants.structures.gen.villager.VillageHouse;
 import net.minecraft.world.gen.structure.MapGenStructureIO;
+import net.minecraftforge.fml.common.registry.VillagerRegistry;
 
 public class StructureGenRegister {
 
@@ -57,7 +57,7 @@ public class StructureGenRegister {
     resourceManager = new StructureResourceManager(this);
     villagerGen = new CompositeCreationHandler();
     VillagerRegistry.instance().registerVillageCreationHandler(villagerGen);
-    MapGenStructureIO.func_143031_a(VillageHouse.class, "EnderStructuresHouse");
+    MapGenStructureIO.registerStructureComponent(VillageHouse.class, "EnderStructuresHouse");
   }
 
   public void registerGenerator(IStructureGenerator gen) {

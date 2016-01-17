@@ -3,7 +3,9 @@ package crazypants.structures.api.util;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.IShearable;
@@ -14,8 +16,8 @@ public class StructureUtil {
   public static final Random RND = new Random();
 
   public static boolean isPlant(Block block, World world, int x, int y, int z) {
-    return block instanceof IShearable || block instanceof IPlantable || block.isLeaves(world, x, y, z)
-        || block.isWood(world, x, y, z);
+    return block instanceof IShearable || block instanceof IPlantable || block.isLeaves(world, new BlockPos(x, y, z))
+        || block.isWood(world, new BlockPos(x, y, z));
   }
 
   /**
@@ -31,30 +33,31 @@ public class StructureUtil {
    * @param ignoreFluids
    * @return
    */
-  public static boolean isIgnoredAsSurface(World world, int x, int z, int y, Block blk, boolean ignorePlants, boolean ignoreFluids) {
+  public static boolean isIgnoredAsSurface(World world, int x, int z, int y, IBlockState bs, boolean ignorePlants, boolean ignoreFluids) {
+    Block blk = bs.getBlock();
     //the first one will get a lot of hits, so it gets its own check
-    return blk == Blocks.air || blk == Blocks.snow_layer || blk == Blocks.web || blk.isAir(world, x, y, z) ||
+    return blk == Blocks.air || blk == Blocks.snow_layer || blk == Blocks.web || blk.isAir(world, new BlockPos(x, y, z)) ||
         (ignorePlants && StructureUtil.isPlant(blk, world, x, y, z) ||
             (ignoreFluids && FluidRegistry.lookupFluidForBlock(blk) != null));
   }
 
-  public static Block getSurfaceBlock(World world, int x, int z, Point3i blockLocationResult, boolean ignorePlants, boolean ignoreFluids) {
+  public static IBlockState getSurfaceBlock(World world, int x, int z, Point3i blockLocationResult, boolean ignorePlants, boolean ignoreFluids) {
     return getSurfaceBlock(world, x, z, 0, 256, blockLocationResult, ignorePlants, ignoreFluids);
   }
 
-  public static Block getSurfaceBlock(World world, int x, int z, int minY, int maxY, Point3i blockLocationResult, boolean ignorePlants, boolean ignoreFluids) {
+  public static IBlockState getSurfaceBlock(World world, int x, int z, int minY, int maxY, Point3i blockLocationResult, boolean ignorePlants, boolean ignoreFluids) {
 
     //Find the surface y
-    Block blk;
+    IBlockState blk;
 
     int y = maxY;
-    blk = world.getBlock(x, y, z);
+    blk = world.getBlockState(new BlockPos(x, y, z));
     while (StructureUtil.isIgnoredAsSurface(world, x, z, y, blk, ignorePlants, ignoreFluids)) {
       --y;
       if(y < minY) {
         return null;
       }
-      blk = world.getBlock(x, y, z);
+      blk = world.getBlockState(new BlockPos(x, y, z));
     }
 
     if(blk == null) {

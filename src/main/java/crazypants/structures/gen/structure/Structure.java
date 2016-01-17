@@ -132,7 +132,7 @@ public class Structure implements IStructure {
   private void updateBounds() {
     if(isValid()) {
       bb = rotation.rotate(template.getBounds());
-      bb = bb.getOffsetBoundingBox(origin.x, origin.y, origin.z);
+      bb = bb.offset(origin.x, origin.y, origin.z);
       size = VecUtil.size(bb);
       bc = new BoundingCircle(bb);
     }

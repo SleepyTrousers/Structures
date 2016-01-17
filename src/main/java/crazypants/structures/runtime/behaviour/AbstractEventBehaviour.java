@@ -1,12 +1,12 @@
 package crazypants.structures.runtime.behaviour;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.IBehaviour;
 import crazypants.structures.api.runtime.IStateful;
 import crazypants.structures.runtime.PositionedType;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 
 public abstract class AbstractEventBehaviour extends PositionedType implements IBehaviour {
 
@@ -38,14 +38,14 @@ public abstract class AbstractEventBehaviour extends PositionedType implements I
 
   protected void register() {
     if(!registered) {
-      FMLCommonHandler.instance().bus().register(this);
+      MinecraftForge.EVENT_BUS.register(this);
       registered = true;
     }
   }
 
   protected void deregister() {
     if(registered) {
-      FMLCommonHandler.instance().bus().unregister(this);
+      MinecraftForge.EVENT_BUS.unregister(this);
       registered = false;
     }
   }

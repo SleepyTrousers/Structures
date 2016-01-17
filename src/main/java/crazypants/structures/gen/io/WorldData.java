@@ -25,7 +25,7 @@ public class WorldData {
   
   public File getWorldSaveDir(World world) {
     File dir = new File(world.getSaveHandler().getWorldDirectory(), EnderStructures.MODID);
-    dir = new File(dir, "DIM" + world.provider.dimensionId);
+    dir = new File(dir, "DIM" + world.provider.getDimensionId());
     if(!dir.exists()) {
       if(!dir.mkdirs()) {
         Log.error("WorldData: Could not create directory: " + dir.getAbsolutePath());

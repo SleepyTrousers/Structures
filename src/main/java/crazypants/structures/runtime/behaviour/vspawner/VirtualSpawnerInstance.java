@@ -1,10 +1,5 @@
 package crazypants.structures.runtime.behaviour.vspawner;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.WorldTickEvent;
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
-import cpw.mods.fml.relauncher.Side;
 import crazypants.structures.PacketHandler;
 import crazypants.structures.StructureUtils;
 import crazypants.structures.api.gen.IStructure;
@@ -14,7 +9,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class VirtualSpawnerInstance {
 
@@ -55,15 +56,15 @@ public class VirtualSpawnerInstance {
   }
 
   public void onLoad() {
-    if(!registered) {
-      FMLCommonHandler.instance().bus().register(this);
+    if(!registered) {      
+      MinecraftForge.EVENT_BUS.register(this);
       registered = true;
     }
   }
 
   public void onUnload() {
     if(registered) {
-      FMLCommonHandler.instance().bus().unregister(this);
+      MinecraftForge.EVENT_BUS.unregister(this);
       registered = false;
     }
   }
@@ -96,7 +97,7 @@ public class VirtualSpawnerInstance {
       return;
     }
     PacketHandler.INSTANCE.sendToAllAround(new PacketSpawnParticles(worldPos),
-        new TargetPoint(world.provider.dimensionId, worldPos.x, worldPos.y, worldPos.z, 64));
+        new TargetPoint(world.provider.getDimensionId(), worldPos.x, worldPos.y, worldPos.z, 64));
   }
 
  
@@ -114,7 +115,7 @@ public class VirtualSpawnerInstance {
       entityliving.setLocationAndAngles(x, y, z, world.rand.nextFloat() * 360.0F, 0.0F);
 
       if(StructureUtils.canSpawnEntity(world, entityliving, behaviour.isUseVanillaSpawnChecks())) {
-        entityliving.onSpawnWithEgg(null);
+        entityliving.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(x,y,z)), null);
         world.spawnEntityInWorld(entityliving);
         //world.playAuxSFX(2004, worldPos.x, worldPos.y, worldPos.z, 0);
         entityliving.spawnExplosionParticle();
@@ -134,7 +135,7 @@ public class VirtualSpawnerInstance {
     }
     EntityLiving res = (EntityLiving)ent;
     if(behaviour.isPersistEntities()) {
-      res.func_110163_bv();
+      res.enablePersistence();
     }
     return res;
   }

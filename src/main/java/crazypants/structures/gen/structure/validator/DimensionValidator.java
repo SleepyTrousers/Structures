@@ -47,11 +47,11 @@ public class DimensionValidator extends AbstractTyped implements IChunkValidator
   
   @Override
   public boolean isValidChunk(IStructureGenerator template, IWorldStructures structures, World world, Random random, int chunkX, int chunkZ) {
-    String bName = world.getBiomeGenForCoords(chunkX, chunkZ).biomeName;
-    if(!includes.isEmpty() && !includes.contains(bName)) {
+    String dName = world.provider.getDimensionName();
+    if(!includes.isEmpty() && !includes.contains(dName)) {
       return false;
     }    
-    return !excludes.contains(bName);
+    return !excludes.contains(dName);
   }
 
 }

@@ -1,12 +1,5 @@
 package crazypants.structures.gen;
 
-import static net.minecraftforge.common.util.ForgeDirection.DOWN;
-import static net.minecraftforge.common.util.ForgeDirection.EAST;
-import static net.minecraftforge.common.util.ForgeDirection.NORTH;
-import static net.minecraftforge.common.util.ForgeDirection.SOUTH;
-import static net.minecraftforge.common.util.ForgeDirection.UP;
-import static net.minecraftforge.common.util.ForgeDirection.WEST;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,7 +39,7 @@ import net.minecraft.block.BlockTrapDoor;
 import net.minecraft.block.BlockTripWireHook;
 import net.minecraft.block.BlockVine;
 import net.minecraft.init.Blocks;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 /**
  * Based on the forge rotation helper, but that only rotates blocks in world, I
@@ -87,10 +80,10 @@ public class RotationHelper {
 
   }
 
-  private static final Map<BlockType, BiMap<Integer, ForgeDirection>> MAPPINGS = new HashMap<BlockType, BiMap<Integer, ForgeDirection>>();
+  private static final Map<BlockType, BiMap<Integer, EnumFacing>> MAPPINGS = new HashMap<BlockType, BiMap<Integer, EnumFacing>>();
 
   static {
-    BiMap<Integer, ForgeDirection> biMap;
+    BiMap<Integer, EnumFacing> biMap;
 
     biMap = HashBiMap.create(3);
     biMap.put(0x0, UP);

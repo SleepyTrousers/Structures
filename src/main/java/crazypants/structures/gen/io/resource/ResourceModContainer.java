@@ -7,16 +7,15 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.Set;
 
-import cpw.mods.fml.common.ModContainer;
-import cpw.mods.fml.common.ModMetadata;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import crazypants.structures.config.Config;
 import crazypants.structures.gen.StructureGenRegister;
 import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.client.resources.data.IMetadataSection;
 import net.minecraft.client.resources.data.IMetadataSerializer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.common.ModMetadata;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class ResourceModContainer extends cpw.mods.fml.common.DummyModContainer {

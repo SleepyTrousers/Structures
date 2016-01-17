@@ -4,14 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import cpw.mods.fml.common.registry.VillagerRegistry.IVillageCreationHandler;
 import crazypants.structures.api.gen.IStructureTemplate;
 import crazypants.structures.api.gen.WeightedTemplate;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraft.world.gen.structure.StructureComponent;
 import net.minecraft.world.gen.structure.StructureVillagePieces.PieceWeight;
 import net.minecraft.world.gen.structure.StructureVillagePieces.Start;
+import net.minecraft.world.gen.structure.StructureVillagePieces.Village;
+import net.minecraftforge.fml.common.registry.VillagerRegistry.IVillageCreationHandler;
 
 public class CreationHandler implements IVillageCreationHandler {
    
@@ -85,9 +87,11 @@ public class CreationHandler implements IVillageCreationHandler {
     return VillageHouse.class;
   }
 
-  @SuppressWarnings("rawtypes")
   @Override
-  public Object buildComponent(PieceWeight villagePiece, Start startPiece, List pieces, Random random, int x, int y, int z, int coordBaseMode, int p5) {
+  public Village buildComponent(PieceWeight villagePiece, Start startPiece, List<StructureComponent> pieces, Random random, int x, int y, int z,
+      EnumFacing facing, int p5) {
+   
+//  public Object buildComponent(PieceWeight villagePiece, Start startPiece, List pieces, Random random, int x, int y, int z, int coordBaseMode, int p5) {
     
     
     IStructureTemplate template = null;
@@ -100,7 +104,7 @@ public class CreationHandler implements IVillageCreationHandler {
     if(template == null) {
       return null;
     }
-    VillageHouse comp = new VillageHouse(template,villagerSpawnLocation, villagerId, x, y, z, coordBaseMode);
+    VillageHouse comp = new VillageHouse(template,villagerSpawnLocation, villagerId, x, y, z, facing);
     VillageHouse res = canVillageGoDeeper(comp.getBoundingBox()) && StructureComponent.findIntersecting(pieces, comp.getBoundingBox()) == null
         ? comp : null;
     
@@ -110,5 +114,7 @@ public class CreationHandler implements IVillageCreationHandler {
   protected boolean canVillageGoDeeper(StructureBoundingBox p_74895_0_) {
     return p_74895_0_ != null && p_74895_0_.minY > 10;
   }
+
+ 
 
 }

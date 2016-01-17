@@ -15,6 +15,8 @@ import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.util.Point3i;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.Vec3i;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
@@ -41,7 +43,7 @@ public class LootTableDecorator extends AbstractTyped implements IDecorator {
     for (String target : targets) {
       Collection<Point3i> locs = structure.getTaggedLocationsInWorldCoords(target);
       for (Point3i loc : locs) {
-        if(bounds == null || bounds.isVecInside(loc.x, loc.y, loc.z)) {
+        if(bounds == null || bounds.isVecInside(new Vec3i(loc.x, loc.y, loc.z))) {
           IInventory inv = getInventory(world, loc);
           if(inv != null) {
             WeightedRandomChestContent.generateChestContents(random, ChestGenHooks.getItems(category, random), inv, ChestGenHooks.getCount(category, random));
@@ -52,7 +54,7 @@ public class LootTableDecorator extends AbstractTyped implements IDecorator {
   }
 
   private IInventory getInventory(World world, Point3i loc) {
-    TileEntity te = world.getTileEntity(loc.x, loc.y, loc.z);
+    TileEntity te = world.getTileEntity(new BlockPos(loc.x, loc.y, loc.z));
     if(te instanceof IInventory) {
       return (IInventory) te;
     }

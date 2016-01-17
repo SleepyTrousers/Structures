@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Random;
 
-import cpw.mods.fml.common.registry.VillagerRegistry.IVillageCreationHandler;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.world.gen.structure.StructureComponent;
 import net.minecraft.world.gen.structure.StructureVillagePieces;
 import net.minecraft.world.gen.structure.StructureVillagePieces.PieceWeight;
 import net.minecraft.world.gen.structure.StructureVillagePieces.Start;
 import net.minecraft.world.gen.structure.StructureVillagePieces.Village;
+import net.minecraftforge.fml.common.registry.VillagerRegistry.IVillageCreationHandler;
 
 public class CompositeCreationHandler implements IVillageCreationHandler {
 
@@ -56,10 +58,11 @@ public class CompositeCreationHandler implements IVillageCreationHandler {
     return VillageHouse.class;
   }
 
-  @SuppressWarnings("rawtypes")
+  
   @Override
-  public Object buildComponent(PieceWeight villagePiece, Start startPiece, List pieces, Random random, int x, int y, int z, int coordBaseMode, int p5) {
-    
+  public Village buildComponent(PieceWeight villagePiece, Start startPiece, List<StructureComponent> pieces, Random random, int x, int y, int z,
+      EnumFacing facing, int p5) {
+       
     int totalWeight = getTotalWieght(pieceWeights);
     if(totalWeight <= 0) {
       return null;
@@ -81,7 +84,7 @@ public class CompositeCreationHandler implements IVillageCreationHandler {
               || pieceweight == startPiece.structVillagePieceWeight && pieceWeights.size() > 1) {
             break;
           }
-          StructureVillagePieces.Village village = (Village) el.handler.buildComponent(pieceweight, startPiece, pieces, random, x, y, z, coordBaseMode, p5);
+          StructureVillagePieces.Village village = (Village) el.handler.buildComponent(pieceweight, startPiece, pieces, random, x, y, z, facing, p5);
 
           if(village != null) {
             ++pieceweight.villagePiecesSpawned;
@@ -132,5 +135,7 @@ public class CompositeCreationHandler implements IVillageCreationHandler {
     }
 
   }
+
+  
 
 }

@@ -1,12 +1,13 @@
 package crazypants.structures.runtime.behaviour.vspawner;
 
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import crazypants.structures.EnderStructures;
 import crazypants.structures.api.util.Point3i;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public class PacketSpawnParticles implements IMessage, IMessageHandler<PacketSpawnParticles, IMessage> {
 
@@ -46,8 +47,8 @@ public class PacketSpawnParticles implements IMessage, IMessageHandler<PacketSpa
     double d0 = message.x + world.rand.nextFloat();
     double d1 = message.y + world.rand.nextFloat();
     double d2 = message.z + world.rand.nextFloat();
-    world.spawnParticle("smoke", d0, d1, d2, 0.0D, 0.0D, 0.0D);
-    world.spawnParticle("flame", d0, d1, d2, 0.0D, 0.0D, 0.0D);
+    world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+    world.spawnParticle(EnumParticleTypes.FLAME, d0, d1, d2, 0.0D, 0.0D, 0.0D);
     
     return null;
   }

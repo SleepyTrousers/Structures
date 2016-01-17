@@ -3,8 +3,10 @@ package crazypants.structures.runtime.action;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 import com.google.gson.annotations.Expose;
+import com.mojang.authlib.GameProfile;
 
 import crazypants.structures.api.ListElementType;
 import crazypants.structures.api.gen.IStructure;
@@ -14,12 +16,14 @@ import crazypants.structures.runtime.PositionedType;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.command.ICommandManager;
 import net.minecraft.command.server.CommandBlockLogic;
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.util.FakePlayer;
 
 public class ExecuteCommandAction extends PositionedType implements IAction {
 
@@ -50,7 +54,7 @@ public class ExecuteCommandAction extends PositionedType implements IAction {
       InnerSender sender = new InnerSender(world, structure, wp);      
       ICommandManager icommandmanager = minecraftserver.getCommandManager();
       
-      boolean origValue = minecraftserver.worldServers[0].getGameRules().getGameRuleBooleanValue("commandBlockOutput");      
+      boolean origValue = minecraftserver.worldServers[0].getGameRules().getBoolean("commandBlockOutput");      
       minecraftserver.worldServers[0].getGameRules().setOrCreateGameRule("commandBlockOutput", "false");
       
       for(String cmd : commands) {
@@ -99,42 +103,27 @@ public class ExecuteCommandAction extends PositionedType implements IAction {
  // private class InnerSender extends RConConsoleSource {//implements ICommandSender {
   private class InnerSender extends CommandBlockLogic {//implements ICommandSender {
 
-    private final ChunkCoordinates coords;
+    private final BlockPos coords;
     private final World world;
-    private IChatComponent cp;    
+    private final FakePlayer fp;  
 
     public InnerSender(World world, IStructure structure, Point3i worldPos) {
+      if(world instanceof WorldServer) {        
+        fp = new FakePlayer((WorldServer)world, new GameProfile(UUID.fromString("41C82C87-7AfB-4024-BA57-13DPPPPPPE77"), "EnderStructures"));
+      } else {
+        fp = null;
+      }
       this.world = world;      
-      this.coords = new ChunkCoordinates(worldPos.x, worldPos.y, worldPos.z);      
-      cp = new ChatComponentText(chat);
+      this.coords = new BlockPos(worldPos.x, worldPos.y, worldPos.z);      
+      
     }
-
-    @Override
-    public String getCommandSenderName() {
-      return "EnderStructures";      
-    }
-
-    @Override
-    public ChunkCoordinates getPlayerCoordinates() {
-      return coords;
-    }
-
+    
     @Override
     public World getEntityWorld() {
       return world;
     }
-
-    @Override
-    public IChatComponent func_145748_c_() {
-      return cp;
-    }
-
-    @Override
-    public void addChatMessage(IChatComponent parent) {
-      if(chat != null && world != null && !world.isRemote) {
-        cp = new ChatComponentText(chat).appendSibling(parent);
-      }
-    }
+ 
+   
 
     @Override
     public boolean canCommandSenderUseCommand(int p_70003_1_, String p_70003_2_) {
@@ -142,20 +131,31 @@ public class ExecuteCommandAction extends PositionedType implements IAction {
     }
 
     @Override
-    public void func_145756_e() {
-      
-    }
-
-    @Override
     public int func_145751_f() {
-      // TODO Auto-generated method stub
       return 0;
     }
 
     @Override
-    public void func_145757_a(ByteBuf p_145757_1_) {
-      // TODO Auto-generated method stub
-      
+    public void func_145757_a(ByteBuf p_145757_1_) {      
+    }
+
+    @Override
+    public BlockPos getPosition() {
+      return coords;
+    }
+
+    @Override
+    public Vec3 getPositionVector() {
+      return new Vec3(0,0,0);
+    }
+
+    @Override
+    public Entity getCommandSenderEntity() {
+      return fp;
+    }
+
+    @Override
+    public void updateCommand() {            
     }
 
   }

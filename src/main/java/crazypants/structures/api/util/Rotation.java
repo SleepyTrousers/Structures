@@ -47,7 +47,7 @@ public enum Rotation {
       return bb;
     }
     Point3i sz = VecUtil.size(bb);
-    return AxisAlignedBB.getBoundingBox(0, 0, 0, sz.z, sz.y, sz.x);
+    return new AxisAlignedBB(0, 0, 0, sz.z, sz.y, sz.x);
   }
 
   public Rotation next() {
@@ -70,4 +70,5 @@ public enum Rotation {
   public int getRotationDegrees() {
     return val;
   }
+   
 }

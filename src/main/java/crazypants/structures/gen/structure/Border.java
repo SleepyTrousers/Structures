@@ -5,26 +5,26 @@ import java.util.Map;
 
 import crazypants.structures.api.gen.IStructure;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
-import net.minecraftforge.common.util.ForgeDirection;
 
 public class Border {
   
-  private Map<ForgeDirection, Integer> border = new HashMap<ForgeDirection, Integer>();
+  private Map<EnumFacing, Integer> border = new HashMap<EnumFacing, Integer>();
 
   public Border() {
-    for(ForgeDirection dir : ForgeDirection.values()) {
+    for(EnumFacing dir : EnumFacing.values()) {
       set(dir, 0);
     }
   }
   
   public Border(int north, int south, int east, int west, int up, int down) {
-    border.put(ForgeDirection.DOWN, down);
-    border.put(ForgeDirection.UP, up);
-    border.put(ForgeDirection.EAST, east);
-    border.put(ForgeDirection.WEST, west);
-    border.put(ForgeDirection.NORTH, north);
-    border.put(ForgeDirection.SOUTH, south);
+    border.put(EnumFacing.DOWN, down);
+    border.put(EnumFacing.UP, up);
+    border.put(EnumFacing.EAST, east);
+    border.put(EnumFacing.WEST, west);
+    border.put(EnumFacing.NORTH, north);
+    border.put(EnumFacing.SOUTH, south);
   }
   
   public void setBorderXZ(int size) {
@@ -32,43 +32,43 @@ public class Border {
   }
 
   public void setBorderY(int down, int up) {
-    border.put(ForgeDirection.DOWN, down);
-    border.put(ForgeDirection.UP, up);
+    border.put(EnumFacing.DOWN, down);
+    border.put(EnumFacing.UP, up);
   }
 
   public void setBorder(int north, int south, int east, int west) {
-    border.put(ForgeDirection.EAST, east);
-    border.put(ForgeDirection.WEST, west);
-    border.put(ForgeDirection.NORTH, north);
-    border.put(ForgeDirection.SOUTH, south);
+    border.put(EnumFacing.EAST, east);
+    border.put(EnumFacing.WEST, west);
+    border.put(EnumFacing.NORTH, north);
+    border.put(EnumFacing.SOUTH, south);
   }
 
   public void setBorder(int north, int south, int east, int west, int up, int down) {
-    border.put(ForgeDirection.DOWN, down);
-    border.put(ForgeDirection.UP, up);
-    border.put(ForgeDirection.EAST, east);
-    border.put(ForgeDirection.WEST, west);
-    border.put(ForgeDirection.NORTH, north);
-    border.put(ForgeDirection.SOUTH, south);
+    border.put(EnumFacing.DOWN, down);
+    border.put(EnumFacing.UP, up);
+    border.put(EnumFacing.EAST, east);
+    border.put(EnumFacing.WEST, west);
+    border.put(EnumFacing.NORTH, north);
+    border.put(EnumFacing.SOUTH, south);
   }
 
   public StructureBoundingBox getBounds(IStructure structure) {
     //TODO: Rotations? 
     AxisAlignedBB bb = structure.getBounds();
-    int minX = (int) bb.minX - border.get(ForgeDirection.WEST);
-    int maxX = (int) bb.maxX + border.get(ForgeDirection.EAST);
-    int minY = (int) bb.minY - border.get(ForgeDirection.DOWN);
-    int maxY = (int) bb.maxY + border.get(ForgeDirection.UP);
-    int minZ = (int) bb.minZ - border.get(ForgeDirection.NORTH);
-    int maxZ = (int) bb.maxZ + border.get(ForgeDirection.SOUTH);
+    int minX = (int) bb.minX - border.get(EnumFacing.WEST);
+    int maxX = (int) bb.maxX + border.get(EnumFacing.EAST);
+    int minY = (int) bb.minY - border.get(EnumFacing.DOWN);
+    int maxY = (int) bb.maxY + border.get(EnumFacing.UP);
+    int minZ = (int) bb.minZ - border.get(EnumFacing.NORTH);
+    int maxZ = (int) bb.maxZ + border.get(EnumFacing.SOUTH);
     return new StructureBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);        
   }
   
-  public void set(ForgeDirection dir, int val) {
+  public void set(EnumFacing dir, int val) {
     border.put(dir, val);
   }
   
-  public int get(ForgeDirection dir) {
+  public int get(EnumFacing dir) {
     Integer res = border.get(dir);
     if(res == null) {
       return 0;
@@ -80,7 +80,7 @@ public class Border {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("[ ");
-    for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+    for(EnumFacing dir : EnumFacing.VALUES) {
       sb.append(dir.toString().substring(0,1));
       sb.append("=");
       sb.append(get(dir));

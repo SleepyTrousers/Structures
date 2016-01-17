@@ -1,6 +1,5 @@
 package crazypants.structures.gen.villager;
 
-import cpw.mods.fml.common.registry.VillagerRegistry;
 import crazypants.structures.Log;
 import crazypants.structures.api.gen.IVillagerGenerator;
 import crazypants.structures.api.gen.WeightedTemplate;
@@ -8,6 +7,8 @@ import crazypants.structures.gen.structure.loot.LootCategories;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.village.MerchantRecipe;
 import net.minecraft.world.gen.structure.StructureVillagePieces.PieceWeight;
+import net.minecraftforge.fml.common.registry.VillagerRegistry;
+import net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerProfession;
 
 public class VillagerGenerator implements IVillagerGenerator {
 
@@ -96,6 +97,8 @@ public class VillagerGenerator implements IVillagerGenerator {
   @Override
   public void onReload() {
     if(creationHandler.hasVillager()) {
+//      VillagerProfession prof = new VillagerProfession("MyJobName", texture.getResourcePath());     
+//      VillagerRegistry.instance().register(prof);
       VillagerRegistry.instance().registerVillagerSkin(getVillagerId(), texture);
       VillagerRegistry.instance().registerVillageTradeHandler(getVillagerId(), tradeHandler);
     }    

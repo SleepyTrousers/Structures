@@ -13,6 +13,7 @@ import crazypants.structures.api.util.VecUtil;
 import crazypants.structures.gen.structure.Border;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 
@@ -51,9 +52,9 @@ public class ClearPreperation extends AbstractTyped implements ISitePreperation 
     for (int x = bb.minX; x < bb.maxX; x++) {
       for (int y = bb.minY; y < bb.maxY; y++) {
         for (int z = bb.minZ; z < bb.maxZ; z++) {
-          if((clip == null || VecUtil.isInBounds(clip, x, z)) && (clearPlants || !StructureUtil.isPlant(world.getBlock(x, y, z), world, x, y, z))) {
-            if(!world.isAirBlock(x, y, z)) {
-              world.setBlockToAir(x, y, z);
+          if((clip == null || VecUtil.isInBounds(clip, x, z)) && (clearPlants || !StructureUtil.isPlant(world.getBlockState(new BlockPos(x, y, z)).getBlock(), world, x, y, z))) {
+            if(!world.isAirBlock(new BlockPos(x, y, z))) {
+              world.setBlockToAir(new BlockPos(x, y, z));
             }
           }
         }
@@ -61,8 +62,7 @@ public class ClearPreperation extends AbstractTyped implements ISitePreperation 
     }
 
     if(clearItems) {            
-      AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(bb.minX, bb.minY, bb.minZ, bb.maxX, bb.maxY, bb.maxZ);
-      @SuppressWarnings("unchecked")
+      AxisAlignedBB aabb = new AxisAlignedBB(bb.minX, bb.minY, bb.minZ, bb.maxX, bb.maxY, bb.maxZ);
       List<EntityItem> ents = world.getEntitiesWithinAABB(EntityItem.class, aabb);
       if(ents != null) {
         for (EntityItem item : ents) {

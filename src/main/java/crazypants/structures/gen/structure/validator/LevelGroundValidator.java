@@ -12,11 +12,11 @@ import crazypants.structures.api.util.Point3i;
 import crazypants.structures.api.util.StructureUtil;
 import crazypants.structures.api.util.VecUtil;
 import crazypants.structures.gen.structure.Border;
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
-import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidRegistry;
 
 public class LevelGroundValidator extends AbstractTyped implements ISiteValidator {
@@ -69,8 +69,8 @@ public class LevelGroundValidator extends AbstractTyped implements ISiteValidato
     int[] minMax = new int[] { Integer.MAX_VALUE, -Integer.MAX_VALUE };
     Point3i sampleLoc = new Point3i(structure.getOrigin());
     Point3i surfacePos = new Point3i();
-    for (int x = minX - border.get(ForgeDirection.WEST); x <= maxX + border.get(ForgeDirection.EAST); x += xSpacing) {
-      for (int z = minZ - border.get(ForgeDirection.NORTH); z <= maxZ + border.get(ForgeDirection.SOUTH); z += zSpacing) {
+    for (int x = minX - border.get(EnumFacing.WEST); x <= maxX + border.get(EnumFacing.EAST); x += xSpacing) {
+      for (int z = minZ - border.get(EnumFacing.NORTH); z <= maxZ + border.get(EnumFacing.SOUTH); z += zSpacing) {
 
         if(clip == null || VecUtil.isInBounds(clip, x,z)) {
           sampleLoc.set(x, structure.getOrigin().y + structure.getSurfaceOffset(), z);
@@ -112,10 +112,10 @@ public class LevelGroundValidator extends AbstractTyped implements ISiteValidato
   }
 
   protected boolean testLocation(Point3i sampleLocation, World world, int[] minMax, Point3i surfacePos) {
-    Block blk = StructureUtil.getSurfaceBlock(world, sampleLocation.x, sampleLocation.z,
+    IBlockState blk = StructureUtil.getSurfaceBlock(world, sampleLocation.x, sampleLocation.z,
         Math.max(0, sampleLocation.y - tolerance - 1), Math.min(256, sampleLocation.y + tolerance + 1), surfacePos, true, canSpawnOnWater);
     if(blk != null) {
-      if(!canSpawnOnWater && FluidRegistry.lookupFluidForBlock(blk) != null) {
+      if(!canSpawnOnWater && FluidRegistry.lookupFluidForBlock(blk.getBlock()) != null) {
         return false;
       }
       minMax[0] = Math.min(minMax[0], surfacePos.y);

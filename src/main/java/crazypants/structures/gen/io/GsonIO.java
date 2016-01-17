@@ -20,8 +20,6 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
 import crazypants.structures.Log;
 import crazypants.structures.api.gen.IChunkValidator;
 import crazypants.structures.api.gen.IDecorator;
@@ -43,7 +41,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry.UniqueIdentifier;
 
 public class GsonIO {
 
@@ -210,14 +210,14 @@ public class GsonIO {
 
       String nbt64 = JsonUtil.getStringField(obj, "nbt", null);
       if(nbt64 != null) {
-        res.stackTagCompound = deserializeNBT(nbt64);
+        res.setTagCompound(deserializeNBT(nbt64));
       } else {
         try {
           String nbtString = JsonUtil.getStringField(obj, "nbtString", null);
           if(nbtString != null) {
             NBTTagCompound nbt = JsonUtil.parseNBT(nbtString);
             if(nbt != null) {
-              res.stackTagCompound = nbt;
+              res.setTagCompound(nbt);
             }
           }
         } catch (Exception e) {
@@ -240,7 +240,7 @@ public class GsonIO {
       res.addProperty("number", src.stackSize);
       res.addProperty("meta", src.getItemDamage());
 
-      String nbt = serializeNBT(src.stackTagCompound);
+      String nbt = serializeNBT(src.getTagCompound());
       if(nbt != null && nbt.trim().length() > 0) {
         res.addProperty("nbt", nbt);
       }
@@ -317,9 +317,9 @@ public class GsonIO {
 
       Border border = new Border();
       if(obj.has("sizeXZ")) {
-        border.setBorderXZ(JsonUtil.getIntField(obj, "sizeXZ", border.get(ForgeDirection.NORTH)));
+        border.setBorderXZ(JsonUtil.getIntField(obj, "sizeXZ", border.get(EnumFacing.NORTH)));
       }
-      for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+      for (EnumFacing dir : EnumFacing.VALUES) {
         border.set(dir, JsonUtil.getIntField(obj, dir.name().toLowerCase(), border.get(dir)));
       }
       return border;
@@ -331,7 +331,7 @@ public class GsonIO {
         return JsonNull.INSTANCE;
       }
       JsonObject res = new JsonObject();
-      for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+      for (EnumFacing dir : EnumFacing.VALUES) {
         int val = src.get(dir);
         res.addProperty(dir.name().toLowerCase(), val);
       }

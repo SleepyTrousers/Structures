@@ -2,13 +2,13 @@ package crazypants.structures.runtime.behaviour.vspawner;
 
 import java.lang.reflect.Field;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.relauncher.ReflectionHelper;
 import crazypants.structures.Log;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class DespawnController {
 

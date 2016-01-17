@@ -25,6 +25,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 
@@ -42,9 +43,9 @@ public class StructureUtils {
   }
   
   public static boolean canSpawnEntity(World world, EntityLiving entityliving, boolean doEntityChecks) {
-    boolean spaceClear = world.checkNoEntityCollision(entityliving.boundingBox)
-        && world.getCollidingBoundingBoxes(entityliving, entityliving.boundingBox).isEmpty()
-        && (!world.isAnyLiquid(entityliving.boundingBox) || entityliving.isCreatureType(EnumCreatureType.waterCreature, false));
+    boolean spaceClear = world.checkNoEntityCollision(entityliving.getEntityBoundingBox())
+        && world.getCollidingBoundingBoxes(entityliving, entityliving.getEntityBoundingBox()).isEmpty()
+        && (!world.isAnyLiquid(entityliving.getEntityBoundingBox()) || entityliving.isCreatureType(EnumCreatureType.WATER_CREATURE, false));
     if(spaceClear && doEntityChecks) {
       //Full checks for lighting, dimension etc 
       spaceClear = entityliving.getCanSpawnHere();
@@ -61,7 +62,7 @@ public class StructureUtils {
       entityliving.setLocationAndAngles(x, y, z, world.rand.nextFloat() * 360.0F, 0.0F);
 
       if(StructureUtils.canSpawnEntity(world, entityliving, doEntityChecks)) {
-        entityliving.onSpawnWithEgg(null);
+        entityliving.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(worldPos.x, worldPos.y, worldPos.z)), null);
         world.spawnEntityInWorld(entityliving);
         return true;
       }
@@ -203,11 +204,10 @@ public class StructureUtils {
     for (int x = (int) bb.minX; x < bb.maxX; x++) {
       for (int y = (int) bb.minY; y < bb.maxY; y++) {
         for (int z = (int) bb.minZ; z < bb.maxZ; z++) {
-          wld.setBlockToAir(x, y, z);;
+          wld.setBlockToAir(new BlockPos(x, y, z));
         }
       }
     }
-    @SuppressWarnings("unchecked")
     List<EntityItem> ents = wld.getEntitiesWithinAABB(EntityItem.class, bb);
     if(ents == null || ents.isEmpty()) {
       return;
@@ -218,7 +218,7 @@ public class StructureUtils {
   }
   
   public static AxisAlignedBB growBounds(AxisAlignedBB bounds, StructureBoundingBox growBy) {
-    bounds = AxisAlignedBB.getBoundingBox(
+    bounds = new AxisAlignedBB(
         Math.min(growBy.minX, bounds.minX),
         Math.min(growBy.minY, bounds.minY), 
         Math.min(growBy.minZ, bounds.minZ), 

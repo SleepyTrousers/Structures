@@ -8,19 +8,6 @@ import java.io.File;
 
 import com.google.common.collect.ImmutableList;
 
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLInterModComms;
-import cpw.mods.fml.common.event.FMLInterModComms.IMCEvent;
-import cpw.mods.fml.common.event.FMLInterModComms.IMCMessage;
-import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.event.FMLServerStoppedEvent;
 import crazypants.structures.api.API;
 import crazypants.structures.api.ITyped;
 import crazypants.structures.api.gen.IStructureGenerator;
@@ -35,6 +22,19 @@ import crazypants.structures.gen.io.GsonParserAdapter;
 import crazypants.structures.gen.io.ParserRegister;
 import crazypants.structures.gen.structure.TypeRegister;
 import crazypants.structures.runtime.StructureRegister;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLInterModComms;
+import net.minecraftforge.fml.common.event.FMLInterModComms.IMCEvent;
+import net.minecraftforge.fml.common.event.FMLInterModComms.IMCMessage;
+import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
 
 @Mod(modid = MODID, name = MOD_NAME, version = VERSION, dependencies = "required-after:Forge@10.13.0.1150,)", guiFactory = "crazypants.structures.config.ConfigFactoryEnderStructures")
 public class EnderStructures {

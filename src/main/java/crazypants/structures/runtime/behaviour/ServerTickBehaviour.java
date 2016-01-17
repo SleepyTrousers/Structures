@@ -2,8 +2,6 @@ package crazypants.structures.runtime.behaviour;
 
 import com.google.gson.annotations.Expose;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.IAction;
 import crazypants.structures.api.runtime.IBehaviour;
@@ -11,6 +9,8 @@ import crazypants.structures.api.runtime.ICondition;
 import crazypants.structures.api.util.Point3i;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 
 public class ServerTickBehaviour extends AbstractEventBehaviour  {
 

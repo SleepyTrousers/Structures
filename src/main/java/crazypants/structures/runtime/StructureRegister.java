@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import cpw.mods.fml.common.event.FMLServerStoppedEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.gen.IWorldStructures;
 import crazypants.structures.api.util.Point3i;
@@ -18,6 +16,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class StructureRegister {
 
@@ -46,11 +46,11 @@ public class StructureRegister {
     if(world == null) {
       return null;
     }
-    WorldStructures res = worldManagers.get(world.provider.dimensionId);
+    WorldStructures res = worldManagers.get(world.provider.getDimensionId());
     if(res == null) {
       WorldStructures s = new WorldStructures(world);
       s.load();
-      worldManagers.put(world.provider.dimensionId, s);
+      worldManagers.put(world.provider.getDimensionId(), s);
       res = s;
     }
     return res;

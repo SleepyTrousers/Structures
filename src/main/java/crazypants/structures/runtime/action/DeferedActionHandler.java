@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.IAction;
 import crazypants.structures.api.util.Point3i;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 
 public class DeferedActionHandler {
 
@@ -41,14 +41,14 @@ public class DeferedActionHandler {
 
   protected void register() {
     if(!registered) {
-      registered = true;
-      FMLCommonHandler.instance().bus().register(this);
+      registered = true;      
+      MinecraftForge.EVENT_BUS.register(this);
     }
   }
 
   protected void deregister() {
     if(registered) {
-      FMLCommonHandler.instance().bus().unregister(this);
+      MinecraftForge.EVENT_BUS.unregister(this);
       registered = false;
     }
   }

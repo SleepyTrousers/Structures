@@ -8,17 +8,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
 import crazypants.structures.Log;
 import crazypants.structures.api.util.Point3i;
 import crazypants.structures.gen.structure.Border;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 public class JsonUtil {
 
@@ -143,9 +140,9 @@ public class JsonUtil {
     }
     Border border = new Border();
     if(obj.has("sizeXZ")) {
-      border.setBorderXZ(getIntField(obj, "sizeXZ", border.get(ForgeDirection.NORTH)));
+      border.setBorderXZ(getIntField(obj, "sizeXZ", border.get(EnumFacing.NORTH)));
     }
-    for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+    for (EnumFacing dir : EnumFacing.VALUES) {
       border.set(dir, JsonUtil.getIntField(obj, dir.name().toLowerCase(), border.get(dir)));
     }
     return border;
@@ -164,7 +161,7 @@ public class JsonUtil {
       return null;
     }
     try {
-      NBTBase nbtbase = JsonToNBT.func_150315_a(nbtTxt);
+      NBTBase nbtbase = JsonToNBT.getTagFromJson(nbtTxt);
       return (NBTTagCompound) nbtbase;
     } catch (NBTException e) {
       Log.warn("EntityUtil.parseNBT: Could not parse NBT " + nbtTxt + " Error: " + e);
@@ -173,32 +170,32 @@ public class JsonUtil {
     }
   }
 
-  public static ItemStack getItemStack(JsonObject json, String element) {
-    JsonObject obj = getObjectField(json, element);
-    if(obj == null) {
-      return null;
-    }
-    String uid = getStringField(obj, "uid", null);
-    if(uid == null) {
-      return null;
-    }
-    UniqueIdentifier u = new UniqueIdentifier(uid);
-    ItemStack res = GameRegistry.findItemStack(u.modId, u.name, 1);
-    if(res == null) {
-      return res;
-    }
-    res.setItemDamage(getIntField(obj, "meta", res.getItemDamage()));
-    
-    String nbtStr = getStringField(obj, "nbt", null);
-    if(nbtStr != null) {
-      NBTTagCompound nbt = parseNBT(nbtStr);
-      if(nbt != null) {
-        res.setTagCompound(nbt);  
-      }      
-    }
-
-    return res;
-  }
+//  public static ItemStack getItemStack(JsonObject json, String element) {
+//    JsonObject obj = getObjectField(json, element);
+//    if(obj == null) {
+//      return null;
+//    }
+//    String uid = getStringField(obj, "uid", null);
+//    if(uid == null) {
+//      return null;
+//    }
+//    UniqueIdentifier u = new UniqueIdentifier(uid);
+//    ItemStack res = GameRegistry.makeItemStack(u.modId, u.name, 1);
+//    if(res == null) {
+//      return res;
+//    }
+//    res.setItemDamage(getIntField(obj, "meta", res.getItemDamage()));
+//    
+//    String nbtStr = getStringField(obj, "nbt", null);
+//    if(nbtStr != null) {
+//      NBTTagCompound nbt = parseNBT(nbtStr);
+//      if(nbt != null) {
+//        res.setTagCompound(nbt);  
+//      }      
+//    }
+//
+//    return res;
+//  }
 
   public static class TypedObject {
     final String type;

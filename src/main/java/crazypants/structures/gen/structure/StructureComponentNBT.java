@@ -17,7 +17,6 @@ import java.util.Set;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
-import cpw.mods.fml.common.registry.GameRegistry;
 import crazypants.structures.Log;
 import crazypants.structures.StructureUtils;
 import crazypants.structures.api.gen.IStructureComponent;
@@ -34,14 +33,18 @@ import net.minecraft.block.BlockSand;
 import net.minecraft.block.BlockTorch;
 import net.minecraft.block.BlockTripWire;
 import net.minecraft.block.BlockTripWireHook;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.Vec3i;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class StructureComponentNBT implements IStructureComponent {
 
@@ -84,7 +87,7 @@ public class StructureComponentNBT implements IStructureComponent {
       blocks.put(sb, coords);
     }
 
-    bb = AxisAlignedBB.getBoundingBox(root.getInteger("minX"), root.getInteger("minY"), root.getInteger("minZ"), root.getInteger("maxX"),
+    bb = new AxisAlignedBB(root.getInteger("minX"), root.getInteger("minY"), root.getInteger("minZ"), root.getInteger("maxX"),
         root.getInteger("maxY"), root.getInteger("maxZ"));
 
     size = new Point3i((int) Math.abs(bb.maxX - bb.minX), (int) Math.abs(bb.maxY - bb.minY), (int) Math.abs(bb.maxZ - bb.minZ));
@@ -179,9 +182,9 @@ public class StructureComponentNBT implements IStructureComponent {
       rot = Rotation.DEG_0;
     }
 
-    Block fillBlk = null;
-    Block surfBlk = null;
-    BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
+    IBlockState fillBlk = null;
+    IBlockState surfBlk = null;
+    BiomeGenBase biome = world.getBiomeGenForCoords(new BlockPos(x,64, z));
     if(biome != null) {
       fillBlk = biome.fillerBlock;
       surfBlk = biome.topBlock;
@@ -225,12 +228,12 @@ public class StructureComponentNBT implements IStructureComponent {
         || block instanceof BlockTripWireHook || block instanceof  BlockTripWire|| block instanceof BlockRedstoneWire;
   }
 
-  private void fillBlocks(World world, int x, int y, int z, Rotation rot, StructureBoundingBox genBounds, List<Point3i> coords, Block filler) {
+  private void fillBlocks(World world, int x, int y, int z, Rotation rot, StructureBoundingBox genBounds, List<Point3i> coords, IBlockState filler) {
     for (Point3i coord : coords) {
       Point3i bc = VecUtil.transformLocationToWorld(x, y, z, rot, size, coord);
-      if((genBounds == null || genBounds.isVecInside(bc.x, bc.y, bc.z))
-          && StructureUtil.isIgnoredAsSurface(world, x, z, y, world.getBlock(x, y, z), true, false)) {
-        world.setBlock(bc.x, bc.y, bc.z, filler, 0, 2);
+      if((genBounds == null || genBounds.isVecInside(new Vec3i(bc.x, bc.y, bc.z)))
+          && StructureUtil.isIgnoredAsSurface(world, x, z, y, world.getBlockState(new BlockPos(x, y, z)), true, false)) {
+        world.setBlockState(new BlockPos(bc.x, bc.y, bc.z), filler, 2);
       }
     }
     return;
@@ -246,24 +249,25 @@ public class StructureComponentNBT implements IStructureComponent {
       for (Point3i coord : coords) {
         Point3i bc = VecUtil.transformLocationToWorld(x, y, z, rot, size, coord);
 
-        if(genBounds == null || genBounds.isVecInside(bc.x, bc.y, bc.z)) {
+        if(genBounds == null || genBounds.isVecInside(new Vec3i(bc.x, bc.y, bc.z))) {
 
-          int meta = RotationHelper.rotateMetadata(block, sb.getMetaData(), rot);
-          world.setBlock(bc.x, bc.y, bc.z, block, meta, 2);
+          int meta = RotationHelper.rotateMetadata(block, sb.getMetaData(), rot);          
+          IBlockState bs = block.getStateFromMeta(meta);
+          world.setBlockState(new BlockPos(bc.x, bc.y, bc.z), bs, 2);
 
           if(sb.getTileEntity() != null) {
             TileEntity te = TileEntity.createAndLoadEntity(sb.getTileEntity());
             if(te != null) {
-              te.xCoord = bc.x;
-              te.yCoord = bc.y;
-              te.zCoord = bc.z;
-              world.setTileEntity(bc.x, bc.y, bc.z, te);
+              BlockPos pos = new BlockPos(bc.x, bc.y,bc.z);
+              te.setPos(pos);              
+              world.setTileEntity(pos, te);
             }
           }
           //Chest will change the meta on block placed, so need to set it back
-          if(world.getBlockMetadata(bc.x, bc.y, bc.z) != meta) {
-            world.setBlockMetadataWithNotify(bc.x, bc.y, bc.z, meta, 3);
-          }
+          //TODO:
+//          if(world.getBlockMetadata(bc.x, bc.y, bc.z) != meta) {
+//            world.setBlockMetadataWithNotify(bc.x, bc.y, bc.z, meta, 3);
+//          }
         }
       }
     }

@@ -8,9 +8,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import cpw.mods.fml.common.IWorldGenerator;
-import cpw.mods.fml.common.event.FMLServerStoppedEvent;
-import cpw.mods.fml.common.registry.GameRegistry;
 import crazypants.structures.EnderStructures;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.gen.IStructureGenerator;
@@ -19,6 +16,9 @@ import crazypants.structures.api.util.Point3i;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.IWorldGenerator;
+import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class WorldGenerator implements IWorldGenerator {
 
@@ -52,7 +52,7 @@ public class WorldGenerator implements IWorldGenerator {
       return;
     }
 
-    Point3i p = new Point3i(world.provider.dimensionId, chunkX, chunkZ);
+    Point3i p = new Point3i(world.provider.getDimensionId(), chunkX, chunkZ);
     if(generating.contains(p)) {
       //guard against recurse gen
       return;

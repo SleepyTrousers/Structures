@@ -1,13 +1,15 @@
 package crazypants.structures.gen.structure;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
 import crazypants.structures.Log;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry.UniqueIdentifier;
 
 public class StructureBlock {
 
@@ -22,7 +24,7 @@ public class StructureBlock {
     modId = uid.modId;
     blockName = uid.name;
     blockMeta = tag.getShort("meta");
-    if(tag.hasKey("te")) {
+    if (tag.hasKey("te")) {
       tileEntity = tag.getCompoundTag("te");
     } else {
       tileEntity = null;
@@ -38,16 +40,16 @@ public class StructureBlock {
   }
 
   public StructureBlock(Block b) {
-    this(b,0,null);
+    this(b, 0, null);
   }
-  
+
   public StructureBlock(Block b, int meta, TileEntity te) {
-    if(b == null) {
+    if (b == null) {
       Log.warn("StructureBlock.StructureBlock: Null block");
       b = Blocks.air;
     }
     UniqueIdentifier uid = GameRegistry.findUniqueIdentifierFor(b);
-    if(uid == null) {
+    if (uid == null) {
       modId = "minecraft";
       blockName = "air";
       Log.warn("StructureBlock.StructureBlock: Null UID for " + b);
@@ -56,7 +58,7 @@ public class StructureBlock {
       blockName = uid.name;
     }
     blockMeta = (short) meta;
-    if(te != null) {
+    if (te != null) {
       tileEntity = new NBTTagCompound();
       te.writeToNBT(tileEntity);
     } else {
@@ -65,7 +67,11 @@ public class StructureBlock {
   }
 
   public StructureBlock(IBlockAccess ba, int x, int y, int z) {
-    this(ba.getBlock(x, y, z), ba.getBlockMetadata(x, y, z), ba.getTileEntity(x, y, z));
+    this(ba.getBlockState(new BlockPos(x, y, z)), ba.getTileEntity(new BlockPos(x, y, z)));
+  }
+
+  public StructureBlock(IBlockState bs, TileEntity te) {
+    this(bs.getBlock(), bs.getBlock().getMetaFromState(bs), te);
   }
 
   public boolean isAir() {
@@ -81,7 +87,7 @@ public class StructureBlock {
   public void writeToNBT(NBTTagCompound res) {
     res.setString("uid", getModId() + ":" + getBlockName());
     res.setShort("meta", blockMeta);
-    if(tileEntity != null) {
+    if (tileEntity != null) {
       res.setTag("te", tileEntity);
     }
   }
@@ -99,38 +105,38 @@ public class StructureBlock {
 
   @Override
   public boolean equals(Object obj) {
-    if(this == obj) {
+    if (this == obj) {
       return true;
     }
-    if(obj == null) {
+    if (obj == null) {
       return false;
     }
-    if(getClass() != obj.getClass()) {
+    if (getClass() != obj.getClass()) {
       return false;
     }
     StructureBlock other = (StructureBlock) obj;
-    if(blockMeta != other.blockMeta) {
+    if (blockMeta != other.blockMeta) {
       return false;
     }
-    if(getBlockName() == null) {
-      if(other.getBlockName() != null) {
+    if (getBlockName() == null) {
+      if (other.getBlockName() != null) {
         return false;
       }
-    } else if(!getBlockName().equals(other.getBlockName())) {
+    } else if (!getBlockName().equals(other.getBlockName())) {
       return false;
     }
-    if(getModId() == null) {
-      if(other.getModId() != null) {
+    if (getModId() == null) {
+      if (other.getModId() != null) {
         return false;
       }
-    } else if(!getModId().equals(other.getModId())) {
+    } else if (!getModId().equals(other.getModId())) {
       return false;
     }
-    if(tileEntity == null) {
-      if(other.tileEntity != null) {
+    if (tileEntity == null) {
+      if (other.tileEntity != null) {
         return false;
       }
-    } else if(!tileEntity.equals(other.tileEntity)) {
+    } else if (!tileEntity.equals(other.tileEntity)) {
       return false;
     }
     return true;
@@ -151,7 +157,5 @@ public class StructureBlock {
   public NBTTagCompound getTileEntity() {
     return tileEntity;
   }
-
-  
 
 }

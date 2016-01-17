@@ -3,13 +3,12 @@ package crazypants.structures.runtime.condition;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.base.Predicate;
 import com.google.gson.annotations.Expose;
 
 import crazypants.structures.api.ListElementType;
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.util.Point3i;
-import net.minecraft.command.IEntitySelector;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.AxisAlignedBB;
@@ -38,8 +37,9 @@ public class MaxEntitiesInRangeCondition extends PositionedCondition {
     if(range <= 0) {
       return true;
     }            
-    int nearbyEntities = world.selectEntitiesWithinAABB(EntityLiving.class,
-        AxisAlignedBB.getBoundingBox(
+    
+    int nearbyEntities = world.getEntitiesWithinAABB(EntityLiving.class,
+        new AxisAlignedBB(
             worldPos.x - range, worldPos.y - range, worldPos.z - range,
             worldPos.x + range, worldPos.y + range, worldPos.z + range),
         selector)
@@ -72,10 +72,10 @@ public class MaxEntitiesInRangeCondition extends PositionedCondition {
     this.entities = ents;
   }
 
-  private class Selector implements IEntitySelector {
+  private class Selector implements Predicate<EntityLiving> {
 
     @Override
-    public boolean isEntityApplicable(Entity ent) {
+    public boolean apply(EntityLiving ent) {
       if(entities.isEmpty()) {
         return true;
       }

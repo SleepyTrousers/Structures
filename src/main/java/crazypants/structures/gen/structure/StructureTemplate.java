@@ -170,11 +170,11 @@ public class StructureTemplate implements IStructureTemplate {
     for (PositionedComponent comp : components) {
       AxisAlignedBB bb = comp.getComponent().getBounds();
       Point3i offset = comp.getOffset();
-      bb = bb.getOffsetBoundingBox(offset.x, offset.y, offset.z);
+      bb = bb.offset(offset.x, offset.y, offset.z);
       if(res == null) {
         res = bb;
       } else {
-        res = res.func_111270_a(bb);
+        res = res.union(bb);
       }
     }
     return res;

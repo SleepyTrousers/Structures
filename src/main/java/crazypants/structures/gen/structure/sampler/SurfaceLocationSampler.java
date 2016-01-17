@@ -10,8 +10,10 @@ import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.gen.IWorldStructures;
 import crazypants.structures.api.util.Point3i;
 import crazypants.structures.api.util.StructureUtil;
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
 
 public class SurfaceLocationSampler extends AbstractTyped implements ILocationSampler {
 
@@ -65,11 +67,12 @@ public class SurfaceLocationSampler extends AbstractTyped implements ILocationSa
     int z = chunkZ * 16 + (maxOffsetZ > 0 ? rnd.nextInt(maxOffsetZ) : 0);
 
     //Find the surface y
-    Block blk;
+    IBlockState blk;
     Point3i loc = new Point3i();
-
     blk = StructureUtil.getSurfaceBlock(world, x, z, loc, true, !canGenerateOnFluid);
-    if(blk != world.getBiomeGenForCoords(x, z).topBlock && blk != world.getBiomeGenForCoords(x, z).fillerBlock) {
+    BlockPos pos = new BlockPos(loc.x, loc.y, loc.z);
+    BiomeGenBase biome = world.getBiomeGenForCoords(pos);
+    if(blk != biome.topBlock && blk != biome.fillerBlock) {
       return null;
     }
 

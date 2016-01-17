@@ -2,10 +2,9 @@ package crazypants.structures.runtime.behaviour;
 
 import java.util.List;
 
+import com.google.common.base.Predicate;
 import com.google.gson.annotations.Expose;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
 import crazypants.structures.StructureUtils;
 import crazypants.structures.api.AttributeEditor;
 import crazypants.structures.api.gen.IStructure;
@@ -13,14 +12,16 @@ import crazypants.structures.api.runtime.IAction;
 import crazypants.structures.api.runtime.IBehaviour;
 import crazypants.structures.api.runtime.ICondition;
 import crazypants.structures.api.util.Point3i;
-import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 
 public class ResidentSpawner extends AbstractEventBehaviour {
 
@@ -148,8 +149,8 @@ public class ResidentSpawner extends AbstractEventBehaviour {
   }
 
   private int getNumResidentsInHomeBounds() {    
-    List<?> ents = world.selectEntitiesWithinAABB(EntityLiving.class,
-        AxisAlignedBB.getBoundingBox(
+    List<?> ents = world.getEntitiesWithinAABB(EntityLiving.class,
+        new AxisAlignedBB(
             worldPos.x - homeRadius, worldPos.y - homeRadius, worldPos.z - homeRadius,
             worldPos.x + homeRadius, worldPos.y + homeRadius, worldPos.z + homeRadius),
         selector);
@@ -184,12 +185,12 @@ public class ResidentSpawner extends AbstractEventBehaviour {
     }
     EntityLiving res = (EntityLiving) ent;
 
-    res.func_110163_bv(); //persist  
+    res.enablePersistence();  
     res.getEntityData().setInteger("residentId", residentId);
 
     if(res instanceof EntityCreature) {
       EntityCreature creature = (EntityCreature) res;
-      creature.setHomeArea(worldPos.x, worldPos.y, worldPos.z, homeRadius - 1);
+      creature.setHomePosAndDistance(new BlockPos(worldPos.x, worldPos.y, worldPos.z), homeRadius);
     }
     return res;
   }
@@ -265,10 +266,10 @@ public class ResidentSpawner extends AbstractEventBehaviour {
     this.onSpawnAction = onSpawnAction;
   }
 
-  private class Selector implements IEntitySelector {
+  private class Selector implements Predicate<EntityLiving> {
 
     @Override
-    public boolean isEntityApplicable(Entity ent) {
+    public boolean apply(EntityLiving ent) {
       String entityId = EntityList.getEntityString(ent);
       if(!entity.equals(entityId)) {
         return false;

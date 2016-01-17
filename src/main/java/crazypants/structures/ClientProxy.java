@@ -1,10 +1,10 @@
 package crazypants.structures;
 
-import cpw.mods.fml.client.FMLClientHandler;
 import crazypants.structures.gen.io.resource.ResourceModContainer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 public class ClientProxy extends CommonProxy {
 
