@@ -74,6 +74,10 @@ public class StructureBlock {
     this(bs.getBlock(), bs.getBlock().getMetaFromState(bs), te);
   }
 
+  public StructureBlock(IBlockState bs) {
+    this(bs, null);
+  }
+
   public boolean isAir() {
     return "minecraft".equals(getModId()) && "air".equals(getBlockName());
   }

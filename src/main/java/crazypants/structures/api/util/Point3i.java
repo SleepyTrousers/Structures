@@ -1,6 +1,8 @@
 package crazypants.structures.api.util;
 
+import net.minecraft.util.BlockPos;
 
+//TODO: 1.8 get rid of this
 public class Point3i {
 
   public int x;
@@ -13,6 +15,12 @@ public class Point3i {
     z = 0;
   }
 
+  public Point3i(BlockPos pos) {
+    x = pos.getX();
+    y = pos.getY();
+    z = pos.getZ();
+  }
+  
   public Point3i(int x, int y, int z) {  
     this.x = x;
     this.y = y;
