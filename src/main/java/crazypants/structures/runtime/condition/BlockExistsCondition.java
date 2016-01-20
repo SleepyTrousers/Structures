@@ -11,33 +11,37 @@ import net.minecraft.world.World;
 public class BlockExistsCondition extends PositionedCondition {
 
   @Expose
-  private IBlockState block;
+  private IBlockState blockState;
     
   public BlockExistsCondition() { 
     super("BlockExists");
   }
   
   @Override
-  protected boolean doIsConditonMet(World world, IStructure structure, Point3i worldPos) {    
-    IBlockState blk = world.getBlockState(new BlockPos(worldPos.x, worldPos.y, worldPos.z));
+  protected boolean doIsConditonMet(World world, IStructure structure, Point3i worldPos) {  
     
-    if(blk.getBlock() != block.getBlock()) {
+    IBlockState blk = world.getBlockState(new BlockPos(worldPos.x, worldPos.y, worldPos.z));
+    if(blockState == null){
+      return blk.getBlock().isAir(world, worldPos.getBlockPos());
+    }
+    
+    if(blk.getBlock() != blockState.getBlock()) {
       return false;
     }
     int meta = blk.getBlock().getMetaFromState(blk);    
-    int m = block.getBlock().getMetaFromState(block);
+    int m = blockState.getBlock().getMetaFromState(blockState);
     if(meta != m) {
       return false;
     }    
     return true;
   }
   
-  public IBlockState getBlock() {
-    return block;
+  public IBlockState getBlockState() {
+    return blockState;
   }
 
-  public void setBlock(IBlockState block) {
-    this.block = block;
+  public void setBlockState(IBlockState block) {
+    this.blockState = block;
   }
   
 }

@@ -37,13 +37,14 @@ import crazypants.structures.api.util.Rotation;
 import crazypants.structures.gen.StructureGenRegister;
 import crazypants.structures.gen.structure.Border;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.common.registry.GameRegistry.UniqueIdentifier;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.registry.GameData;
 
 public class GsonIO {
 
@@ -62,7 +63,7 @@ public class GsonIO {
     builder.registerTypeAdapter(Rotation.class, new RotationIO());
 
     //MC Types
-    builder.registerTypeAdapter(Block.class, new BlockIO());
+    builder.registerTypeAdapter(IBlockState.class, new BlockStateIO());
     builder.registerTypeAdapter(ItemStack.class, new ItemStackIO());
 
     //Resources
@@ -163,28 +164,41 @@ public class GsonIO {
     }
 
   }
-
-  //--------------------------------------------------
-  private static class BlockIO implements JsonSerializer<Block>, JsonDeserializer<Block> {
+ 
+//--------------------------------------------------
+  private static class BlockStateIO implements JsonSerializer<IBlockState>, JsonDeserializer<IBlockState> {
 
     @Override
-    public Block deserialize(JsonElement je, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-      if(!je.isJsonPrimitive() || !je.getAsJsonPrimitive().isString()) {
+    public IBlockState deserialize(JsonElement je, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+      if(!je.isJsonObject()) {
         return null;
       }
-
-      UniqueIdentifier blkId = new UniqueIdentifier(je.getAsString());
-      Block blk = GameRegistry.findBlock(blkId.modId, blkId.name);
-      return blk;
+      JsonObject obj = je.getAsJsonObject();
+      String uid = obj.getAsJsonPrimitive("uid").getAsString();
+      int meta = obj.getAsJsonPrimitive("meta").getAsInt();
+      ResourceLocation rl = new ResourceLocation(uid);
+      Block blk = GameData.getBlockRegistry().getObject(rl);
+      if(blk == null) {
+        return null;
+      }      
+      return blk.getStateFromMeta(meta);
     }
 
     @Override
-    public JsonElement serialize(Block src, Type typeOfSrc, JsonSerializationContext context) {
-      UniqueIdentifier id = GameRegistry.findUniqueIdentifierFor(src);
-      if(id == null) {
+    public JsonElement serialize(IBlockState src, Type typeOfSrc, JsonSerializationContext context) {
+      ResourceLocation rl = GameData.getBlockRegistry().getNameForObject(src.getBlock());
+      //UniqueIdentifier id = GameRegistry.findUniqueIdentifierFor(src.getBlock());
+      if(rl == null) {
         return null;
       }
-      return new JsonPrimitive(id.toString());
+      String name = rl.getResourceDomain().toString();
+      int meta = src.getBlock().getMetaFromState(src);
+      
+      JsonObject jo = new JsonObject();
+      jo.addProperty("uid", name);
+      jo.addProperty("meta", meta);
+      
+      return jo;
     }
 
   }
@@ -200,9 +214,7 @@ public class GsonIO {
 
       JsonObject obj = json.getAsJsonObject();
       String itemStr = JsonUtil.getStringField(obj, "item", null);
-
-      UniqueIdentifier itemId = new UniqueIdentifier(itemStr);
-      Item item = GameRegistry.findItem(itemId.modId, itemId.name);
+      Item item = GameData.getItemRegistry().getObject(new ResourceLocation(itemStr));
       if(item == null) {
         throw new JsonParseException("No item found for " + itemStr);
       }
@@ -234,9 +246,8 @@ public class GsonIO {
         return JsonNull.INSTANCE;
       }
       JsonObject res = new JsonObject();
-
-      UniqueIdentifier id = GameRegistry.findUniqueIdentifierFor(src.getItem());
-      res.addProperty("item", id.modId + ":" + id.name);
+      ResourceLocation id = GameData.getItemRegistry().getNameForObject(src.getItem());
+      res.addProperty("item", id.toString());
       res.addProperty("number", src.stackSize);
       res.addProperty("meta", src.getItemDamage());
 

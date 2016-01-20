@@ -112,5 +112,9 @@ public class Point3i {
     z *= scale;    
   }
 
+  public BlockPos getBlockPos() {
+    return new BlockPos(x,y,z);
+  }
+
 
 }

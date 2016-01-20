@@ -21,10 +21,10 @@ import net.minecraft.world.gen.structure.StructureBoundingBox;
 public class FillPreperation extends AbstractTyped implements ISitePreperation {
 
   @Expose
-  private IBlockState fillBlock;
+  private IBlockState fillBlockState;
 
   @Expose
-  private IBlockState surfaceBlock;
+  private IBlockState surfaceBlockState;
   
   @Expose
   private boolean useBiomeFillerBlock = true;
@@ -47,8 +47,8 @@ public class FillPreperation extends AbstractTyped implements ISitePreperation {
 
   @Override
   public boolean prepareLocation(IStructure structure, World world, Random random, StructureBoundingBox clip) {
-    IBlockState fill = fillBlock;
-    IBlockState surf = surfaceBlock;
+    IBlockState fill = fillBlockState;
+    IBlockState surf = surfaceBlockState;
     if(useBiomeFillerBlock) {
       BlockPos pos = new BlockPos(structure.getOrigin().x, 64, structure.getOrigin().z);
       fill = world.getBiomeGenForCoords(pos).fillerBlock;

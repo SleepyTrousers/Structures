@@ -109,7 +109,7 @@ public class ExecuteCommandAction extends PositionedType implements IAction {
 
     public InnerSender(World world, IStructure structure, Point3i worldPos) {
       if(world instanceof WorldServer) {        
-        fp = new FakePlayer((WorldServer)world, new GameProfile(UUID.fromString("41C82C87-7AfB-4024-BA57-13DPPPPPPE77"), "EnderStructures"));
+        fp = new FakePlayer((WorldServer)world, new GameProfile(UUID.fromString("41C82C87-7AfB-4024-BA57-13D000000E77"), "EnderStructures"));
       } else {
         fp = null;
       }
