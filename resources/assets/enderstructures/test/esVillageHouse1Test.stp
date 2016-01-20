@@ -1,72 +1,113 @@
 {
-    "structureTemplate" : {
-                  
-        "components" : [
-          {"uid" : "esVillageHouse1Test"}
-        ],               
-        
-        "sitePreperation": {
-            "type": "CompositePreperation",
-            "preperations": [
-                {
-                    "type": "ClearPreperation",
-                    "clearPlants": "true"
-                },
-                {
-                    "type": "FillPreperation",
-                    "clearPlants": "true"
-                }
-            ]
+  "structureTemplate": {
+    "canSpanChunks": true,
+    "generationRequiresLoadedChunks": true,
+    "rotations": [],
+    "components": [
+      {
+        "uid": "esVillageHouse1Test",
+        "offset": [
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "sitePreperation": {
+      "preperations": [
+        {
+          "border": {
+            "down": 0,
+            "up": 3,
+            "north": 1,
+            "south": 1,
+            "west": 1,
+            "east": 1
+          },
+          "clearPlants": true,
+          "clearBellowGround": false,
+          "clearItems": true,
+          "type": "ClearPreperation"
         },
-
-	"decorator" : {
-                  
-         "type" : "CompositeDecorator",
-                  "decorators" : [
-                         
-                    { "type" : "LootTableInventory",
-                               "category" : "mineshaftCorridor",                                                                
-                               "targets" : ["inv0", "inv1", "inv2"]
-                    }
-                  ]                        
-        },
-              
-      "behaviour" : {                     
-          
-          "type" : "CompositeBehaviour",
-          "behaviours" : [
-           
-           { "type": "VirtualSpawner",
-                     "entity" : "Wolf",
-                     "entityNbt" : "{CustomName:Puppy Rubs}",                                         
-                     "numSpawned" : 2,
-                     "position" : [2, 2, 2],
-                     "activeCondition" : { "type" : "AndCondition",
-                                           "conditions" : [
-                                             {"type" : "PlayerInRange", "range" : 12, "position" : [2,1,2]  },
-                                             {"__type" : "BlockExists", "block" : "minecraft:brick_block", "meta" : 0, "position" : [2,1,2] }
-                                            ]
-                                         },
-                     "spawnCondition" : { "type" : "AndCondition",
-                                           "conditions" : [
-                                            {"type" : "ElapasedTimeCondition", 
-                                                       "initialTime" : 10, 
-                                                       "minTime" : 100, 
-                                                       "maxTime" : 100,
-                                                       "persisted" : false },
-                                                       
-                                             {"type" : "MaxEntitiesInRange", 
-                                                       "maxEntities" : 16, 
-                                                       "range" : 32, 
-                                                       "position" : [2,1,2],
-                                                       "entities" : [ "Wolf"] }
-                                            ]
-                                         }
-                      
-             }
-             
-         ]
-       }                           
-       
+        {
+          "useBiomeFillerBlock": true,
+          "clearPlants": true,
+          "border": {
+            "down": 0,
+            "up": 0,
+            "north": 1,
+            "south": 1,
+            "west": 1,
+            "east": 1
+          },
+          "type": "FillPreperation"
+        }
+      ],
+      "type": "CompositePreperation"
+    },
+    "behaviour": {
+      "behaviours": [
+        {
+          "entity": "Wolf",
+          "entityNbt": "{CustomName:Puppy Rubs}",
+          "activeCondition": {
+            "conditions": [
+              {
+                "range": 12,
+                "position": [
+                  2,
+                  1,
+                  2
+                ],
+                "type": "PlayerInRange"
+              },
+              null
+            ],
+            "type": "AndCondition"
+          },
+          "spawnCondition": {
+            "conditions": [
+              {
+                "initialTime": 10,
+                "minTime": 100,
+                "maxTime": 100,
+                "persisted": false,
+                "type": "ElapasedTimeCondition"
+              },
+              {
+                "maxEntities": 16,
+                "range": 32,
+                "entities": [
+                  "Wolf"
+                ],
+                "position": [
+                  2,
+                  1,
+                  2
+                ],
+                "type": "MaxEntitiesInRange"
+              }
+            ],
+            "type": "AndCondition"
+          },
+          "numSpawned": 2,
+          "maxSpawnRetries": 3,
+          "spawnRange": 4,
+          "useVanillaSpawnChecks": true,
+          "renderParticles": true,
+          "persistEntities": false,
+          "position": [
+            2,
+            2,
+            2
+          ],
+          "type": "VirtualSpawner"
+        }
+      ],
+      "type": "CompositeBehaviour"
+    },
+    "lootCategories": {
+      "categories": []
     }
+  }
 }

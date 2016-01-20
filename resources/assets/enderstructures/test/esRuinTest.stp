@@ -1,142 +1,234 @@
 {
-    "structureTemplate" : {
-            
-        "canSpanChunks" :  "true", 
-        
-        "rotations" : [0,90,180,270],
-        
-        "components" : [
-          {"uid" : "esRuinTest"}
-        ],
-        
-	"siteValidator" : {
-          "type" : "CompositeSiteValidator",
-                   "validators" : [
-        
-                      { "type" : "SpacingValidator", 
-                                  "minSpacing" : 20},
-                                            
-                      { "type" : "LevelGroundValidator",
-                                 "canSpawnOnWater" : "false",
-                                 "tolerance" : 2,
-                                 "sampleSpacing" : 4,
-                                 "maxSamples" : 50,
-                                 "Border" : { "sizeXZ" : 2 }}                    
-                    ]                    
-        
-        },
-        
-       "sitePreperation" : {
-                  
-         "type" : "CompositePreperation",
-                  "preperations" : [
-                                     
-                      { "type": "ClearPreperation", 
-                                "clearPlants" : "false",   
-				"clearBellowGround" : "false",  
-                                "Border" : { "up" : 6, "down" : 0, "north" : 2, "south" : 2, "east" : 2, "west" : 2 }
-                      },
-           
-                      { "type" : "FillPreperation",
-                                 "clearPlants" : "true",
-                                 "Border" : { "sizeXZ" : 1 }
-                      }  
-                  ]         
-       },
-       
-       
-       "decorator" : {
-                  
-         "type" : "CompositeDecorator",
-                  "decorators" : [
-                         
-                    { "type" : "LootTableInventory",
-                               "category" : "esRuinTestPrivateCat",                                 
-                               "targets" : ["upstairsChest"]
-                    },
-		    { "type" : "LootTableInventory",
-                               "category" : "esTestCat2",                                                                
-                               "targets" : ["lowerChest1", "lowerChest2"]
-                    },
-		    { "type" : "LootTableInventory",
-                               "category" : "dungeonChest",                                                                
-                               "targets" : [ "doubleChest1" ]
-                    }
-                  ]                        
-        },
-        
-        "lootCategories": {
-          "categories": [ 
-            
-            {
-             "category" : "esRuinTestPrivateCat",
-             "minItems" : 1,
-             "maxItems" : 3,
-             "entries" : [
-             
-               { 
-                 "item":  { "item" : "minecraft:pumpkin_pie", "meta" : 0 },
-                 "minChanceToGenerate" : 1,
-                 "maxChanceToGenerate" : 3,
-                 "weight" : 30                
-               },
-               { 
-                 "item":  { "item" : "minecraft:cookie", "meta" : 6 },
-                 "minChanceToGenerate" : 1,
-                 "maxChanceToGenerate" : 3,
-                 "weight" : 30                
-               },
-               { 
-                 "item":  { "item" : "minecraft:experience_bottle", "meta" : 0 },
-                 "minChanceToGenerate" : 1,
-                 "maxChanceToGenerate" : 64,
-                 "weight" : 80                
-               },
-               { 
-                 "item":  { "item" : "minecraft:diamond_sword", "meta" : 0 },
-                 "minChanceToGenerate" : 1,
-                 "maxChanceToGenerate" : 1,
-                 "weight" : 50                
-               }
-             ]
-            }
-        ]          
-      },
-      
-      "behaviour" : {                     
-          
-          "type" : "CompositeBehaviour",
-          "behaviours" : [
-           
-               { "type": "ResidentSpawner",
-                         "entity" : "Creeper",
-                         "entityNbt" : "{powered:1,CustomName:McDoodle The Second}",
-                         "numSpawned" : 4,                    
-                         "spawnRange" : 4,
-                         "respawnRate" : 2500,
-                         "homeRadius" : 64,
-                         "taggedPosition" : "resSpawner",
-                         "preCondition" : {"type" : "PlayerInRange", "range" : 32 },
-                         "onSpawnAction" : {"type" : "CompositeAction", 
-                                                "actions" : [                                 
-                                                    {"type" : "RandomizerAction", "minOffset" : [-2,0,-2], "maxOffset" : [2,0,2],
-                                                              "actions" : [
-                                                                {"type" : "ExecuteCommand",  "commands" : ["summon PigZombie ~ ~ ~ {powered:1,CustomName:John}"]}  
-                                                              ]                                                    
-                                                    },
-                                                    {"type" : "RandomizerAction", 
-                                                              "minOffset" : [-12,10,-12], "maxOffset" : [12,15,12], 
-                                                              "minRepeats" : 2, "maxRepeats" : 6,
-                                                              "minDelay" : 0, "maxDelay" : 60,
-                                                              "actions" : [
-                                                                {"type" : "ExecuteCommand",  "commands" : ["summon Fireball ~ ~ ~ {direction:[0.0,-4.0,0.0]}"]}  
-                                                              ]                                                    
-                                                    }                                                                                                                   
-                                                ]                                 
-                                             }  
-                                                    
-            }
-         ]
+  "structureTemplate": {
+    "canSpanChunks": true,
+    "generationRequiresLoadedChunks": true,
+    "rotations": [
+      0,
+      90,
+      180,
+      270
+    ],
+    "components": [
+      {
+        "uid": "esRuinTest",
+        "offset": [
+          0,
+          0,
+          0
+        ]
       }
+    ],
+    "siteValidator": {
+      "validators": [
+        {
+          "minSpacing": 20,
+          "templateFilter": [],
+          "type": "SpacingValidator"
+        },
+        {
+          "canSpawnOnWater": false,
+          "maxSamples": 50,
+          "sampleSpacing": 4,
+          "tolerance": 2,
+          "border": {
+            "down": 0,
+            "up": 0,
+            "north": 1,
+            "south": 1,
+            "west": 1,
+            "east": 1
+          },
+          "type": "LevelGroundValidator"
+        }
+      ],
+      "type": "CompositeSiteValidator"
+    },
+    "sitePreperation": {
+      "preperations": [
+        {
+          "border": {
+            "down": 0,
+            "up": 3,
+            "north": 1,
+            "south": 1,
+            "west": 1,
+            "east": 1
+          },
+          "clearPlants": false,
+          "clearBellowGround": false,
+          "clearItems": true,
+          "type": "ClearPreperation"
+        },
+        {
+          "useBiomeFillerBlock": true,
+          "clearPlants": true,
+          "border": {
+            "down": 0,
+            "up": 0,
+            "north": 1,
+            "south": 1,
+            "west": 1,
+            "east": 1
+          },
+          "type": "FillPreperation"
+        }
+      ],
+      "type": "CompositePreperation"
+    },
+    "decorator": {
+      "decorators": [
+        {
+          "category": "esRuinTestPrivateCat",
+          "targets": [
+            "upstairsChest"
+          ],
+          "type": "LootTableInventory"
+        },
+        {
+          "category": "esTestCat2",
+          "targets": [
+            "lowerChest1",
+            "lowerChest2"
+          ],
+          "type": "LootTableInventory"
+        },
+        {
+          "category": "mineshaftCorridor",
+          "targets": [
+            "doubleChest1",
+            "doubleChest2"
+          ],
+          "type": "LootTableInventory"
+        }
+      ],
+      "type": "CompositeDecorator"
+    },
+    "behaviour": {
+      "behaviours": [
+        {
+          "entity": "Creeper",
+          "entityNbt": "{powered:1,CustomName:McDoodle The Second}",
+          "numSpawned": 4,
+          "spawnRange": 4,
+          "respawnRate": 100,
+          "homeRadius": 64,
+          "preCondition": {
+            "range": 32,
+            "type": "PlayerInRange"
+          },
+          "onSpawnAction": {
+            "actions": [
+              {
+                "minOffset": [
+                  -2,
+                  0,
+                  -2
+                ],
+                "maxOffset": [
+                  2,
+                  0,
+                  2
+                ],
+                "minDelay": 0,
+                "maxDelay": 0,
+                "minRepeats": 1,
+                "maxRepeats": 1,
+                "actions": [
+                  {
+                    "commands": [
+                      "summon PigZombie ~ ~ ~ {powered:1,CustomName:John}"
+                    ],
+                    "chat": "What is this for?",
+                    "type": "ExecuteCommand"
+                  }
+                ],
+                "type": "RandomizerAction"
+              },
+              {
+                "minOffset": [
+                  -12,
+                  10,
+                  -12
+                ],
+                "maxOffset": [
+                  12,
+                  15,
+                  12
+                ],
+                "minDelay": 0,
+                "maxDelay": 60,
+                "minRepeats": 2,
+                "maxRepeats": 6,
+                "actions": [
+                  {
+                    "commands": [
+                      "summon Fireball ~ ~ ~ {direction:[0.0,-4.0,0.0]}"
+                    ],
+                    "chat": "What is this for?",
+                    "type": "ExecuteCommand"
+                  }
+                ],
+                "type": "RandomizerAction"
+              }
+            ],
+            "type": "CompositeAction"
+          },
+          "taggedPosition": "resSpawner",
+          "type": "ResidentSpawner"
+        }
+      ],
+      "type": "CompositeBehaviour"
+    },
+    "lootCategories": {
+      "categories": [
+        {
+          "category": "esRuinTestPrivateCat",
+          "minItems": 1,
+          "maxItems": 3,
+          "entries": [
+            {
+              "minChanceToGenerate": 1,
+              "maxChanceToGenerate": 3,
+              "weight": 30,
+              "item": {
+                "item": "minecraft:pumpkin_pie",
+                "number": 1,
+                "meta": 0
+              }
+            },
+            {
+              "minChanceToGenerate": 1,
+              "maxChanceToGenerate": 3,
+              "weight": 30,
+              "item": {
+                "item": "minecraft:cookie",
+                "number": 1,
+                "meta": 6
+              }
+            },
+            {
+              "minChanceToGenerate": 1,
+              "maxChanceToGenerate": 64,
+              "weight": 80,
+              "item": {
+                "item": "minecraft:experience_bottle",
+                "number": 1,
+                "meta": 0
+              }
+            },
+            {
+              "minChanceToGenerate": 1,
+              "maxChanceToGenerate": 1,
+              "weight": 50,
+              "item": {
+                "item": "minecraft:diamond_sword",
+                "number": 1,
+                "meta": 0
+              }
+            }
+          ]
+        }
+      ]
     }
+  }
 }

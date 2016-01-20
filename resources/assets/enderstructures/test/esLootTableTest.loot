@@ -1,72 +1,101 @@
 {
-
   "lootCategories": {
-    "categories": [        
-        {
-           "category" : "esTestCat1",
-           "minItems" : 1,
-           "maxItems" : 3,
-           "entries" : [
-             { 
-               "item":  { "item" : "minecraft:sand", "meta" : 0 },
-               "minChanceToGenerate" : 1,
-               "maxChanceToGenerate" : 3,
-               "weight" : 30                
-             },
-             { 
-               "item":  { "item" : "minecraft:wool", "meta" : 6 },
-               "minChanceToGenerate" : 1,
-               "maxChanceToGenerate" : 3,
-               "weight" : 30                
-             },
-             { 
-               "item":  { "item" : "minecraft:grass", "meta" : 6 },
-               "minChanceToGenerate" : 1,
-               "maxChanceToGenerate" : 64,
-               "weight" : 80
-             },
-             { 
-               "item":  { "item" : "minecraft:iron_sword" },
-               "minChanceToGenerate" : 1,
-               "maxChanceToGenerate" : 1,
-               "weight" : 80
-             }                           
-           ]
-        },
-        
-        {
-           "category" : "esTestCat2",
-           "minItems" : 1,
-           "maxItems" : 5,
-           "entries" : [
-             { 
-               "item":  { "item" : "minecraft:diamond_hoe", "meta" : 0 },
-               "minChanceToGenerate" : 1,
-               "maxChanceToGenerate" : 3,
-               "weight" : 30                
-             },
-             { 
-               "item":  { "item" : "minecraft:poisonous_potato", "meta" : 6 },
-               "minChanceToGenerate" : 1,
-               "maxChanceToGenerate" : 3,
-               "weight" : 30                
-             },
-             { 
-               "item":  { "item" : "minecraft:cake", "meta" : 0 },
-               "minChanceToGenerate" : 1,
-               "maxChanceToGenerate" : 2,
-               "weight" : 80               
-             },
-             { 
-               "item":  { "item" : "minecraft:leather_chestplate" , "nbtString" : "{display:{color:3402699,Name:\"Diamond Jersey\",Lore:[\"The Strange\"]}}" },
-               "minChanceToGenerate" : 1,
-               "maxChanceToGenerate" : 1,
-               "weight" : 200
-             }     
-                                                  
-           ]
-        }
-                
+    "categories": [
+      {
+        "category": "esTestCat1",
+        "minItems": 2,
+        "maxItems": 5,
+        "entries": [
+          {
+            "minChanceToGenerate": 1,
+            "maxChanceToGenerate": 3,
+            "weight": 30,
+            "item": {
+              "item": "minecraft:sand",
+              "number": 1,
+              "meta": 0
+            }
+          },
+          {
+            "minChanceToGenerate": 1,
+            "maxChanceToGenerate": 3,
+            "weight": 30,
+            "item": {
+              "item": "minecraft:wool",
+              "number": 1,
+              "meta": 6
+            }
+          },
+          {
+            "minChanceToGenerate": 1,
+            "maxChanceToGenerate": 64,
+            "weight": 80,
+            "item": {
+              "item": "minecraft:grass",
+              "number": 1,
+              "meta": 6
+            }
+          },
+          {
+            "minChanceToGenerate": 1,
+            "maxChanceToGenerate": 1,
+            "weight": 80,
+            "item": {
+              "item": "minecraft:iron_sword",
+              "number": 1,
+              "meta": 0
+            }
+          }
+        ]
+      },
+      {
+        "category": "esTestCat2",
+        "minItems": 2,
+        "maxItems": 6,
+        "entries": [
+          {
+            "minChanceToGenerate": 1,
+            "maxChanceToGenerate": 3,
+            "weight": 30,
+            "item": {
+              "item": "minecraft:diamond_hoe",
+              "number": 1,
+              "meta": 0
+            }
+          },
+          {
+            "minChanceToGenerate": 1,
+            "maxChanceToGenerate": 3,
+            "weight": 30,
+            "item": {
+              "item": "minecraft:poisonous_potato",
+              "number": 1,
+              "meta": 6
+            }
+          },
+          {
+            "minChanceToGenerate": 1,
+            "maxChanceToGenerate": 2,
+            "weight": 80,
+            "item": {
+              "item": "minecraft:cake",
+              "number": 1,
+              "meta": 0
+            }
+          },
+          {
+            "minChanceToGenerate": 1,
+            "maxChanceToGenerate": 1,
+            "weight": 200,
+            "item": {
+              "item": "minecraft:leather_chestplate",
+              "number": 1,
+              "meta": 0,
+              "nbt": "H4sIAAAAAAAAAONiYOBiYE/JLC7ISazkZGDxyS9K5WBgYGBk4A7JSFUILilKzEtPZWZgTc7PyS9iMH59moOBxS8xN5WBzyUzMTc/L0XBK7WoOLWSgQEAbnjChEsAAAA\u003d"
+            }
+          }
+        ]
+      }
     ]
-  }       
-}       
+  }
+}

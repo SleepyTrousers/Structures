@@ -30,10 +30,7 @@ public class ExecuteCommandAction extends PositionedType implements IAction {
   @ListElementType(elementType=String.class)
   @Expose
   private List<String> commands = new ArrayList<String>();
-  
-  @Expose
-  private String chat = "What is this for?";
-  
+
   public ExecuteCommandAction() { 
     super("ExecuteCommand");
   }
@@ -91,16 +88,6 @@ public class ExecuteCommandAction extends PositionedType implements IAction {
     }    
   }
 
-  public String getChat() {
-    return chat;
-  }
-
-  public void setChat(String chat) {
-    this.chat = chat;
-  }
-
-  //RConConsoleSource
- // private class InnerSender extends RConConsoleSource {//implements ICommandSender {
   private class InnerSender extends CommandBlockLogic {//implements ICommandSender {
 
     private final BlockPos coords;
@@ -159,7 +146,5 @@ public class ExecuteCommandAction extends PositionedType implements IAction {
     }
 
   }
-
- 
 
 }

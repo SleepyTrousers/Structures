@@ -30,8 +30,6 @@
           "type": "ClearPreperation"
         },
         {
-          "fillMeta": 0,
-          "surfaceMeta": 0,
           "useBiomeFillerBlock": true,
           "clearPlants": true,
           "border": {

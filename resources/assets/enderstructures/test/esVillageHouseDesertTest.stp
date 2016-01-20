@@ -1,22 +1,52 @@
 {
-    "structureTemplate": {
-        "components": [
-            {
-                "uid": "esVillageHouseDesertTest"
-            }
-        ],
-        "sitePreperation": {
-            "type": "CompositePreperation",
-            "preperations": [
-                {
-                    "type": "ClearPreperation",
-                    "clearPlants": "true"
-                },
-                {
-                    "type": "FillPreperation",
-                    "clearPlants": "true"
-                }
-            ]
+  "structureTemplate": {
+    "canSpanChunks": true,
+    "generationRequiresLoadedChunks": true,
+    "rotations": [],
+    "components": [
+      {
+        "uid": "esVillageHouseDesertTest",
+        "offset": [
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "sitePreperation": {
+      "preperations": [
+        {
+          "border": {
+            "down": 0,
+            "up": 3,
+            "north": 1,
+            "south": 1,
+            "west": 1,
+            "east": 1
+          },
+          "clearPlants": true,
+          "clearBellowGround": false,
+          "clearItems": true,
+          "type": "ClearPreperation"
+        },
+        {
+          "useBiomeFillerBlock": true,
+          "clearPlants": true,
+          "border": {
+            "down": 0,
+            "up": 0,
+            "north": 1,
+            "south": 1,
+            "west": 1,
+            "east": 1
+          },
+          "type": "FillPreperation"
         }
+      ],
+      "type": "CompositePreperation"
+    },
+    "lootCategories": {
+      "categories": []
     }
+  }
 }

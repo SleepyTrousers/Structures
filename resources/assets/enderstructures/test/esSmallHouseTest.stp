@@ -1,91 +1,142 @@
 {
-    "structureTemplate" : {
-                       
-        "canSpanChunks" :  "true",    
-        
-        "rotations" : [0,90,180,270],
-               
-        "components" : [
-          {"uid" : "esSmallHouseTest"}
-        ],
-                
-        "siteValidator" : {
-          "type" : "CompositeSiteValidator",
-                   "validators" : [
-        
-                      { "type" : "SpacingValidator", 
-                                  "minSpacing" : 20},
-                                            
-                      { "type" : "LevelGroundValidator",
-                                 "canSpawnOnWater" : "false",
-                                 "tolerance" : 2,
-                                 "sampleSpacing" : 4,
-                                 "maxSamples" : 50,
-                                 "Border" : { "sizeXZ" : 1 }}                    
-                    ]                    
-        
+  "structureTemplate": {
+    "canSpanChunks": true,
+    "generationRequiresLoadedChunks": true,
+    "rotations": [
+      0,
+      90,
+      180,
+      270
+    ],
+    "components": [
+      {
+        "uid": "esSmallHouseTest",
+        "offset": [
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "siteValidator": {
+      "validators": [
+        {
+          "minSpacing": 20,
+          "templateFilter": [],
+          "type": "SpacingValidator"
         },
-        
-        
-        "sitePreperation" : {
-                  
-         "type" : "CompositePreperation",
-                  "preperations" : [
-                                     
-                      { "type": "ClearPreperation", 
-                                "clearPlants" : "true",          
-                                "Border" : { "up" : 3, "down" : 0, "north" : 1, "south" : 1, "east" : 1, "west" : 1 }
-                      },
-           
-                      { "type" : "FillPreperation",
-                                 "clearPlants" : "true",
-                                 "Border" : { "sizeXZ" : 1 }
-                      }  
-                  ]         
-       },
-       
-       "decorator" : {
-                  
-         "type" : "CompositeDecorator",
-                  "decorators" : [
-                         
-                    { "type" : "LootTableInventory",
-                               "category" : "esTestCat1",                                 
-                               "_category" : "mineshaftCorridor",
-                               "comment_category" : "mineshaftCorridor, pyramidDesertyChest, pyramidJungleChest, pyramidJungleDispenser, strongholdCorridor, strongholdLibrary, strongholdCrossing, villageBlacksmith, bonusChest, dungeonChest",
-                               "targets" : ["chest"]
-                    }
-                  ]                        
+        {
+          "canSpawnOnWater": false,
+          "maxSamples": 50,
+          "sampleSpacing": 4,
+          "tolerance": 2,
+          "border": {
+            "down": 0,
+            "up": 0,
+            "north": 1,
+            "south": 1,
+            "west": 1,
+            "east": 1
+          },
+          "type": "LevelGroundValidator"
+        }
+      ],
+      "type": "CompositeSiteValidator"
+    },
+    "sitePreperation": {
+      "preperations": [
+        {
+          "border": {
+            "down": 0,
+            "up": 3,
+            "north": 1,
+            "south": 1,
+            "west": 1,
+            "east": 1
+          },
+          "clearPlants": true,
+          "clearBellowGround": false,
+          "clearItems": true,
+          "type": "ClearPreperation"
         },
-       
-       "behaviour" : {                     
-          
-          "type" : "CompositeBehaviour",
-          "behaviours" : [
-                      
-                   { "type": "ServerTickBehaviour",
-                             "executionInterval" : 20,
-                             "condition" : { "type" : "AndCondition",
-                                              "conditions" : [
-                                               {"type" : "PlayerInRange", 
-                                                         "range" : 32, 
-                                                         "position" : [2,1,2]  },
-                                               {"type" : "ElapasedTimeCondition", 
-                                                         "initialTime" : 10, 
-                                                         "minTime" : 200, 
-                                                         "maxTime" : 300,
-                                                         "persisted" : true }
-                                              ]
-                             },
-                                                        
-                             "action" : {"type" : "CompositeAction", 
-                                                  "actions" : [                                 
-                                                    {"type" : "ExecuteCommand", "position" : [2,10,2], "commands" : [ "effect @a[r=32] 1 5", "say \"nice place..\""]}                                                                                                                   
-                                                   ]                                 
-                                        }                                                                         
-                  }
-          ]                                                
-       }
-       
+        {
+          "useBiomeFillerBlock": true,
+          "clearPlants": true,
+          "border": {
+            "down": 0,
+            "up": 0,
+            "north": 1,
+            "south": 1,
+            "west": 1,
+            "east": 1
+          },
+          "type": "FillPreperation"
+        }
+      ],
+      "type": "CompositePreperation"
+    },
+    "decorator": {
+      "decorators": [
+        {
+          "category": "dungeonChest",
+          "targets": [
+            "chest"
+          ],
+          "type": "LootTableInventory"
+        }
+      ],
+      "type": "CompositeDecorator"
+    },
+    "behaviour": {
+      "behaviours": [
+        {
+          "executionInterval": 20,
+          "condition": {
+            "conditions": [
+              {
+                "range": 32,
+                "position": [
+                  2,
+                  1,
+                  2
+                ],
+                "type": "PlayerInRange"
+              },
+              {
+                "initialTime": 10,
+                "minTime": 200,
+                "maxTime": 300,
+                "persisted": true,
+                "type": "ElapasedTimeCondition"
+              }
+            ],
+            "type": "AndCondition"
+          },
+          "action": {
+            "actions": [
+              {
+                "commands": [
+                  "effect @a[r\u003d32] 1 5",
+                  "say \"nice place..\""
+                ],
+                "chat": "What is this for?",
+                "position": [
+                  2,
+                  10,
+                  2
+                ],
+                "type": "ExecuteCommand"
+              }
+            ],
+            "type": "CompositeAction"
+          },
+          "type": "ServerTickBehaviour"
+        }
+      ],
+      "type": "CompositeBehaviour"
+    },
+    "lootCategories": {
+      "categories": []
     }
+  }
 }

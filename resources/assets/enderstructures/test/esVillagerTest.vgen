@@ -1,33 +1,65 @@
 {
-    "villagerGenerator" : {
-       
-      "villagerId" : 45654,
-      "texture" : "esresource:esTestVillager.png",
-      
-      "weight" : 10,
-      "minGeneratedPerVillage" : 1,
-      "maxGeneratedPerVillage" : 10,
-
-      "plainsTemplates" : [
-          { weight : 1, template : {"uid" : "esVillageHouse1Test"}},
-          { weight : 1, template : {"uid" : "esVillageHouse2Test"}}    
-        ],
-
-       "desertTemplates" : [
-          { weight : 1, template : {"uid" : "esVillageHouse1Test"}}
-        ],
-
-	"trades" : [
-          { 
-	    "itemToBuy" : { "item" : "minecraft:apple", "number" : 10, "meta" : 0 },
-	    "secondItemToBuy" : { "item" : "minecraft:diamond", "number" : 1, "meta" : 0 },
-	    "itemToSell" : { "item" : "minecraft:stone", "number" : 12, "meta" : 0 } 
-	  },
-	  { 
-	    "itemToBuy" : { "item" : "minecraft:feather", "number" : 3, "meta" : 0 },	    
-	    "itemToSell" : { "item" : "minecraft:planks", "number" : 6, "meta" : 1 } 
-	  }
-	]
-
+  "villagerGenerator": {
+    "weight": 10,
+    "minGeneratedPerVillage": 1,
+    "maxGeneratedPerVillage": 10,
+    "plainsTemplates": [
+      {
+        "weight": 1,
+        "template": {
+          "uid": "esVillageHouse1Test"
+        }
+      },
+      {
+        "weight": 1,
+        "template": {
+          "uid": "esVillageHouse2Test"
+        }
+      }
+    ],
+    "desertTemplates": [
+      {
+        "weight": 1,
+        "template": {
+          "uid": "esVillageHouse1Test"
+        }
+      }
+    ],
+    "villagerId": 45654,
+    "texture": "esresource:esTestVillager.png",
+    "trades": [
+      {
+        "itemToBuy": {
+          "item": "minecraft:apple",
+          "number": 10,
+          "meta": 0
+        },
+        "secondItemToBuy": {
+          "item": "minecraft:diamond",
+          "number": 1,
+          "meta": 0
+        },
+        "itemToSell": {
+          "item": "minecraft:stone",
+          "number": 12,
+          "meta": 0
+        }
+      },
+      {
+        "itemToBuy": {
+          "item": "minecraft:feather",
+          "number": 3,
+          "meta": 0
+        },
+        "itemToSell": {
+          "item": "minecraft:planks",
+          "number": 6,
+          "meta": 1
+        }
+      }
+    ],
+    "lootCategories": {
+      "categories": []
     }
+  }
 }
