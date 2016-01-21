@@ -2,7 +2,7 @@ package crazypants.structures.runtime.action;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import crazypants.structures.api.gen.IStructure;
 import crazypants.structures.api.runtime.IAction;
@@ -22,7 +22,7 @@ public class DeferedActionHandler {
 
   private boolean registered = false;
 
-  private final List<TimedAction> deferedActions = new ArrayList<TimedAction>();
+  private final List<TimedAction> deferedActions = new CopyOnWriteArrayList<TimedAction>();
 
   public void addDeferedAction(IAction action, World world, IStructure structure, Point3i worldPosition, int delay) {
     deferedActions.add(new TimedAction(action, world, structure, worldPosition, delay));
@@ -30,13 +30,15 @@ public class DeferedActionHandler {
 
   @SubscribeEvent
   public void update(ServerTickEvent evt) {
-    ListIterator<TimedAction> iter = deferedActions.listIterator();
-    while(iter.hasNext()) {
-      TimedAction action = iter.next();
+    List<TimedAction> toRemove = new ArrayList<DeferedActionHandler.TimedAction>();    
+    for(TimedAction action : deferedActions) {      
       if(action.performThisTick()) {
-        iter.remove();
+        toRemove.add(action);
       }
     }
+    if(!toRemove.isEmpty()) {
+      deferedActions.removeAll(toRemove);
+    }    
   }
 
   protected void register() {

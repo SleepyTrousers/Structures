@@ -258,16 +258,12 @@ public class StructureComponentNBT implements IStructureComponent {
           if(sb.getTileEntity() != null) {
             TileEntity te = TileEntity.createAndLoadEntity(sb.getTileEntity());
             if(te != null) {
-              BlockPos pos = new BlockPos(bc.x, bc.y,bc.z);
-              te.setPos(pos);              
-              world.setTileEntity(pos, te);
+              //TODO: This is breaking all the things!
+//              BlockPos pos = new BlockPos(bc.x, bc.y,bc.z);
+//              te.setPos(pos);              
+//              world.setTileEntity(pos, te);
             }
           }
-          //Chest will change the meta on block placed, so need to set it back
-          //TODO:
-//          if(world.getBlockMetadata(bc.x, bc.y, bc.z) != meta) {
-//            world.setBlockMetadataWithNotify(bc.x, bc.y, bc.z, meta, 3);
-//          }
         }
       }
     }
