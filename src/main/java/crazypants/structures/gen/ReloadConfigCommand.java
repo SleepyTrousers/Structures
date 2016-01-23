@@ -53,7 +53,6 @@ public class ReloadConfigCommand implements ICommand {
 
   @Override
   public int compareTo(ICommand arg0) {
-    // TODO Auto-generated method stub
     return 0;
   }
 

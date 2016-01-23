@@ -10,6 +10,7 @@ import crazypants.structures.api.util.Point3i;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 
 public class ServerTickBehaviour extends AbstractEventBehaviour  {
@@ -56,6 +57,9 @@ public class ServerTickBehaviour extends AbstractEventBehaviour  {
   
   @SubscribeEvent
   public void update(ServerTickEvent evt) {
+    if(evt.phase != Phase.START) {
+      return;
+    }
     long curTime = world.getTotalWorldTime();
     if(executionInterval > 0 && curTime % executionInterval != 0) {
       return;
