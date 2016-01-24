@@ -258,10 +258,15 @@ public class StructureComponentNBT implements IStructureComponent {
           if(sb.getTileEntity() != null) {
             TileEntity te = TileEntity.createAndLoadEntity(sb.getTileEntity());
             if(te != null) {
-              //TODO: This is breaking all the things!
-//              BlockPos pos = new BlockPos(bc.x, bc.y,bc.z);
-//              te.setPos(pos);              
-//              world.setTileEntity(pos, te);
+              BlockPos pos = new BlockPos(bc.x, bc.y,bc.z);
+              TileEntity curTe = world.getTileEntity(pos);
+              if(curTe != null && curTe.getClass() == te.getClass()) {
+                curTe.readFromNBT(sb.getTileEntity());
+                curTe.setPos(pos);               
+              } else {
+                te.setPos(pos);
+                world.setTileEntity(pos, te);
+              }            
             }
           }
         }
