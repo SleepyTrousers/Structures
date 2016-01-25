@@ -33,7 +33,7 @@ public class CompositeCreationHandler implements IVillageCreationHandler {
       maxToSpawn += wch.weight.villagePiecesLimit;
       totalWeight += wch.weight.villagePieceWeight;
     }
-    return new PieceWeight(VillageHouse.class, totalWeight, maxToSpawn);
+    return new PieceWeight(StructuresVillageHouse.class, totalWeight, maxToSpawn);
   }
 
   public void addCreationHandler(CreationHandler handler) {
@@ -55,7 +55,7 @@ public class CompositeCreationHandler implements IVillageCreationHandler {
 
   @Override
   public Class<?> getComponentClass() {
-    return VillageHouse.class;
+    return StructuresVillageHouse.class;
   }
 
   

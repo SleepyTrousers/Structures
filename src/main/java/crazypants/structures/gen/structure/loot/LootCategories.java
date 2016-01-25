@@ -49,24 +49,22 @@ public class LootCategories implements IResource {
     this.uid = uid;
   }
   
-  public void register() {
-    Log.info("LootCategories.register: Registered loot categories in: " + uid);
+  public void register() {    
     if(categories == null) {
       return;
     }
+    Log.info("LootCategories.register: Registered loot categories in: " + uid);
     for(LootCategory cat : categories) {
       if(cat != null) {
-//        System.out.println("LootCategories.register:    - Category " + cat.getCategory());
         cat.register();
       }
     }   
   }
   
-  public void deregister() {
-    System.out.println("LootCategories.deregister: Deregistered loot categories in: " + uid);
+  public void deregister() {    
     if(categories == null) {
       return;
-    }
+    }    
     for(LootCategory cat : categories) {
       if(cat != null) {
         cat.deregister();

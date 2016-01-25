@@ -18,7 +18,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraft.world.gen.structure.StructureVillagePieces;
 
-public class VillageHouse extends StructureVillagePieces.House1 {
+public class StructuresVillageHouse extends StructureVillagePieces.House1 {
 
   private int villagerId;
 
@@ -33,28 +33,20 @@ public class VillageHouse extends StructureVillagePieces.House1 {
 
   private String spawnTag;
 
-  public VillageHouse() {
+  public StructuresVillageHouse() {
   }
 
-  public VillageHouse(IStructureTemplate template, String spawnTag, int villagerId, int x, int y, int z, EnumFacing coordBaseMode) {
+  public StructuresVillageHouse(IStructureTemplate template, String spawnTag, int villagerId, int x, int y, int z, EnumFacing facing) {
     this.template = template;
     this.spawnTag = spawnTag;
     this.villagerId = villagerId;
-    this.coordBaseMode = coordBaseMode;
+    this.coordBaseMode = facing;
 
     structure = template.createInstance(getRotation());
 
     AxisAlignedBB bb = structure.getBounds();
     bb = bb.offset(x, y, z);
-    boundingBox = new StructureBoundingBox((int) bb.minX, (int) bb.minY, (int) bb.minZ, (int) bb.maxX, (int) bb.maxY, (int) bb.maxZ);
-    // TODO: 1.8 check
-    // if(coordBaseMode == 1) {
-    if (coordBaseMode == EnumFacing.EAST) {
-      boundingBox.offset((int) -(bb.maxX - bb.minX), 0, 0);
-      // } else if(coordBaseMode == 2) {
-    } else if (coordBaseMode == EnumFacing.SOUTH) {
-      boundingBox.offset(0, 0, (int) -(bb.maxZ - bb.minZ));
-    }
+    boundingBox = new StructureBoundingBox((int) bb.minX, (int) bb.minY, (int) bb.minZ, (int) bb.maxX, (int) bb.maxY, (int) bb.maxZ);    
   }
 
   @Override
@@ -74,20 +66,8 @@ public class VillageHouse extends StructureVillagePieces.House1 {
       boundingBox.offset(0, averageGroundLevel - boundingBox.minY - 1 - structure.getSurfaceOffset(), 0);
     }
     Point3i origin = new Point3i(boundingBox.minX, boundingBox.minY, boundingBox.minZ);
-
-    // WHats the deal with this?
-    // public abstract static class Village extends StructureComponent
-    // /**
-    // * Gets the next village component, with the bounding box shifted -1 in
-    // the X and Z direction.
-    // */
-    // protected StructureComponent getNextComponentNN(
-
-    if (coordBaseMode == EnumFacing.EAST) {
-      origin.x++;
-    } else if (coordBaseMode == EnumFacing.SOUTH) {
-      origin.z++;
-    }
+    //Offset so it overlaps the paths
+    origin.add(-coordBaseMode.getFrontOffsetX(),0,-coordBaseMode.getFrontOffsetZ());    
     structure.setOrigin(origin);
     if (!structure.isValid()) {
       return false;

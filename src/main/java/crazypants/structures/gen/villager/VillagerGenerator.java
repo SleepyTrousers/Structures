@@ -45,11 +45,15 @@ public class VillagerGenerator implements IVillagerGenerator {
   }
 
   public void setTexture(String texture) {
-    this.texture = new ResourceLocation(texture);
+    if(texture == null) {
+      this.texture = null; 
+    } else {
+      this.texture = new ResourceLocation(texture);
+    }
   }
 
   public void setWeight(int weight, int minNum, int maxNum) {
-    creationHandler.setVillagePieceWeight(new PieceWeight(VillageHouse.class, weight, maxNum), minNum);
+    creationHandler.setVillagePieceWeight(new PieceWeight(StructuresVillageHouse.class, weight, maxNum), minNum);
   }
 
   public void setSpawnLocation(String villagerSpawnLocation) {

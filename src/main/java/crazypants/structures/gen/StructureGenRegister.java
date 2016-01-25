@@ -22,7 +22,7 @@ import crazypants.structures.gen.io.resource.StructureResourceManager;
 import crazypants.structures.gen.structure.StructureComponentNBT;
 import crazypants.structures.gen.structure.loot.LootCategories;
 import crazypants.structures.gen.villager.CompositeCreationHandler;
-import crazypants.structures.gen.villager.VillageHouse;
+import crazypants.structures.gen.villager.StructuresVillageHouse;
 import net.minecraft.world.gen.structure.MapGenStructureIO;
 import net.minecraftforge.fml.common.registry.VillagerRegistry;
 
@@ -57,7 +57,7 @@ public class StructureGenRegister {
     resourceManager = new StructureResourceManager(this);
     villagerGen = new CompositeCreationHandler();
     VillagerRegistry.instance().registerVillageCreationHandler(villagerGen);
-    MapGenStructureIO.registerStructureComponent(VillageHouse.class, "EnderStructuresHouse");
+    MapGenStructureIO.registerStructureComponent(StructuresVillageHouse.class, "EnderStructuresHouse");
   }
 
   public void registerGenerator(IStructureGenerator gen) {
