@@ -82,6 +82,6 @@
     },
     "canSpanChunks": true,
     "maxAttemptsPerChunk": 2,
-    "maxGeneratedPerChunk": 21
+    "maxGeneratedPerChunk": 1
   }
 }
