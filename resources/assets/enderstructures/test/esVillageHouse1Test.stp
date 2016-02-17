@@ -19,10 +19,10 @@
           "border": {
             "down": 0,
             "up": 3,
-            "north": 1,
-            "south": 1,
-            "west": 1,
-            "east": 1
+            "north": 0,
+            "south": 0,
+            "west": 0,
+            "east": 0
           },
           "clearPlants": true,
           "clearBellowGround": false,
@@ -35,10 +35,10 @@
           "border": {
             "down": 0,
             "up": 0,
-            "north": 1,
-            "south": 1,
-            "west": 1,
-            "east": 1
+            "north": 0,
+            "south": 0,
+            "west": 0,
+            "east": 0
           },
           "type": "FillPreperation"
         }
